@@ -1,0 +1,6 @@
+[submodule "externals/llvm-project"]
+	path = externals/llvm-project
+	url = https://github.com/llvm/llvm-project
+[submodule "externals/torch-mlir"]
+	path = externals/torch-mlir
+	url = https://github.com/llvm/torch-mlir

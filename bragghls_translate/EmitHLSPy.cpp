@@ -1613,9 +1613,9 @@ std::string getValIdent(Value &value) {
 /// Top-level MLIR module emitter.
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
-from hls.scripts.refactor.memref import MemRef, GlobalMemRef
-from hls.scripts.refactor.ops import Alias, FMAC, ReLU, ReduceAdd
-from hls.scripts.refactor.runner import parfor, Forward
+from bragghls.memref import MemRef, GlobalMemRef
+from bragghls.ops import Alias, FMAC, ReLU, ReduceAdd
+from bragghls.runner import parfor, Forward
 
 )XXX";
   os << "\n\n";

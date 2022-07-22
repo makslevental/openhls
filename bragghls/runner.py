@@ -3,11 +3,11 @@ import io
 import itertools
 from textwrap import indent, dedent
 
-from hls.scripts.refactor import state
-from hls.scripts.refactor.memref import MemRef, GlobalMemRef
-from hls.scripts.refactor.ops import LATENCIES
-from hls.scripts.refactor.state import logger, COLLAPSE_MACS
-from hls.scripts.refactor.util import extend_idx
+from bragghls import state
+from bragghls.memref import MemRef, GlobalMemRef
+from bragghls.ops import LATENCIES
+from bragghls.state import logger, COLLAPSE_MACS
+from bragghls.util import extend_idx
 
 
 def make_latency_attrs():

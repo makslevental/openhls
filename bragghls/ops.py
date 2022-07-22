@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Tuple
 
-from hls.scripts.refactor import state
-from hls.scripts.refactor.state import idx_to_str
-from hls.scripts.refactor.util import extend_idx
+from bragghls import state
+from bragghls.state import idx_to_str
+from bragghls.util import extend_idx
 
 
 def overload_op(type):
@@ -140,7 +140,7 @@ def create_new_op(
 
 
 def Alias(dst: "MemRef", src: "MemRef"):
-    from hls.scripts.refactor.memref import MemRef
+    from bragghls.memref import MemRef
 
     assert isinstance(src, MemRef)
     registers_to_copy = src.registers

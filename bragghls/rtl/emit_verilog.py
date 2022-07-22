@@ -1,18 +1,18 @@
 import argparse
 from collections import defaultdict
 
-from hls.scripts.refactor.ops import OpType, LATENCIES
-from hls.scripts.refactor.parse import parse_mlir_module
-from hls.scripts.refactor.rtl.basic import (
+from bragghls.ops import OpType, LATENCIES
+from bragghls.parse import parse_mlir_module
+from bragghls.rtl.basic import (
     Wire,
     Reg,
     make_constant,
     make_always_tree,
     make_always_branch,
 )
-from hls.scripts.refactor.rtl.fsm import FSM
-from hls.scripts.refactor.rtl.ip import FAdd, FMul, ReLU, Neg, PE
-from hls.scripts.refactor.rtl.module import make_top_module_decl
+from bragghls.rtl.fsm import FSM
+from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
+from bragghls.rtl.module import make_top_module_decl
 
 DEBUG = True
 

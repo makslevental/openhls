@@ -1,6 +1,6 @@
-from hls.scripts.refactor.memref import MemRef, GlobalMemRef
-from hls.scripts.refactor.ops import Alias, FMAC, ReduceAdd, ReLU, Copy
-from hls.scripts.refactor.runner import parfor, Forward
+from bragghls.memref import MemRef, GlobalMemRef
+from bragghls.ops import Alias, FMAC, ReduceAdd, ReLU, Copy
+from bragghls.runner import parfor, Forward
 
 # fmt: off
 # fmt: on

@@ -1,10 +1,10 @@
 import numpy as np
 
-from hls.scripts.refactor.memref import MemRef, GlobalMemRef
-from hls.scripts.refactor.ops import Alias, ReduceAdd, FMAC
-from hls.scripts.refactor.runner import parfor, Forward
+from bragghls.memref import MemRef, GlobalMemRef
+from bragghls.ops import Alias, ReduceAdd, FMAC
+from bragghls.runner import parfor, Forward
 
-from hls.scripts.refactor import state
+from bragghls import state
 pref = ".macs" if state.COLLAPSE_MACS else ""
 state.state = state.State(__file__.replace(".py", pref + ".mlir"))
 

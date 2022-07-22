@@ -1,6 +1,6 @@
 from textwrap import dedent, indent
 
-from hls.scripts.refactor.rtl.basic import make_constant
+from bragghls.rtl.basic import make_constant
 
 
 def make_top_module_decl(input_wires, output_wires, precision):

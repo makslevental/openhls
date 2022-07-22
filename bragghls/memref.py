@@ -4,9 +4,9 @@ from typing import Tuple
 
 import numpy as np
 
-from hls.scripts.refactor import state
-from hls.scripts.refactor.ops import make_constant, Val
-from hls.scripts.refactor.state import idx_to_str
+from bragghls import state
+from bragghls.ops import make_constant, Val
+from bragghls.state import idx_to_str
 
 MemRefIndex = Tuple[int, ...]
 

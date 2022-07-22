@@ -1,9 +1,9 @@
 import numpy as np
 
 # fmt: off
-from hls.scripts.refactor.memref import MemRef, GlobalMemRef
-from hls.scripts.refactor.ops import Alias, FMAC, ReLU, ReduceAdd
-from hls.scripts.refactor.runner import parfor, Forward
+from bragghls.memref import MemRef, GlobalMemRef
+from bragghls.ops import Alias, FMAC, ReLU, ReduceAdd
+from bragghls.runner import parfor, Forward
 
 __constant_4x2x3x3xf32 = np.array(
     [1.403888e-01, 8.624066e-02, 1.651159e-01, 2.332027e-01, 1.479630e-01, -2.282581e-02, -2.067856e-01, 9.142201e-02,
@@ -32,7 +32,7 @@ __constant_2xf32 = np.array([1.039099e-01, -1.627121e-01, ]).reshape(2, )
 
 
 # fmt: on
-from hls.scripts.refactor import state
+from bragghls import state
 pref = ".macs" if state.COLLAPSE_MACS else ""
 state.state = state.State(__file__.replace(".py", pref + ".mlir"))
 

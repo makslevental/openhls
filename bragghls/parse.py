@@ -5,7 +5,7 @@ from typing import Tuple, Dict
 
 from torch_mlir._mlir_libs._torchMlir import get_val_identifier
 
-from hls.scripts.refactor.ops import OPS, OpType
+from bragghls.ops import OPS, OpType
 from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
 

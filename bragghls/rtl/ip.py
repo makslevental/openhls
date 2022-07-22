@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from textwrap import dedent
 from typing import Tuple
 
-from hls.scripts.refactor.ops import OpType
-from hls.scripts.refactor.rtl.basic import Reg, Wire
-from hls.scripts.refactor.util import remove_all_leading_whitespace
+from bragghls.ops import OpType
+from bragghls.rtl.basic import Reg, Wire
+from bragghls.util import remove_all_leading_whitespace
 
 
 def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):

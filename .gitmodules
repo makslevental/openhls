@@ -4,3 +4,6 @@
 [submodule "externals/torch-mlir"]
 	path = externals/torch-mlir
 	url = https://github.com/llvm/torch-mlir
+[submodule "externals/circt"]
+	path = externals/circt
+	url = https://github.com/llvm/circt/

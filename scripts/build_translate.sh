@@ -8,6 +8,10 @@ echo $BRAGGHLS_DIR
 
 cd "${BRAGGHLS_DIR}"
 
+####
+# LLVM
+####
+
 mkdir -p "${BRAGGHLS_DIR}"/build/llvm
 
 # configure llvm
@@ -28,9 +32,12 @@ fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/llvm --target all
 
+####
+# torch-mlir
+####
+
 mkdir -p "${BRAGGHLS_DIR}"/build/torch-mlir
 
-#git submodule update --init --depth 1 -- "${BRAGGHLS_DIR}"/externals/torch-mlir/externals/llvm-external-projects
 pushd "${BRAGGHLS_DIR}"/externals/torch-mlir/externals
 git submodule update --init --depth 1 mlir-hlo
 popd
@@ -55,6 +62,38 @@ cmake --build "${BRAGGHLS_DIR}"/build/torch-mlir --target all
 pushd "${BRAGGHLS_DIR}"/externals/torch-mlir
 TORCH_MLIR_CMAKE_BUILD_DIR="${BRAGGHLS_DIR}"/build/torch-mlir TORCH_MLIR_CMAKE_BUILD_DIR_ALREADY_BUILT=1 python setup.py install
 popd
+
+####
+# circt
+####
+
+mkdir -p "${BRAGGHLS_DIR}"/build/circt
+
+pushd "${BRAGGHLS_DIR}"/externals/circt
+source "${BRAGGHLS_DIR}"/externals/circt/utils/get-or-tools.sh
+popd
+
+if [ ! -f "${BRAGGHLS_DIR}"/build/circt/CMakeCache.txt ]; then
+  cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DPython3_FIND_VIRTUALENV=ONLY \
+    -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
+    -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
+    -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+    -DLLVM_TARGETS_TO_BUILD=host \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DSCHEDULING_OR_TOOLS=ON \
+    -S "${BRAGGHLS_DIR}"/externals/circt \
+    -B "${BRAGGHLS_DIR}"/build/circt
+fi
+
+cmake --build "${BRAGGHLS_DIR}"/build/circt --target all
+
+####
+# bragghls
+####
 
 mkdir -p "${BRAGGHLS_DIR}"/build/bragghls
 

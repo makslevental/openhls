@@ -8,6 +8,11 @@ echo $BRAGGHLS_DIR
 
 cd "${BRAGGHLS_DIR}"
 
+git submodule sync --recursive
+for submod in circt flopoco llvm-project torch-mlir; do
+  git submodule update --init --depth 1 externals/$submod
+done
+
 ####
 # LLVM
 ####
@@ -59,9 +64,9 @@ fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/torch-mlir --target all
 
-pushd "${BRAGGHLS_DIR}"/externals/torch-mlir
-TORCH_MLIR_CMAKE_BUILD_DIR="${BRAGGHLS_DIR}"/build/torch-mlir TORCH_MLIR_CMAKE_BUILD_DIR_ALREADY_BUILT=1 python setup.py install
-popd
+#pushd "${BRAGGHLS_DIR}"/externals/torch-mlir
+#TORCH_MLIR_CMAKE_BUILD_DIR="${BRAGGHLS_DIR}"/build/torch-mlir TORCH_MLIR_CMAKE_BUILD_DIR_ALREADY_BUILT=1 python setup.py install
+#popd
 
 ####
 # circt

@@ -7,3 +7,6 @@
 [submodule "externals/circt"]
 	path = externals/circt
 	url = https://github.com/llvm/circt/
+[submodule "externals/flopoco"]
+	path = externals/flopoco
+	url = https://gitlab.com/flopoco/flopoco.git

@@ -3,8 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
 *.so
+*.mlir
+*.vvp
+*.vcd
+*.v
+*.bak
+*_bragghls_artifacts
 
 # Distribution / packaging
 .Python

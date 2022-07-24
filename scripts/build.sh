@@ -64,9 +64,9 @@ fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/torch-mlir --target all
 
-#pushd "${BRAGGHLS_DIR}"/externals/torch-mlir
-#TORCH_MLIR_CMAKE_BUILD_DIR="${BRAGGHLS_DIR}"/build/torch-mlir TORCH_MLIR_CMAKE_BUILD_DIR_ALREADY_BUILT=1 python setup.py install
-#popd
+pushd "${BRAGGHLS_DIR}"/externals/torch-mlir
+TORCH_MLIR_CMAKE_BUILD_DIR="${BRAGGHLS_DIR}"/build/torch-mlir TORCH_MLIR_CMAKE_BUILD_DIR_ALREADY_BUILT=1 python setup.py install
+popd
 
 ####
 # circt
@@ -74,9 +74,11 @@ cmake --build "${BRAGGHLS_DIR}"/build/torch-mlir --target all
 
 mkdir -p "${BRAGGHLS_DIR}"/build/circt
 
-pushd "${BRAGGHLS_DIR}"/externals/circt
-source "${BRAGGHLS_DIR}"/externals/circt/utils/get-or-tools.sh
-popd
+if [ ! -d "${BRAGGHLS_DIR}/build/circt/ext" ]; then
+  pushd "${BRAGGHLS_DIR}"/externals/circt
+  source "${BRAGGHLS_DIR}"/externals/circt/utils/get-or-tools.sh
+  popd
+fi
 
 if [ ! -f "${BRAGGHLS_DIR}"/build/circt/CMakeCache.txt ]; then
   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
@@ -103,18 +105,29 @@ cmake --build "${BRAGGHLS_DIR}"/build/circt --target all
 mkdir -p "${BRAGGHLS_DIR}"/build/bragghls
 
 if [ ! -f "${BRAGGHLS_DIR}"/build/bragghls/CMakeCache.txt ]; then
-cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
-    -DPython3_FIND_VIRTUALENV=ONLY \
-    -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
-    -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
-    -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
-    -DLLVM_TARGETS_TO_BUILD=host \
-    -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -S "${BRAGGHLS_DIR}" \
-    -B "${BRAGGHLS_DIR}"/build/bragghls
+  cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DPython3_FIND_VIRTUALENV=ONLY \
+      -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
+      -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
+      -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+      -DLLVM_TARGETS_TO_BUILD=host \
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+      -S "${BRAGGHLS_DIR}" \
+      -B "${BRAGGHLS_DIR}"/build/bragghls
 fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target bragghls_translate
+
+
+
+
+# TODO
+#PYBIND11_DIR=${PREFIX}/lib/python3.10/site-packages/pybind11/share/cmake/
+#PYBIND11_DIR=$(python -c "import pybind11; print(pybind11.get_cmake_dir())")
+#-DPYTHON_LIBRARY="/Users/mlevental/miniforge3/envs/bragghls/lib/libpython3.10.dylib" -DPYTHON_INCLUDE_DIR="/Users/mlevental/miniforge3/envs/bragghls/include/python3.10" \
+
+#      -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")"  \
+#      -DPYTHON_LIBRARY="$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")" \

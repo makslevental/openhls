@@ -121,7 +121,9 @@ def create_new_op(
             assert isinstance(arg, (float, bool, int)), arg
             args[i] = make_constant(arg)
 
-    op = Op(op_type, pe_idx=pe_idx, op_id=state.state.curr_op_id, args=tuple(args), res=res)
+    op = Op(
+        op_type, pe_idx=pe_idx, op_id=state.state.curr_op_id, args=tuple(args), res=res
+    )
 
     for arg in args:
         if "cst" in arg.id:

@@ -271,7 +271,7 @@ private:
   /// C++ component emitters.
   void emitValue(Value val, unsigned rank = 0, bool isPtr = false,
                  bool isRef = false);
-  void emitArrayDecl(Value array, bool input = false, bool output = false, bool global = false);
+  void emitArrayDecl(Value array, bool input = false, bool output = false);
   unsigned emitNestedLoopHeader(Value val);
   void emitNestedLoopFooter(unsigned rank);
   void emitInfoAndNewLine(Operation *op);
@@ -1433,7 +1433,7 @@ void ModuleEmitter::emitValue(Value val, unsigned rank, bool isPtr,
   os << addName(val, isPtr);
 }
 
-void ModuleEmitter::emitArrayDecl(Value array, bool input, bool output, bool global) {
+void ModuleEmitter::emitArrayDecl(Value array, bool input, bool output) {
   assert(!isDeclared(array) && "has been declared before.");
 
   auto arrayType = array.getType().cast<ShapedType>();
@@ -1452,8 +1452,6 @@ void ModuleEmitter::emitArrayDecl(Value array, bool input, bool output, bool glo
       os << "input=True";
     else if (output)
       os << "output=True";
-    else if (global)
-      os << "globl=True";
     os << ")";
   } else
     emitValue(array, /*rank=*/0, /*isPtr=*/true);
@@ -1544,16 +1542,8 @@ void ModuleEmitter::emitFunction(FuncOp func) {
   unsigned argIdx = 0;
   for (auto &arg : func.getArguments()) {
     indent();
-    auto attrName = func.getArgAttrDict(argIdx).begin()->getName().strref();
     if (arg.getType().isa<ShapedType>()) {
-      if (attrName.contains("in"))
-        emitArrayDecl(arg, true, false, false);
-      else if (attrName.contains("constant"))
-        emitArrayDecl(arg, false, false, true);
-      else if (attrName.contains("out"))
-        emitArrayDecl(arg, false, true, false);
-      else
-        emitArrayDecl(arg);
+      emitArrayDecl(arg, true, false);
     } else
       emitValue(arg);
 
@@ -1573,7 +1563,6 @@ void ModuleEmitter::emitFunction(FuncOp func) {
       emitArrayDecl(result, false, true);
     }
     else
-      // In Vivado HLS, pointer indicates the value is an output.
       emitValue(result, /*rank=*/0, /*isPtr=*/true);
 
     portList.push_back(result);

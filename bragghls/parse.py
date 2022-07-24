@@ -3,10 +3,9 @@ import re
 from dataclasses import dataclass
 from typing import Tuple, Dict
 
-from torch_mlir._mlir_libs._torchMlir import get_val_identifier
+from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
 from bragghls.ops import OPS, OpType
-from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
 
 def traverse_op_region_block_iterators(op, handler):
@@ -131,8 +130,10 @@ def parse_mlir_module_using_mlir(module_str):
             return
 
         if list(mlir_op.results) and hasattr(mlir_op, "operands"):
-            res = get_val_identifier(mlir_op.results[0]._CAPIPtr)
-            args = [get_val_identifier(op._CAPIPtr) for op in mlir_op.operands]
+            res = _braggHLS.get_val_identifier(mlir_op.results[0]._CAPIPtr)
+            args = [
+                _braggHLS.get_val_identifier(op._CAPIPtr) for op in mlir_op.operands
+            ]
             print(
                 res,
                 mlir_op.operation.name,
@@ -142,6 +143,12 @@ def parse_mlir_module_using_mlir(module_str):
 
     traverse_op_region_block_iterators(op, handler)
 
+
+if __name__ == "__main__":
+    mlir_module_str = open(
+        "/Users/mlevental/dev_projects/bragghls/examples/dot.mlir"
+    ).read()
+    parse_mlir_module_using_mlir(mlir_module_str)
 
 # MLIRContext context;
 # FailureOr<IntegerPolyhedron> fac;

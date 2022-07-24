@@ -128,6 +128,14 @@ class HoistGlobals(ast.NodeTransformer):
         return node
 
 
+def traverse_mlir_op_region_block_iterators(op, handler):
+    for i, region in enumerate(op.regions):
+        for j, block in enumerate(region):
+            for k, child_op in enumerate(block):
+                handler(child_op)
+                traverse_mlir_op_region_block_iterators(child_op, handler)
+
+
 def transform_forward_py(fp):
     new_tree = astor.parse_file(fp)
     new_tree = HoistGlobals().visit(new_tree)

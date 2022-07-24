@@ -48,3 +48,4 @@ list(APPEND CMAKE_MODULE_PATH ${MLIR_MAIN_SRC_DIR}/cmake/modules)
 list(APPEND CMAKE_MODULE_PATH ${LLVM_MAIN_SRC_DIR}/cmake)
 
 add_subdirectory(bragghls_translate)
+add_subdirectory(ip_cores/flopoco_convert_ext)

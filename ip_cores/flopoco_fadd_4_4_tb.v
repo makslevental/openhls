@@ -15,7 +15,7 @@ module flopoco_fadd_4_4_tb;
     reg[10:0] Y;
     wire[10:0] R;
 
-    fadd uut(
+    fadd add(
         .clk(clk),
         .X(X),
         .Y(Y),
@@ -23,12 +23,13 @@ module flopoco_fadd_4_4_tb;
     );
 
     initial begin
-        X = 1;
-        Y = 1;
-        // Not needed on Cloud V:
+        X = 11'b01010000100; // 2.5
+        Y = 11'b01010010110; // 5.5
         $dumpfile("signals.vcd"); // Name of the signal dump file
         $dumpvars(0, flopoco_fadd_4_4_tb); // Signals to dump
-        #3000;  // Simulation time
+        #100;  // Simulation time
+        if(R != 11'b01010100000) // 8.0
+            $display("failed with sum %10b", R);
         $finish();  // Don't forget this or the simulation will run forever and fill up your hard drive.
     end
 

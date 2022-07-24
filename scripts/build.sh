@@ -120,7 +120,9 @@ if [ ! -f "${BRAGGHLS_DIR}"/build/bragghls/CMakeCache.txt ]; then
 fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target bragghls_translate
+cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
+cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/ip_cores/
 
 
 

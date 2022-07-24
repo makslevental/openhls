@@ -1604,7 +1604,9 @@ void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
 from bragghls.memref import MemRef, GlobalMemRef
 from bragghls.ops import Alias, FMAC, ReLU, ReduceAdd
-from bragghls.runner import parfor, Forward
+from bragghls.runner import parfor, Forward, make_output_file
+
+make_output_file(__file__)
 
 )XXX";
   os << "\n\n";
@@ -1630,7 +1632,7 @@ from bragghls.runner import parfor, Forward
   }
   os << R"XXX(
 if __name__ == "__main__":
-    Forward(forward, __file__)
+    Forward(forward)
 )XXX";
 }
 

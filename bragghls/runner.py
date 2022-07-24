@@ -6,7 +6,7 @@ from textwrap import indent, dedent
 from bragghls import state
 from bragghls.memref import MemRef, GlobalMemRef
 from bragghls.ops import LATENCIES
-from bragghls.state import logger, COLLAPSE_MACS
+from bragghls.state import logger
 from bragghls.util import extend_idx
 
 
@@ -92,9 +92,13 @@ def parfor(ranges):
     return wrapper
 
 
-def Forward(forward, fp):
+def make_output_file(fp=None):
+    from bragghls.state import COLLAPSE_MACS
     pref = ".macs" if COLLAPSE_MACS else ""
     if state.state is None:
         state.state = state.State(fp.replace(".py", pref + ".mlir"))
+
+
+def Forward(forward):
     args = get_default_args(forward)
     MLIRForward(args, forward)

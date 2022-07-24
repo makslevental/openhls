@@ -74,7 +74,7 @@ popd
 
 mkdir -p "${BRAGGHLS_DIR}"/build/circt
 
-if [ ! -d "${BRAGGHLS_DIR}/build/circt/ext" ]; then
+if [ ! -d "${BRAGGHLS_DIR}/externals/circt/ext" ]; then
   pushd "${BRAGGHLS_DIR}"/externals/circt
   source "${BRAGGHLS_DIR}"/externals/circt/utils/get-or-tools.sh
   popd

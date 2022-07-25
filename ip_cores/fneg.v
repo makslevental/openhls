@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module neg
+module fneg
     #(parameter
         ID=1,
         WIDTH=16

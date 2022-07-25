@@ -51,12 +51,9 @@ emit_verilog() {
   sed -i.bak 's/%/v_/g' $res_dir/${filename}.v
 }
 
-#generate_testbench() {
-#  circt-opt $res_dir/${filename}_rewritten.mlir -test-lp-scheduler=with=Problem -allow-unregistered-dialect -o $res_dir/${filename}_rewritten.sched.mlir
-#  python bragghls/transforms.py --mlir $res_dir/${filename}_rewritten.sched.mlir --macs_fp $res_dir/${filename}_rewritten.macs.mlir
-#  python bragghls/rtl/emit_verilog.py $res_dir/${filename}_rewritten.macs_rewritten.mlir
-#  sed -i.bak 's/%/v/g' $res_dir/${filename}_rewritten.macs_rewritten.v
-#}
+generate_testbench() {
+  python bragghls/rtl/generate_tb.py $res_dir --size 4
+}
 
 if [ -n "$TRANSLATE" ]; then
   translate_to_python
@@ -68,4 +65,8 @@ fi
 
 if [ -n "$VERILOG" ]; then
   emit_verilog
+fi
+
+if [ -n "$TESTBENCH" ]; then
+  generate_testbench
 fi

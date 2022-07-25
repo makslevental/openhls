@@ -94,6 +94,7 @@ def parfor(ranges):
 
 def make_output_file(fp=None):
     from bragghls.state import COLLAPSE_MACS
+
     pref = ".macs" if COLLAPSE_MACS else ""
     if state.state is None:
         state.state = state.State(fp.replace(".py", pref + ".mlir"))

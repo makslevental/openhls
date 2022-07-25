@@ -45,7 +45,7 @@ def make_dot(size=11):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=2)
+    parser.add_argument("--size", type=int, default=4)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_dot(args.size)

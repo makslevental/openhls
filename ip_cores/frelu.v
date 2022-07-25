@@ -1,5 +1,5 @@
 `timescale 1ns/1ps
-module relu
+module frelu
     #(parameter
         ID=1,
         WIDTH=16

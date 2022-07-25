@@ -1,8 +1,8 @@
 `default_nettype none
-`include "flopoco_fadd_4_4.v"
+`include "flopoco_fmul_4_4.v"
 `timescale 1ns/1ps
 
-module fadd_tb;
+module fmul_tb;
     parameter HALF_PERIOD = 1.666665;
     parameter PERIOD = 3.33333;
     reg clk;
@@ -19,12 +19,13 @@ module fadd_tb;
         count <= count + 1'b1;
     end
 
+
     reg[10:0] X;
     reg[10:0] Y;
     wire[10:0] R;
     reg[10:0] res;
 
-    fadd dut(
+    fmul dut(
         .clk(clk),
         .X(X),
         .Y(Y),
@@ -48,19 +49,22 @@ module fadd_tb;
 
         #PERIOD;
         $display("count %0d res %11b", count, res);
-
-        #PERIOD;
-        $display("count %0d res %11b", count, res);
-        if(res !== 11'b01010010100) // 5.0
-            $display("failed with sum %10b", res);
+        if(res !== 11'b01010011000) // 6.0
+            $display("failed with product %11b", res);
         else
-            $display("passed with sum %10b", res);
+            $display("passed with product %11b", res);
 
         #PERIOD;
         $display("count %0d res %11b", count, res);
 
-        $dumpfile("fadd.vcd");
-        $dumpvars(0, fadd_tb);
+        #PERIOD;
+        $display("count %0d res %11b", count, res);
+
+        #PERIOD;
+        $display("count %0d res %11b", count, res);
+
+        $dumpfile("fmul.vcd");
+        $dumpvars(0, fmul_tb);
         #20;
         $finish();
     end

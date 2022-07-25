@@ -98,7 +98,7 @@ def parse_mlir_module(module_str):
             )
         elif "func.func" in line:
             assert idents
-            func_args = set(idn[0] for idn in idents)
+            func_args = [idn[0] for idn in idents]
         elif "return" in line:
             start_time = reg_start_time.findall(line)
             if start_time:
@@ -113,7 +113,7 @@ def parse_mlir_module(module_str):
         else:
             continue
     assert func_args and returns
-    vals -= func_args
+    vals -= set(func_args)
     return op_id_data, func_args, returns, return_time, vals, csts, pe_idxs
 
 

@@ -2,11 +2,12 @@
 
 set -xe -o pipefail
 
-while getopts 'trv' opt; do
+while getopts 'trvb' opt; do
   case $opt in
   t) TRANSLATE=true ;;
   r) REWRITE=true ;;
   v) VERILOG=true ;;
+  b) TESTBENCH=true ;;
   *)
     echo "Unknown option -$OPTARG"
     exit 1
@@ -16,7 +17,7 @@ done
 
 shift $((OPTIND - 1))
 
-if [ -z "${TRANSLATE}" ] && [ -z "${REWRITE}" ] && [ -z "${VERILOG}" ]; then
+if [ -z "${TRANSLATE}" ] && [ -z "${REWRITE}" ] && [ -z "${VERILOG}" ] && [ -z "${TESTBENCH}" ]; then
   ALL=true
 fi
 
@@ -47,17 +48,24 @@ emit_verilog() {
   circt-opt $res_dir/${filename}_rewritten.mlir -test-lp-scheduler=with=Problem -allow-unregistered-dialect -o $res_dir/${filename}_rewritten.sched.mlir
   python bragghls/transforms.py --mlir $res_dir/${filename}_rewritten.sched.mlir --macs_fp $res_dir/${filename}_rewritten.macs.mlir
   python bragghls/rtl/emit_verilog.py $res_dir/${filename}_rewritten.macs_rewritten.mlir
-  sed -i.bak 's/%/v/g' $res_dir/${filename}_rewritten.macs_rewritten.v
+  sed -i.bak 's/%/v_/g' $res_dir/${filename}.v
 }
 
-if [ -n "$TRANSLATE" ] ; then
-    translate_to_python
+#generate_testbench() {
+#  circt-opt $res_dir/${filename}_rewritten.mlir -test-lp-scheduler=with=Problem -allow-unregistered-dialect -o $res_dir/${filename}_rewritten.sched.mlir
+#  python bragghls/transforms.py --mlir $res_dir/${filename}_rewritten.sched.mlir --macs_fp $res_dir/${filename}_rewritten.macs.mlir
+#  python bragghls/rtl/emit_verilog.py $res_dir/${filename}_rewritten.macs_rewritten.mlir
+#  sed -i.bak 's/%/v/g' $res_dir/${filename}_rewritten.macs_rewritten.v
+#}
+
+if [ -n "$TRANSLATE" ]; then
+  translate_to_python
 fi
 
-if [ -n "$REWRITE" ] ; then
-    rewrite_python
+if [ -n "$REWRITE" ]; then
+  rewrite_python
 fi
 
-if [ -n "$VERILOG" ] ; then
-    emit_verilog
+if [ -n "$VERILOG" ]; then
+  emit_verilog
 fi

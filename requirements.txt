@@ -6,6 +6,7 @@ numpy
 torchvision
 networkx
 astor
+jinja2
 
 # Build requirements.
 pybind11

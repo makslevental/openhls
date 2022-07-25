@@ -14,6 +14,9 @@ class Wire:
     def instantiate(self):
         return f"wire [{self.precision - 1}:0] {self};"
 
+    def __lt__(self, other):
+        return str(self) < str(other)
+
 
 @dataclass(frozen=True)
 class Reg:
@@ -33,9 +36,9 @@ def make_constant(v, precision):
 
 def make_always_tree(conds, vals_to_init):
     vals_to_init = [
-        f"\t{v} = 1'bx;"
+        f"\t{v} = 1'b0;"
         for v in vals_to_init
-        if isinstance(v, Reg) and "cst" not in f"{v}"
+        if isinstance(v, Reg) and not ("cst" in f"{v}" or "val" in f"{v}")
     ]
     return "\n".join(["always @ (*) begin"] + vals_to_init + conds + ["end"])
 

@@ -3,7 +3,7 @@ from textwrap import dedent, indent
 from bragghls.rtl.basic import make_constant
 
 
-def make_top_module_decl(input_wires, output_wires, precision):
+def make_top_module_decl(ip_name, input_wires, output_wires, precision):
     inputs = input_wires
     outputs = output_wires
     base_inputs = ["clk", "reset", "ce"]
@@ -20,7 +20,7 @@ def make_top_module_decl(input_wires, output_wires, precision):
     mod_top = dedent(
         f"""\
         `default_nettype none
-        module forward (
+        module {ip_name} (
         """
     )
 
@@ -45,7 +45,7 @@ def make_top_module_decl(input_wires, output_wires, precision):
     )
 
     mod_top += "\n"
-    mod_top += "\nforward_inner _forward_inner(\n"
+    mod_top += f"\n{ip_name}_inner _{ip_name}_inner(\n"
     mod_top += indent(
         dedent(
             ",\n".join([f".{port}({port})" for port in base_inputs + inputs + outputs])
@@ -62,7 +62,7 @@ def make_top_module_decl(input_wires, output_wires, precision):
 
     mod_inner = dedent(
         f"""\
-        module forward_inner (
+        module {ip_name}_inner (
         """
     )
     mod_inner += indent(dedent(input_wires + ",\n" + output_wires), "\t")

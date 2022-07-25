@@ -27,9 +27,9 @@ class OpType(Enum):
 
 
 LATENCIES = {
-    OpType.ADD: 4,
-    OpType.SUB: 4,
-    OpType.MUL: 3,
+    OpType.ADD: 3,
+    OpType.SUB: 3,
+    OpType.MUL: 2,
     OpType.DIV: 3,
     OpType.GT: 1,
     OpType.NEG: 1,

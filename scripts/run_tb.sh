@@ -13,4 +13,8 @@ iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores $dirname/"$filena
 rm $dirname/*.vcd || echo 0
 vvp $dirname/$filename.vvp
 
-open -a Scansion $dirname/*.vcd
+if [[ "$(uname)" == 'Darwin' ]]; then
+  open -a Scansion $dirname/*.vcd
+else
+  gtkwave $dirname/*.vcd &
+fi

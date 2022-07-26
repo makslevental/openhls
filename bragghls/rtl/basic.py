@@ -1,3 +1,4 @@
+import enum
 import random
 from dataclasses import dataclass
 from textwrap import dedent, indent
@@ -31,24 +32,37 @@ class Reg:
 
 
 def make_constant(v, precision):
-    return f"{precision}'d{random.randint(0, 2 ** precision - 1)}"
+    if v is None:
+        return f"{precision}'d{random.randint(0, 2 ** precision - 1)}"
+    else:
+        # %val_cst_00
+        assert "cst" in v, v
+        v = v.split("_")[-1]
+        # TODO: put real constants here
+        return f"{precision}'b{int(v)}"
 
 
-def make_always_tree(conds, vals_to_init):
+class CombOrSeq(enum.Enum):
+    COMB = "*"
+    SEQ = "posedge clk"
+
+def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
     vals_to_init = [
         f"\t{v} = 1'b0;"
         for v in vals_to_init
     ]
 
-    return "\n".join(["always @ (*) begin"] + vals_to_init + conds + ["end"])
+    return "\n".join(
+        [f"always @ ({comb_or_seq.value}) begin"] + vals_to_init + conds + ["end"]
+    )
 
 
-def make_always_branch(left, right, cond):
+def make_always_branch(left, right, cond, comb_or_seq=CombOrSeq.COMB):
     return indent(
-        dedent(
-            f"""\
+            dedent(
+                f"""\
             if ({cond}) begin
-                {left} = {right}; 
+                {left} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {right}; 
             end
         """
         ),

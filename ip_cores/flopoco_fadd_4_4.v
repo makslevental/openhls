@@ -1,4 +1,4 @@
-module intadder_10_f300_uid13
+module _intadder_10_f300_uid13
   (input  clk,
    input  [9:0] x,
    input  [9:0] y,

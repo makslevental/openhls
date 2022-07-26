@@ -38,6 +38,7 @@ def make_top_module_decl(ip_name, input_wires, output_wires, precision):
     mod_top += dedent(
         "\n".join(
             [
+                # TODO: put real net values here
                 f"""reg {inp} = {make_constant(None, precision)};"""
                 for inp in input_ports[2:]
             ]

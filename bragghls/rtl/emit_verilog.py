@@ -138,9 +138,9 @@ def main(mac_rewritten_sched_mlir_fp, precision):
             precision,
         )
     )
-    for name, val_reg in vals.items():
+    for name, val_reg in sorted(vals.items()):
         if name in csts:
-            emit(val_reg.instantiate()[:-1], "=", f"{make_constant(None, precision)};")
+            emit(val_reg.instantiate()[:-1], "=", f"{make_constant(name, precision)};")
         else:
             emit(val_reg.instantiate())
 

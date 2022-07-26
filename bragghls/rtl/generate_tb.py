@@ -138,9 +138,9 @@ def test_dot(fp, size=4):
         "dot.v",
         3.33333,
         11,
-        10,
+        40,
         [f"v_arg{i}_wire" for i in range(len(inputs))],
-        ["output_v_val_4_wire"],
+        [f"output_v_val_23_wire"],
         inputs,
         [output],
     )

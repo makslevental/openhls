@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from functools import reduce
 from typing import Tuple
 
 from bragghls import state
@@ -190,21 +191,26 @@ class FMAC:
         return op_res
 
 
-def ReduceAdd(vals):
-    prev_sums = list(vals)
-    while len(prev_sums) > 1:
-        next_sums = []
-        while len(prev_sums) > 1:
-            left = prev_sums.pop()
-            state.state.pe_idx = state.state.get_arg_src(left).pe_idx
-            next_sums.append(left + prev_sums.pop())
-        if len(prev_sums) == 1:
-            left = next_sums[-1]
-            state.state.pe_idx = state.state.get_arg_src(left).pe_idx
-            next_sums[-1] = left + prev_sums[0]
-        prev_sums = next_sums
-    return prev_sums[0]
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
+
+def reducer(accum, val):
+    state.state.pe_idx = state.state.get_arg_src(val[0]).pe_idx
+    if len(val) > 1:
+        return accum + [val[0] + val[1]]
+    else:
+        return accum + [Copy(val[0])]
+
+
+def ReduceAdd(vals):
+    pairs = list(chunks(list(vals), 2))
+    while len(pairs) > 1:
+        pairs = list(chunks(reduce(reducer, pairs, []), 2))
+    state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
+    return pairs[0][0] + pairs[0][1]
 
 ReLU = lambda x: overload_op(OpType.RELU)(x)
 Copy = lambda x: overload_op(OpType.COPY)(x)

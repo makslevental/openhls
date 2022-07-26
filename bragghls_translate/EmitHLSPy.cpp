@@ -808,7 +808,7 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     if (i < op.getNumDims()-1)
       os << ", ";
   }
-  indent() << "))\n";
+  indent() << ",))\n";
   indent() << "def body(";
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
     auto iterVar = op.getBody()->getArgument(i);

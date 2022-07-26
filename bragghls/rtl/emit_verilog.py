@@ -45,7 +45,7 @@ DEBUG = True
 
 def make_pe_always(fsm, pe, op_datas, vals, input_wires):
     tree_conds = []
-    vals_to_init = set()
+    not_latches = set()
     for data in op_datas:
         op = data.opr
         ip = getattr(pe, op.value, None)
@@ -53,7 +53,6 @@ def make_pe_always(fsm, pe, op_datas, vals, input_wires):
         start_time = data.start_time
         end_time = start_time + LATENCIES[op]
         res_val = vals.get(data.res_val, data.res_val)
-        vals_to_init.add(res_val)
         in_a = vals.get(args[0], input_wires.get(args[0], args[0]))
 
         if op in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
@@ -61,32 +60,33 @@ def make_pe_always(fsm, pe, op_datas, vals, input_wires):
             tree_conds.append(
                 make_always_branch(ip.x, in_a, fsm.make_fsm_states([start_time]))
             )
-            vals_to_init.add(ip.x)
             tree_conds.append(
                 make_always_branch(ip.y, in_b, fsm.make_fsm_states([start_time]))
             )
-            vals_to_init.add(ip.y)
             tree_conds.append(
                 make_always_branch(res_val, ip.r, fsm.make_fsm_states([end_time]))
             )
-            vals_to_init.add(ip.r)
+            if "val" in str(res_val):
+                not_latches.add(res_val)
         elif op in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(ip.a, in_a, fsm.make_fsm_states([start_time]))
             )
-            vals_to_init.add(ip.a)
             tree_conds.append(
                 make_always_branch(res_val, ip.res, fsm.make_fsm_states([end_time]))
             )
-            vals_to_init.add(ip.res)
+            if "val" in str(res_val):
+                not_latches.add(res_val)
         elif op in {OpType.COPY}:
+            debug_emit(f"copy {in_a} to {res_val}")
             tree_conds.append(
                 make_always_branch(res_val, in_a, fsm.make_fsm_states([start_time]))
             )
+            # this does not need to be a latch so don't init it
         else:
             raise NotImplementedError
 
-    return make_always_tree(tree_conds, vals_to_init)
+    return make_always_tree(tree_conds, not_latches)
 
 
 def cluster_pes(pes, op_id_data):
@@ -98,6 +98,15 @@ def cluster_pes(pes, op_id_data):
 
     return pe_to_ops
 
+VERILOG_FILE = None
+
+def emit(*args):
+    print(*args, file=VERILOG_FILE)
+    print(file=VERILOG_FILE)
+
+def debug_emit(*args):
+    if DEBUG:
+        emit(*["//"] + list(args))
 
 def main(mac_rewritten_sched_mlir_fp, precision):
     dirname, filename = os.path.split(mac_rewritten_sched_mlir_fp)
@@ -118,15 +127,8 @@ def main(mac_rewritten_sched_mlir_fp, precision):
     output_wires = {v: Wire(v, precision) for v in returns}
     vals = {v: Reg(v, precision) for v in vals}
 
-    verilog_file = open(f"{dirname}/{ip_name}.v", "w")
-
-    def emit(*args):
-        print(*args, file=verilog_file)
-        print(file=verilog_file)
-
-    def debug_print(self, *args):
-        if DEBUG:
-            self.emit(["//"] + args)
+    global VERILOG_FILE
+    VERILOG_FILE = open(f"{dirname}/{ip_name}.v", "w")
 
     emit(
         make_top_module_decl(

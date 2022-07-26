@@ -38,9 +38,9 @@ def make_always_tree(conds, vals_to_init):
     vals_to_init = [
         f"\t{v} = 1'b0;"
         for v in vals_to_init
-        if isinstance(v, Reg) and not ("cst" in f"{v}" or "val" in f"{v}")
     ]
-    return "\n".join(["always @ (*) begin"] + conds + ["end"])
+
+    return "\n".join(["always @ (*) begin"] + vals_to_init + conds + ["end"])
 
 
 def make_always_branch(left, right, cond):

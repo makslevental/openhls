@@ -30,13 +30,13 @@ def make_dot(size=11):
         mod = Dot()
         mod.eval()
         y = torch.randn(size)
-        x = torch.randn(size).T
+        x = torch.randn(size)
         # z = mod(x, y)
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
-            ([1, size], torch.float32),
-            ([size, 1], torch.float32),
+            ([size], torch.float32),
+            ([size], torch.float32),
         ],
     )
     return str(mlir_module)
@@ -45,7 +45,7 @@ def make_dot(size=11):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=4)
+    parser.add_argument("--size", type=int, default=11)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_dot(args.size)

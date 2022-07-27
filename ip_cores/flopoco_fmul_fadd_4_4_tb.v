@@ -82,12 +82,12 @@ module fmul_fadd_tb;
             fmul_ce <= 1;
         end
         // 2 == count
-
         if ((11'd3 == count)) begin
             fadd_x <= arg0; // 0.0
             fadd_y <= fmul_r; // 2.0
             fadd_ce <= 1;
         end
+        // need to put a spacer here between the start of the previous
         if ((11'd4 == count)) begin
             fmul_x <= arg3; // 3.0
             fmul_y <= arg4; // 4.0
@@ -137,6 +137,8 @@ module fmul_fadd_tb;
 	end
 
     initial begin
+        $display("count %0d fmul_r %11b fadd_r %11b", count, fmul_r, fadd_r);
+        #PERIOD;
         $display("count %0d fmul_r %11b fadd_r %11b", count, fmul_r, fadd_r);
         #PERIOD;
         $display("count %0d fmul_r %11b fadd_r %11b", count, fmul_r, fadd_r);

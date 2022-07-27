@@ -12,6 +12,8 @@ module fadd_tb;
 
     reg[10:0] count = 11'b0;
     initial begin
+        $dumpfile("fadd.vcd");
+        $dumpvars(0, fadd_tb);
         clk = 0;
         count = 0;
     end
@@ -24,26 +26,36 @@ module fadd_tb;
     wire[10:0] R;
     reg[10:0] res;
 
-    fadd dut(
+    fadd #(1) dut(
         .clk(clk),
         .X(X),
         .Y(Y),
         .R(R)
     );
-    always @(posedge clk)
-        res = R;
+
+    always @ (*) begin
+        X = 1'b0;
+        Y = 1'b0;
+        if ((11'd1 == count)) begin
+            X = 11'b01010000000; // 2.0
+            Y = 11'b01010001000; // 3.0
+        end
+        if ((11'd3 == count)) begin
+            //res = R;
+        end
+	end
+    always @ (posedge clk) begin
+        if ((11'd3 == count)) begin
+            res <= R;
+        end
+	end
+
 
     initial begin
         #0;
         $display("count %0d res %11b", count, res);
 
         #PERIOD;
-        X <= 11'b01010000000; // 2.0
-        Y <= 11'b01010001000; // 3.0
-        $display("count %0d res %11b", count, res);
-        $display("write to inputs");
-
-        #PERIOD;
         $display("count %0d res %11b", count, res);
 
         #PERIOD;
@@ -51,16 +63,10 @@ module fadd_tb;
 
         #PERIOD;
         $display("count %0d res %11b", count, res);
-        if(res !== 11'b01010010100) // 5.0
-            $display("failed with sum %10b", res);
-        else
-            $display("passed with sum %10b", res);
 
         #PERIOD;
         $display("count %0d res %11b", count, res);
 
-        $dumpfile("fadd.vcd");
-        $dumpvars(0, fadd_tb);
         #20;
         $finish();
     end

@@ -52,7 +52,7 @@ emit_verilog() {
 }
 
 generate_testbench() {
-  python bragghls/rtl/generate_tb.py $res_dir --size 11
+  python bragghls/rtl/generate_tb.py $res_dir --size 9
 }
 
 if [ -n "$TRANSLATE" ]; then

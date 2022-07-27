@@ -3,8 +3,8 @@
 `timescale 1ns/1ps
 
 module fmul_tb;
-    parameter HALF_PERIOD = 1.666665;
-    parameter PERIOD = 3.33333;
+    parameter HALF_PERIOD = 5;
+    parameter PERIOD = 10;
     reg clk;
     reg reset;
     reg ce;

@@ -35,7 +35,7 @@ module fmac(
     input wire current_state_fsm_state08,
     input wire current_state_fsm_state09,
     input wire current_state_fsm_state10,
-    input wire current_state_fsm_state11,
+    input wire current_state_fsm_state1,
     input wire current_state_fsm_state12,
     input wire current_state_fsm_state13,
     input wire current_state_fsm_state14,
@@ -49,58 +49,54 @@ module fmac(
         fadd_x = 0;
         fadd_y = 0;
         fadd_ce = 0;
-        if ((11'b1 == current_state_fsm_state01)) begin
+        if ((1'b1 == current_state_fsm_state01)) begin
             fmul_x <= arg1; // 1.0
             fmul_y <= arg2; // 2.0
             fmul_ce <= 1;
         end
-        // 2 == count
-        if ((11'b1 == current_state_fsm_state03)) begin
+        if ((1'b1 == current_state_fsm_state03)) begin
             fadd_x <= 'b0; // 0.0
             fadd_y <= fmul_r; // 2.0
             fadd_ce <= 1;
         end
         // need to put a spacer here between the start of the previous
-        if ((11'b1 == current_state_fsm_state04)) begin
+        if ((1'b1 == current_state_fsm_state04)) begin
             fmul_x <= arg3; // 3.0
             fmul_y <= arg4; // 4.0
             fmul_ce <= 1;
             fadd_ce <= 1;
         end
-        // 5 == count
-
-        if ((11'b1 == current_state_fsm_state06)) begin
+        if ((1'b1 == current_state_fsm_state06)) begin
             fadd_x <= fadd_r;
             fadd_y <= fmul_r;
             fadd_ce <= 1;
         end
-        if ((11'b1 == current_state_fsm_state07)) begin
+        //
+        if ((1'b1 == current_state_fsm_state07)) begin
             fmul_x <= arg5;
             fmul_y <= arg6;
             fmul_ce <= 1;
             fadd_ce <= 1;
         end
-        // 8 == count
-
-        if ((11'b1 == current_state_fsm_state09)) begin
+        if ((1'b1 == current_state_fsm_state09)) begin
             fadd_x <= fadd_r;
             fadd_y <= fmul_r;
             fadd_ce <= 1;
         end
-        if ((11'b1 == current_state_fsm_state10)) begin
+        //
+        if ((1'b1 == current_state_fsm_state10)) begin
             fmul_x <= arg7;
             fmul_y <= arg8;
             fmul_ce <= 1;
             fadd_ce <= 1;
         end
-        // 11 == count
-
-        if ((11'b1 == current_state_fsm_state12)) begin
+        if ((1'b1 == current_state_fsm_state12)) begin
             fadd_x <= fadd_r;
             fadd_y <= fmul_r;
             fadd_ce <= 1;
         end
-        if ((11'b1 == current_state_fsm_state13)) begin
+        //
+        if ((1'b1 == current_state_fsm_state13)) begin
             fadd_ce <= 1;
         end
     end

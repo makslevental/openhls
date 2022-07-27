@@ -1,4 +1,4 @@
-import flopoco_converter
+from . import flopoco_converter
 
 
 def convert_float_to_flopoco_binary_str(f, width_exp=4, width_frac=4):

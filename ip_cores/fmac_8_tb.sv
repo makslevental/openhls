@@ -2,7 +2,7 @@
 `include "fmac_8.sv"
 `timescale 1ns/1ps
 
-module fmul_fadd_tb;
+module fmac_8_tb;
     localparam PERIOD = 2;
     localparam HALF_PERIOD = PERIOD/2;
     reg clk;
@@ -10,8 +10,8 @@ module fmul_fadd_tb;
     always #HALF_PERIOD clk = ~clk;
 
     initial begin
-        $dumpfile("fmul_fadd.vcd");
-        $dumpvars(0, fmul_fadd_tb);
+        $dumpfile("fmac_8.vcd");
+        $dumpvars(0, fmac_8_tb);
         clk = 0;
         reset = 1;
     end
@@ -117,7 +117,7 @@ module fmul_fadd_tb;
         .R(fadd_r)
     );
 
-    fmac fmac_dut(
+    fmac fmac_8_dut(
         clk,
         arg1,
         arg2,

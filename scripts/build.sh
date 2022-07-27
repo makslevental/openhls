@@ -4,6 +4,8 @@ set -xeu -o pipefail
 
 # The absolute path to the directory of this script.
 BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
+C_COMPILER=clang-14
+CXX_COMPILER=clang++-14
 echo $BRAGGHLS_DIR
 
 cd "${BRAGGHLS_DIR}"
@@ -22,8 +24,8 @@ mkdir -p "${BRAGGHLS_DIR}"/build/llvm
 # configure llvm
 if [ ! -f "${BRAGGHLS_DIR}"/build/llvm/CMakeCache.txt ]; then
   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_C_COMPILER=$C_COMPILER \
+    -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
     -DPython3_FIND_VIRTUALENV=ONLY \
     -DLLVM_ENABLE_PROJECTS=mlir \
     -DLLVM_ENABLE_ASSERTIONS=ON \
@@ -50,8 +52,8 @@ popd
 if [ ! -f "${BRAGGHLS_DIR}"/build/torch-mlir/CMakeCache.txt ]; then
   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_C_COMPILER=$C_COMPILER \
+    -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
     -DPython3_FIND_VIRTUALENV=ONLY \
     -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
     -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
@@ -83,8 +85,8 @@ fi
 if [ ! -f "${BRAGGHLS_DIR}"/build/circt/CMakeCache.txt ]; then
   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_C_COMPILER=$C_COMPILER \
+    -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
     -DPython3_FIND_VIRTUALENV=ONLY \
     -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
     -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
@@ -107,8 +109,8 @@ mkdir -p "${BRAGGHLS_DIR}"/build/bragghls
 if [ ! -f "${BRAGGHLS_DIR}"/build/bragghls/CMakeCache.txt ]; then
   cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCMAKE_C_COMPILER=$C_COMPILER \
+      -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
       -DPython3_FIND_VIRTUALENV=ONLY \
       -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
       -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
@@ -124,6 +126,11 @@ cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
 cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/ip_cores/
 
+
+
+wget https://github.com/ghdl/ghdl/releases/download/nightly/ghdl-gha-ubuntu-20.04-llvm.tgz
+mkdir -p "${BRAGGHLS_DIR}"/build/ghdl
+tar -xvf ghdl-gha-ubuntu-20.04-llvm.tgz -C "${BRAGGHLS_DIR}"/build/
 
 
 # TODO

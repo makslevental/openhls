@@ -1,7 +1,12 @@
+import argparse
+from pathlib import Path
+
 import torch
 from torch import nn
 
 from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
+
+from bragghls.nn import compile_nn_module_to_mlir, set_weights
 
 
 class Exp(nn.Module):
@@ -22,7 +27,7 @@ class Exp(nn.Module):
         #     + (x * x * x * x) * 0.041666666666666664
         #     + 1
         # )
-        return y + y2 + y3 +  y4 + 1
+        return y + y2 + y3 + y4 + 1
 
 
 class Div(nn.Module):
@@ -46,12 +51,14 @@ class Softmax(nn.Module):
         z = y.sum()
         return y * self.div(z)
 
+
 class Mul(nn.Module):
     def __init__(self):
         super(Mul, self).__init__()
 
     def forward(self, x, y):
         return x * y
+
 
 class Add(nn.Module):
     def __init__(self):
@@ -279,3 +286,30 @@ class dense_layers(torch.nn.Module):
         _out = self.dense_layers(_out)
 
         return _out
+
+
+def make_braggn(scale, img_size=11, simplify_weights=True):
+    with torch.no_grad():
+        mod = BraggNN(scale=scale, imgsz=img_size)
+        mod.eval()
+        if simplify_weights:
+            mod.apply(set_weights)
+        x = torch.randn((1, 1, img_size, img_size))
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, 1, img_size, img_size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="make stuff")
+    parser.add_argument("--out_dir", type=Path, default=Path("."))
+    parser.add_argument("--scale", type=int, default=4)
+    args = parser.parse_args()
+    args.out_dir = args.out_dir.resolve()
+    dot_str = make_braggn(args.scale)
+    open(f"{args.out_dir}/braggnn_{args.scale}.mlir", "w").write(dot_str)

@@ -63,6 +63,7 @@ class Val:
         return f"{state.state.val_prefix}val_{self.id}"
 
 
+
 @dataclass(frozen=True)
 class Op:
     type: OpType
@@ -90,18 +91,22 @@ class Op:
             return f'{self.res} = "{self.type.value}" ({", ".join(args)}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * self.arity)}) -> {state.state.dtype}'
 
 
+CONSTANTS = set()
+
 def make_constant(arg):
     assert isinstance(arg, (float, bool, int)), arg
     arg = str(arg)
     cst_v = Val(id=f'cst_{arg.replace(".", "")}')
-    cst_op = Op(
-        OpType.CST,
-        pe_idx=(-1,),
-        op_id=state.state.curr_op_id,
-        args=(arg,),
-        res=str(cst_v),
-    )
-    state.state.emit(cst_op)
+    if cst_v not in CONSTANTS:
+        cst_op = Op(
+            OpType.CST,
+            pe_idx=(-1,),
+            op_id=state.state.curr_op_id,
+            args=(arg,),
+            res=str(cst_v),
+        )
+        state.state.emit(cst_op)
+        CONSTANTS.add(cst_v)
     # TODO
     # state.state.add_op_res(cst_v, cst_op)
     # state.state.add_edge(cst_op, "CONSTANT", cst_v)

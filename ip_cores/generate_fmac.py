@@ -35,7 +35,7 @@ def generate_core(precision, n_elements=4):
     )
 
 
-def generate_tb(precision, n_elements):
+def generate_tb(precision, num_pes, n_elements):
     template = Template(open("fmac_tb.jinja.sv").read())
     fsm_states = generate_fsm_states(n_elements)
 
@@ -45,15 +45,16 @@ def generate_tb(precision, n_elements):
             width = get_bit_width(max_thing, base)
         return str(i).zfill(width)
 
+    vals = np.linspace(0, 1, 2 * n_elements)
     args = [
-        convert_float_to_flopoco_binary_str(i) for i in range(1, 2 * n_elements + 1)
+        convert_float_to_flopoco_binary_str(i) for i in vals
     ]
     res = convert_float_to_flopoco_binary_str(
         np.apply_along_axis(
-            np.prod, 1, np.arange(1, 2 * n_elements + 1).reshape(2 * n_elements // 2, 2)
+            np.prod, 1, vals.reshape(2 * n_elements // 2, 2)
         ).sum()
     )
-    return template.render(
+    standard = template.render(
         precision=precision,
         args=args,
         n_elements=n_elements,
@@ -63,13 +64,29 @@ def generate_tb(precision, n_elements):
         zfill=zfill,
         res=res,
     )
+    template = Template(open("fmac_conv_tb.jinja.sv").read())
+    conv = template.render(
+        precision=precision,
+        args=args,
+        num_pes=num_pes,
+        n_elements=n_elements,
+        fsm_states=fsm_states,
+        fsm_idx_width=fsm_states[-1] + 2,
+        get_bit_width=get_bit_width,
+        zfill=zfill,
+        res=res,
+    )
+    return standard, conv
 
 
 def generate(precision, n_elements, out_dir):
     with open(f"{out_dir}/generated_fmac_{n_elements}.sv", "w") as f:
         f.write(generate_core(precision, n_elements))
+    standard, conv = generate_tb(precision, 12, n_elements)
     with open(f"{out_dir}/generated_fmac_{n_elements}_tb.sv", "w") as f:
-        f.write(generate_tb(precision, n_elements))
+        f.write(standard)
+    with open(f"{out_dir}/generated_fmac_conv_{n_elements}_tb.sv", "w") as f:
+        f.write(conv)
 
 
 if __name__ == "__main__":

@@ -93,7 +93,7 @@ module fmac_{{ n_elements }}_tb;
         end
         $display("count #%0d fmul_r %{{ precision }}b fadd_r %{{ precision }}b current_state %{{ fsm_idx_width }}b", i, fmul_r, fadd_r, current_state_fsm);
         if (fadd_r !== {{ precision }}'b{{ res }}) // 100
-            $display("failed with accum %{{ precision }}b", fadd_r);
+            $display("failed with accum %{{ precision }}b expected {{ precision }}'b{{ res }}", fadd_r);
         else
             $display("passed with accum %{{ precision }}b", fadd_r);
         $finish();

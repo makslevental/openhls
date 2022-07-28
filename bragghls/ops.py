@@ -25,8 +25,10 @@ class OpType(Enum):
     RELU = "frelu"
     CST = "arith.constant"
     COPY = "copy"
+    FMAC = "fmac"
 
 
+FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3
 LATENCIES = {
     OpType.ADD: 3,
     OpType.SUB: 3,
@@ -37,6 +39,7 @@ LATENCIES = {
     OpType.RELU: 1,
     OpType.CST: 0,
     OpType.COPY: 1,
+    OpType.FMAC: -1,
 }
 
 OPS = {op.value: op for op in OpType}
@@ -63,7 +66,6 @@ class Val:
         return f"{state.state.val_prefix}val_{self.id}"
 
 
-
 @dataclass(frozen=True)
 class Op:
     type: OpType
@@ -71,27 +73,24 @@ class Op:
     op_id: int
     args: Tuple[str]
     res: str
-    arity: int = 0
+    overload: str = None
 
     def __post_init__(self):
-        if self.type in {OpType.ADD, OpType.SUB, OpType.MUL, OpType.DIV, OpType.GT}:
-            object.__setattr__(self, "arity", 2)
-        else:
-            object.__setattr__(self, "arity", 1)
         object.__setattr__(self, "op_id", state.state.curr_op_id)
         state.state.incr_op_id()
 
     def __repr__(self):
         args = (", ".join(map(str, self.args)),)
-        attrs = {"pe": self.pe_idx, "opr": self.type.value, "op_id": self.op_id}
+        attrs = {"pe": self.pe_idx, "opr": self.type.value if self.overload is None else f"{self.type.value}.{self.overload}", "op_id": self.op_id}
         attrs_str = ", ".join([f'{n} = "{v}"' for n, v in attrs.items()])
         if self.type == OpType.CST:
             return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {args[0]} : {state.state.dtype}  }} : () -> {state.state.dtype}'
         else:
-            return f'{self.res} = "{self.type.value}" ({", ".join(args)}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * self.arity)}) -> {state.state.dtype}'
+            return f'{self.res} = "{self.type.value}" ({", ".join(args)}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
 
 
 CONSTANTS = set()
+
 
 def make_constant(arg):
     assert isinstance(arg, (float, bool, int)), arg
@@ -114,7 +113,7 @@ def make_constant(arg):
 
 
 def create_new_op(
-    op_type: OpType, args, *, pe_idx=None, res=None, add_aux_dep=False, res_reg=None
+    op_type: OpType, args, *, pe_idx=None, res=None, add_aux_dep=False, op_overload=None
 ):
     if pe_idx is None:
         pe_idx = state.state.pe_idx
@@ -128,7 +127,7 @@ def create_new_op(
             args[i] = make_constant(arg)
 
     op = Op(
-        op_type, pe_idx=pe_idx, op_id=state.state.curr_op_id, args=tuple(args), res=res
+        op_type, pe_idx=pe_idx, op_id=state.state.curr_op_id, args=tuple(args), res=res, overload=op_overload
     )
 
     for arg in args:
@@ -165,6 +164,9 @@ class FMAC:
         state.state.debug_print(f"MAC {pe_idx} starts")
         self.most_recent_add = None
         self.most_recent_mul = None
+        self.first_add = None
+        self.mul_vals = []
+        self.add_vals = []
 
     def _collapse(self, op_type, prev_res, a, b):
         prev_op = state.state.get_arg_src(prev_res)
@@ -172,34 +174,28 @@ class FMAC:
         return res
 
     def Add(self, a, b):
-        if self.most_recent_add is None or not state.state.collapse_macs:
-            self.most_recent_add = a + b
-        else:
-            self.most_recent_add = self._collapse(
-                OpType.ADD, self.most_recent_add, a, b
-            )
-        return self.most_recent_add
+        self.add_vals.extend((a, b))
+        return Val(f"FAKE_ADD_{self.pe_idx}({a}, {b})")
 
     def Mul(self, a, b):
-        if self.most_recent_mul is None or not state.state.collapse_macs:
-            self.most_recent_mul = create_new_op(OpType.MUL, (a, b), add_aux_dep=True)
-        else:
-            self.most_recent_mul = self._collapse(
-                OpType.MUL, self.most_recent_mul, a, b
-            )
-        return self.most_recent_mul
+        self.mul_vals.extend((a, b))
+        return Val(f"FAKE_MUL_{self.pe_idx}({a}, {b})")
 
     def Result(self):
-        if state.state.collapse_macs:
-            state.state.debug_print(f"MAC {self.pe_idx} ends")
-        op_res = Copy(self.most_recent_add)
+        from bragghls.memref import MemRefVal
+
+        init_val = [v for v in self.add_vals if isinstance(v, MemRefVal)]
+        assert len(init_val) == 1
+        args = init_val + self.mul_vals
+        op_res = FMACOp(len(args), self.pe_idx)(*args)
+        op_res = Copy(op_res)
         return op_res
 
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]
 
 
 def reducer(accum, val):
@@ -217,5 +213,14 @@ def ReduceAdd(vals):
     state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
     return pairs[0][0] + pairs[0][1]
 
+
 ReLU = lambda x: overload_op(OpType.RELU)(x)
 Copy = lambda x: overload_op(OpType.COPY)(x)
+
+
+def FMACOp(n_args, pe_idx):
+    LATENCIES[f"{OpType.FMAC.value}.{n_args - 1}"] = ((n_args - 1)//2) * 3 + 3
+    def f(*args: "Tuple[Val]"):
+        return create_new_op(OpType.FMAC, args, pe_idx=pe_idx, add_aux_dep=True, op_overload=f"{n_args - 1}")
+
+    return f

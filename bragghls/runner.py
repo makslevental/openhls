@@ -5,7 +5,7 @@ from textwrap import indent, dedent
 
 from bragghls import state
 from bragghls.memref import MemRef, GlobalMemRef
-from bragghls.ops import LATENCIES
+from bragghls.ops import LATENCIES, OpType
 from bragghls.state import logger
 from bragghls.util import extend_idx
 
@@ -16,7 +16,7 @@ def make_latency_attrs():
     else:
         aux_deps = []
     operator_types = [
-        f"""{{ name = "{op.value}", latency = {lat}, limit = 2592 }}"""
+        f"""{{ name = "{op.value if isinstance(op, OpType) else op}", latency = {lat}, limit = 2592 }}"""
         for op, lat in LATENCIES.items()
     ]
     lats = indent(

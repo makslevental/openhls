@@ -1,13 +1,13 @@
 /*
   The floating-point numbers used in for FloPoCo
- 
+
   This file is part of the FloPoCo project
   developed by the Arenaire team at Ecole Normale Superieure de Lyon
-  
+
   Author: Cristian Klein, Florent de Dinechin
 
   Initial software.
-  Copyright © ENS-Lyon, INRIA, CNRS, UCBL,  
+  Copyright © ENS-Lyon, INRIA, CNRS, UCBL,
   2008-2010.
   All rights reserved.
 
@@ -39,17 +39,24 @@ mpz_class getLargeRandom(int n) {
 }
 
 namespace flopoco {
+    FPNumber::FPNumber(double x, int wE, int wF) : wE(wE), wF(wF) {
+        mpfr_t mp;
+        mpfr_init2(mp, wF);
+        mpfr_set_d(mp, x, GMP_RNDN);
+        operator=(mp);
+        mpfr_clear(mp);
+    }
 
     FPNumber::FPNumber(int wE, int wF)
             : wE(wE), wF(wF) {
         if (wE > 30)
-            throw std::string("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
+            throw std::runtime_error("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
     }
 
     FPNumber::FPNumber(int wE, int wF, mpfr_t m)
             : wE(wE), wF(wF) {
         if (wE > 30)
-            throw std::string("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
+            throw std::runtime_error("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
         operator=(m);
     }
 
@@ -57,14 +64,14 @@ namespace flopoco {
     FPNumber::FPNumber(int wE, int wF, mpz_class z)
             : wE(wE), wF(wF) {
         if (wE > 30)
-            throw std::string("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
+            throw std::runtime_error("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
         operator=(z);
     }
 
     FPNumber::FPNumber(int wE, int wF, SpecialValue v)
             : wE(wE), wF(wF) {
         if (wE > 30)
-            throw std::string("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
+            throw std::runtime_error("FPNumber::FPNumber: Using exponents larger than 30 bits is not supported.");
         switch (v) {
             case plusInfty:
                 exception = 2;
@@ -237,9 +244,9 @@ namespace flopoco {
         }
 
         if (fraction >= mpz_class(1) << wF)
-            throw std::string("Fraction is too big after conversion to VHDL signal.");
+            throw std::runtime_error("Fraction is too big after conversion to VHDL signal.");
         if (fraction < 0)
-            throw std::string("Fraction is negative after conversion to VHDL signal.");
+            throw std::runtime_error("Fraction is negative after conversion to VHDL signal.");
 
         /* Bias and store exponent */
         exp += ((1 << (wE - 1)) - 1);
@@ -275,7 +282,7 @@ namespace flopoco {
         s = s >> 2;
 
         if (s != 0)
-            throw std::string("FPNumber::operator= s is bigger than expected.");
+            throw std::runtime_error("FPNumber::operator= s is bigger than expected.");
 
         return *this;
     }
@@ -284,13 +291,13 @@ namespace flopoco {
 
         /* Sanity checks */
         if ((sign != 0) && (sign != 1))
-            throw std::string("FPNumber::getSignal: sign is invalid.");
+            throw std::runtime_error("FPNumber::getSignal: sign is invalid.");
         if ((exception < 0) || (exception > 3))
-            throw std::string("FPNumber::getSignal: exception is invalid.");
+            throw std::runtime_error("FPNumber::getSignal: exception is invalid.");
         if ((exponent < 0) || (exponent >= (1 << wE)))
-            throw std::string("FPNumber::getSignal: exponent is invalid.");
+            throw std::runtime_error("FPNumber::getSignal: exponent is invalid.");
         if ((fraction < 0) || (fraction >= (mpz_class(1) << wF)))
-            throw std::string("FPNumber::getSignal: fraction is invalid.");
+            throw std::runtime_error("FPNumber::getSignal: fraction is invalid.");
         return (((((exception << 1) + sign) << wE) + exponent) << wF) + fraction;
     }
 
@@ -393,16 +400,45 @@ namespace flopoco {
 
     FPNumber FPNumber::operator*(FPNumber fpy) {
         auto fpx = this;
+        if (fpx->wE != fpy.wE)
+          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
+        if (fpx->wF != fpy.wF)
+          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
+
+        int wER = fpx->wE;
+        int wFR = fpx->wF;
         mpfr_t x, y, r;
-        // TODO: fraction the same? test?
-        mpfr_init2(x, 1 + this->wF);
-        mpfr_init2(y, 1 + this->wF);
-        mpfr_init2(r, 1 + this->wF);
+        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(y, 1 + fpy.wF);
+        mpfr_init2(r, 1 + wFR);
         fpx->getMPFR(x);
         fpy.getMPFR(y);
+
         mpfr_mul(r, x, y, GMP_RNDN);
         // Set outputs
-        FPNumber fpr(this->wE, this->wF, r);
+        FPNumber fpr(wER, wFR, r);
+        return fpr;
+    }
+
+    FPNumber FPNumber::operator+(FPNumber fpy) {
+        auto fpx = this;
+        if (fpx->wE != fpy.wE)
+          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
+        if (fpx->wF != fpy.wF)
+          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
+
+        int wER = fpx->wE;
+        int wFR = fpx->wF;
+        mpfr_t x, y, r;
+        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(y, 1 + fpy.wF);
+        mpfr_init2(r, 1 + wFR);
+        fpx->getMPFR(x);
+        fpy.getMPFR(y);
+
+        mpfr_add(r, x, y, GMP_RNDN);
+        // Set outputs
+        FPNumber fpr(wER, wFR, r);
         return fpr;
     }
 }

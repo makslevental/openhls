@@ -12,9 +12,9 @@ GLOBAL_MEMREF_ARG = "GLOBAL_MEMREF_ARG"
 CONSTANT = "CONSTANT"
 VAL_PREFIX = "%"
 DTYPE = "f32"
-COLLAPSE_MACS = int(os.environ.get("COLLAPSE_MACS", 0))
+COLLAPSE_MACS = bool(int(os.getenv("COLLAPSE_MACS", 0)))
 logger.debug(f"{COLLAPSE_MACS=}")
-DEBUG = False
+DEBUG = bool(int(os.environ.get("DEBUG", "0")))
 INCLUDE_AUX_DEPS = True
 
 

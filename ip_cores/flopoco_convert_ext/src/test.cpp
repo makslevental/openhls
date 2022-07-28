@@ -23,42 +23,6 @@ void negoneplusnegone() {
 
 using namespace flopoco;
 
-mpz_class emulateFPMult(mpz_class svX, mpz_class svY, int wEX_, int wFX_, int wEY_, int wFY_, int wER_, int wFR_,
-                        bool correctlyRounded_ = true) {
-    /* Compute correct value */
-    FPNumber fpx(wEX_, wFX_), fpy(wEY_, wFY_);
-    fpx = std::move(svX);
-    fpy = std::move(svY);
-    mpfr_t x, y, r;
-    mpfr_init2(x, 1 + wFX_);
-    mpfr_init2(y, 1 + wFY_);
-    mpfr_init2(r, 1 + wFR_);
-    fpx.getMPFR(x);
-    fpy.getMPFR(y);
-//    if (correctlyRounded_) {
-//    }
-    mpfr_mul(r, x, y, GMP_RNDN);
-    // Set outputs
-    FPNumber fpr(wER_, wFR_, r);
-    mpz_class svR = fpr.getSignalValue();
-    mpfr_clears(x, y, r, NULL);
-    return svR;
-//    else {
-//        // round down
-//        mpfr_mul(r, x, y, GMP_RNDD);
-//        FPNumber fprd(wER_, wFR_, r);
-//        mpz_class svRd = fprd.getSignalValue();
-//        mpfr_clears(x, y, r, NULL);
-//        return svRd;
-//        // round up
-//        mpfr_mul(r, x, y, GMP_RNDU);
-//        FPNumber fpru(wER_, wFR_, r);
-//        mpz_class svRu = fpru.getSignalValue();
-//        tc->addExpectedOutput("R", svRu);
-//    }
-    // clean up
-}
-
 int main(int argc, char *argv[]) {
 //    negtwo();
 //    negoneplusnegone();
@@ -71,5 +35,8 @@ int main(int argc, char *argv[]) {
     mpfr_t mpx;
     mpfr_init2(mpx, 1 + 4);
     r.getMPFR(mpx);
-    std::cout << fp2bin(mpx, 4, 4);
+    auto rs = fp2binstr(mpx, 4, 4);
+    std::cout << rs << "\n";
+    auto ss = bin2fpstr(4, 4, rs.c_str());
+    std::cout << ss << "\n";
 }

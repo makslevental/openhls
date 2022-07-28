@@ -5,7 +5,8 @@ from pathlib import Path
 import numpy as np
 from jinja2 import Template
 
-from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
+from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str, FPNumber
+from bragghls.state import DEBUG
 
 
 def get_bit_width(max_thing, base=10):
@@ -45,15 +46,22 @@ def generate_tb(precision, num_pes, n_elements):
             width = get_bit_width(max_thing, base)
         return str(i).zfill(width)
 
-    vals = np.linspace(0, 1, 2 * n_elements)
-    args = [
-        convert_float_to_flopoco_binary_str(i) for i in vals
-    ]
-    res = convert_float_to_flopoco_binary_str(
-        np.apply_along_axis(
-            np.prod, 1, vals.reshape(2 * n_elements // 2, 2)
-        ).sum()
-    )
+    if DEBUG:
+        vals = np.linspace(1, 2 * n_elements, 2 * n_elements)
+        print("test vals ", vals)
+    else:
+        vals = np.linspace(0, 1, 2 * n_elements)
+
+    args = [convert_float_to_flopoco_binary_str(i) for i in vals]
+    wE = wF = (precision - 3) // 2
+    res = FPNumber(0.0, wE, wF)
+    ieee_res = np.apply_along_axis(
+        np.prod, 1, vals.reshape(2 * n_elements // 2, 2)
+    ).sum()
+    for x, y in vals.reshape(2 * n_elements // 2, 2):
+        res += FPNumber(x, wE, wF) * FPNumber(y, wE, wF)
+    print(res, ieee_res)
+
     standard = template.render(
         precision=precision,
         args=args,
@@ -62,7 +70,7 @@ def generate_tb(precision, num_pes, n_elements):
         fsm_idx_width=fsm_states[-1] + 2,
         get_bit_width=get_bit_width,
         zfill=zfill,
-        res=res,
+        res=res.binstr(),
     )
     template = Template(open("fmac_conv_tb.jinja.sv").read())
     conv = template.render(
@@ -74,7 +82,7 @@ def generate_tb(precision, num_pes, n_elements):
         fsm_idx_width=fsm_states[-1] + 2,
         get_bit_width=get_bit_width,
         zfill=zfill,
-        res=res,
+        res=res.binstr(),
     )
     return standard, conv
 
@@ -91,8 +99,8 @@ def generate(precision, n_elements, out_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("precision", type=int)
-    parser.add_argument("n_elements", type=int)
+    parser.add_argument("precision", type=int, default=11)
+    parser.add_argument("n_elements", type=int, default=4)
     parser.add_argument("--out_dir", type=Path, default=Path("."))
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()

@@ -1,8 +1,12 @@
 from . import flopoco_converter
 
 
+def FPNumber(x, wE, wF):
+    return flopoco_converter.FPNumber(x, wE, wF)
+
+
 def convert_float_to_flopoco_binary_str(f, width_exp=4, width_frac=4):
-    s = flopoco_converter.fp2bin(width_exp, width_frac, str(f))
+    s = flopoco_converter.fp2binstr(width_exp, width_frac, str(f))
     assert len(s) == width_exp + width_frac + 2 + 1
     return s
 

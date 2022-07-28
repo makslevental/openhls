@@ -14,33 +14,7 @@ from bragghls.rtl.basic import (
 from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
-
-DEBUG = True
-
-
-# def make_op_always(data, fsm, pes, vals, input_wires):
-#     op = data.opr
-#     ip = getattr(pes[data.pe_idx], op.value, None)
-#     args = data.op_inputs
-#     trees = []
-#     start_time = data.start_time
-#     end_time = start_time + LATENCIES[op]
-#     res_val = vals.get(data.res_val, data.res_val)
-#     in_a = vals.get(args[0], input_wires.get(args[0], args[0]))
-#     if op in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
-#         in_b = vals.get(args[1], input_wires.get(args[1], args[1]))
-#         trees.append(make_always_tree(ip.x, in_a, fsm.make_fsm_states([start_time])))
-#         trees.append(make_always_tree(ip.y, in_b, fsm.make_fsm_states([start_time])))
-#         trees.append(make_always_tree(res_val, ip.r, fsm.make_fsm_states([end_time])))
-#     elif op in {OpType.NEG, OpType.RELU}:
-#         trees.append(make_always_tree(ip.a, in_a, fsm.make_fsm_states([start_time])))
-#         trees.append(make_always_tree(res_val, ip.res, fsm.make_fsm_states([end_time])))
-#     elif op in {OpType.COPY}:
-#         trees.append(make_always_tree(res_val, in_a, fsm.make_fsm_states([start_time])))
-#     else:
-#         raise NotImplementedError
-#
-#     return "\n".join(trees)
+from bragghls.state import DEBUG
 
 
 def make_pe_always(fsm, pe, op_datas, vals, input_wires):
@@ -98,15 +72,19 @@ def cluster_pes(pes, op_id_data):
 
     return pe_to_ops
 
+
 VERILOG_FILE = None
+
 
 def emit(*args):
     print(*args, file=VERILOG_FILE)
     print(file=VERILOG_FILE)
 
+
 def debug_emit(*args):
     if DEBUG:
         emit(*["//"] + list(args))
+
 
 def main(mac_rewritten_sched_mlir_fp, precision):
     dirname, filename = os.path.split(mac_rewritten_sched_mlir_fp)

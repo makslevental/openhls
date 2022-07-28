@@ -140,3 +140,5 @@ tar -xvf ghdl-gha-ubuntu-20.04-llvm.tgz -C "${BRAGGHLS_DIR}"/build/
 
 #      -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")"  \
 #      -DPYTHON_LIBRARY="$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")" \
+
+#-Dpybind11_DIR=/home/mlevental/miniconda3/envs/bragghls/lib/python3.10/site-packages/pybind11/share/cmake/pybind11 -DPython_EXECUTABLE=/home/mlevental/miniconda3/envs/bragghls/bin/python

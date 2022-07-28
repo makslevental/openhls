@@ -30,6 +30,7 @@ namespace flopoco{
 			smallestNegative                  /**< The smallest (in magnitude) negative FPNumber*/
 		} SpecialValue;
 
+        FPNumber(double x, int wE, int wF);
 		/**
 		 * Constructs a new FPNumber.
 		 * @param wE the width of the exponent
@@ -168,8 +169,8 @@ namespace flopoco{
 		FPNumber &operator+=(int x);
 
         FPNumber operator*(FPNumber x);
+        FPNumber operator+(FPNumber x);
 
-	private:
 		/** The width of the exponent */
 		int wE;
 

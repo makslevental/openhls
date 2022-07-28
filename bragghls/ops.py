@@ -81,7 +81,13 @@ class Op:
 
     def __repr__(self):
         args = (", ".join(map(str, self.args)),)
-        attrs = {"pe": self.pe_idx, "opr": self.type.value if self.overload is None else f"{self.type.value}.{self.overload}", "op_id": self.op_id}
+        attrs = {
+            "pe": self.pe_idx,
+            "opr": self.type.value
+            if self.overload is None
+            else f"{self.type.value}.{self.overload}",
+            "op_id": self.op_id,
+        }
         attrs_str = ", ".join([f'{n} = "{v}"' for n, v in attrs.items()])
         if self.type == OpType.CST:
             return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {args[0]} : {state.state.dtype}  }} : () -> {state.state.dtype}'
@@ -127,7 +133,12 @@ def create_new_op(
             args[i] = make_constant(arg)
 
     op = Op(
-        op_type, pe_idx=pe_idx, op_id=state.state.curr_op_id, args=tuple(args), res=res, overload=op_overload
+        op_type,
+        pe_idx=pe_idx,
+        op_id=state.state.curr_op_id,
+        args=tuple(args),
+        res=res,
+        overload=op_overload,
     )
 
     for arg in args:
@@ -219,8 +230,15 @@ Copy = lambda x: overload_op(OpType.COPY)(x)
 
 
 def FMACOp(n_args, pe_idx):
-    LATENCIES[f"{OpType.FMAC.value}.{n_args - 1}"] = ((n_args - 1)//2) * 3 + 3
+    LATENCIES[f"{OpType.FMAC.value}.{n_args - 1}"] = ((n_args - 1) // 2) * 3 + 3
+
     def f(*args: "Tuple[Val]"):
-        return create_new_op(OpType.FMAC, args, pe_idx=pe_idx, add_aux_dep=True, op_overload=f"{n_args - 1}")
+        return create_new_op(
+            OpType.FMAC,
+            args,
+            pe_idx=pe_idx,
+            add_aux_dep=True,
+            op_overload=f"{n_args - 1}",
+        )
 
     return f

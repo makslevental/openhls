@@ -21,4 +21,3 @@ for i, line in enumerate(old_lines):
         line = line.replace("scf", "affine")
     if "scf.yield" not in line:
         print(line)
-

@@ -116,10 +116,19 @@ void bin2fp(int wE, int wF, const char *x, mpfr_t sig) {
 
     // scale sig according to exp
     mpfr_mul_2si(sig, sig, exp, MPFR_RNDN);
+    char ptr[100];
+    FILE *stream = fmemopen(ptr, 100, "r+");
+
+    mpfr_out_str(stream, // please allocate this memory
+                 10, // base
+                 0, // enough digits so that number may be read back
+                 sig,
+                 MPFR_RNDN);
 }
 
 
 std::string bin2fpstr(int wE, int wF, const char *x) {
+    // maybe use this instead? https://stackoverflow.com/questions/26265979/mpfr-library-how-can-you-add-two-mprf-t-variables-and-print-the-result
     mpfr_t sig;
     bin2fp(wE, wF, x, sig);
     char ptr[100];
@@ -130,11 +139,12 @@ std::string bin2fpstr(int wE, int wF, const char *x) {
                  0, // enough digits so that number may be read back
                  sig,
                  MPFR_RNDN);
+    fclose(fp);
     return {ptr};
 
 }
 
-std::string fp2bin(mpfr_t x, int wE, int wF) {
+std::string fp2binstr(mpfr_t x, int wE, int wF) {
     mpfr_t mpx, one, two;
     std::ostringstream s;
 
@@ -197,7 +207,7 @@ std::string fp2bin(mpfr_t x, int wE, int wF) {
     biased_exponent = exponent + (mpz_class(1) << (wE - 1)) - 1;
 
     if (biased_exponent < 0) {
-        std::cerr << "fp2bin warning: underflow, flushing to zero" << std::endl;
+        std::cerr << "fp2binstr warning: underflow, flushing to zero" << std::endl;
         s << "00" << sign;
         for (int i = 0; i < wE + wF; i++)
             s << "0";
@@ -205,7 +215,7 @@ std::string fp2bin(mpfr_t x, int wE, int wF) {
     }
 
     if (biased_exponent >= (mpz_class(1) << wE)) {
-        std::cerr << "fp2bin warning: overflow, returning infinity" << std::endl;
+        std::cerr << "fp2binstr warning: overflow, returning infinity" << std::endl;
         s << "10" << sign;
         for (int i = 0; i < wE + wF; i++)
             s << "0";
@@ -241,7 +251,7 @@ std::string fpstr2bin(int wE, int wF, const std::string &s) {
     mpfr_t mpx;
     mpfr_init2(mpx, wF + 1);
     mpfr_set_str(mpx, s.c_str(), 10, GMP_RNDN);
-    return fp2bin(mpx, wE, wF);
+    return fp2binstr(mpx, wE, wF);
 }
 
 

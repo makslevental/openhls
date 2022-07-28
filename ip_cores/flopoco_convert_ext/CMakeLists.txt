@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 CONFIG REQUIRED)
 
-
 find_library(GMP_LIB NAMES gmp gmp.lib REQUIRED)
 find_path(GMP_H gmp.h REQUIRED)
 find_library(GMPXX_LIB NAMES gmpxx gmpxx.lib REQUIRED)

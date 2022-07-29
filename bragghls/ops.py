@@ -95,7 +95,7 @@ class Op:
             return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
 
 
-FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3
+FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3 - 1
 
 
 class Latencies:

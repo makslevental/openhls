@@ -7,11 +7,13 @@ import shutil
 from subprocess import Popen, PIPE
 
 import astor
+import numpy as np
 
 import bragghls.runner
 import bragghls.state
 from bragghls.parse import parse_mlir_module
 from bragghls.rtl.emit_verilog import emit_verilog
+from bragghls.rtl.generate_tb import generate
 from bragghls.runner import Forward
 from bragghls.transforms import transform_forward, rewrite_schedule_vals
 from scripts.hack_affine_scf import scf_to_affine
@@ -140,7 +142,7 @@ def main(args):
             pe_idxs,
         ) = parse_mlir_module(sched_and_rewritten_mlir)
 
-        verilog_file = emit_verilog(
+        verilog_file, input_wires, output_wires = emit_verilog(
             name,
             args.precision,
             op_id_data,
@@ -152,8 +154,31 @@ def main(args):
             pe_idxs,
         )
         verilog_file = verilog_file.replace("%", "v_")
-        with open(f"{artifacts_dir}/{name}.v", "w") as f:
+        with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
+
+    if args.testbench:
+        if DEBUG:
+            vals = np.linspace(1, len(input_wires), len(input_wires))
+            vals = np.ones_like(vals)
+            print("test vals ", vals)
+        else:
+            vals = np.linspace(0, 1, len(input_wires))
+
+        tb_file = generate(
+            f"{name}_inner",
+            f"{name}.sv",
+            clock_period=10,
+            precision=11,
+            simulation_time=100,
+            input_wires=list(input_wires.keys()),
+            output_wires=list(output_wires.keys()),
+            input_values=vals,
+            output_values=[1.0],
+        )
+        tb_file = tb_file.replace("%", "v_")
+        with open(f"{artifacts_dir}/{name}_tb.sv", "w") as f:
+            f.write(tb_file)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from torch import nn
 import torch
+from torch import nn
 
 from bragghls.nn import compile_nn_module_to_mlir
 
@@ -13,8 +13,7 @@ class Linear(nn.Module):
         self.linear1 = torch.nn.Linear(imgsz, imgsz)
 
     def forward(self, x, y):
-        x = self.linear1(x)
-        return (x * y).sum()
+        return self.linear1(x).sum()
 
 
 class Dot(nn.Module):

@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from torch import nn
 import torch
+from torch import nn
 
 from bragghls.nn import set_weights, compile_nn_module_to_mlir
 

@@ -8,10 +8,10 @@ from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
 TB_TEMPLATE = """\
 `default_nettype none
 `include "{{ include_filename }}"
-`include "flopoco_fadd_4_4.v"
-`include "flopoco_fmul_4_4.v"
-`include "frelu.v"
-`include "fneg.v"
+`include "flopoco_fadd_4_4.sv"
+`include "flopoco_fmul_4_4.sv"
+`include "frelu.sv"
+`include "fneg.sv"
 `timescale 1ns/1ps
 
 module {{ top_level }}_tb;
@@ -112,7 +112,7 @@ def test_fadd():
     X, Y = np.random.uniform(0, 100, 2)
     tb_str = generate(
         "fadd",
-        "flopoco_fadd_4_4.v",
+        "flopoco_fadd_4_4.sv",
         10,
         11,
         100,
@@ -121,9 +121,7 @@ def test_fadd():
         [X, Y],
         [X + Y],
     )
-    open(
-        "/Users/mlevental/dev_projects/bragghls/ip_cores/flopoco_fadd_4_4_tb.v", "w"
-    ).write(tb_str)
+    open("ip_cores/flopoco_fadd_4_4_tb.sv", "w").write(tb_str)
 
 
 def test_dot(fp, size=4):

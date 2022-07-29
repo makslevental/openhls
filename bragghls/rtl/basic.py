@@ -1,5 +1,4 @@
 import enum
-import random
 from dataclasses import dataclass
 from textwrap import dedent, indent
 
@@ -39,7 +38,8 @@ class Reg:
 
 def make_constant(v, precision):
     if v is None:
-        return f"{precision}'d{random.randint(0, 2 ** precision - 1)}"
+        # return f"{precision}'d{random.randint(0, 2 ** precision - 1)}"
+        return f"{precision}'b01001110000"
     else:
         # %val_cst_00
         assert "cst" in v, v
@@ -53,7 +53,7 @@ class CombOrSeq(enum.Enum):
     SEQ = "posedge clk"
 
 
-def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
+def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.SEQ):
     vals_to_init = [f"\t{v} = 1'b0;" for v in vals_to_init]
 
     return "\n".join(
@@ -61,66 +61,60 @@ def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
     )
 
 
-def make_always_branch(left, right, cond, comb_or_seq=CombOrSeq.COMB):
+def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.SEQ):
     return indent(
         dedent(
-            f"""\
-            if ({cond}) begin
-                {left} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {right}; 
-            end
-        """
+            "\n".join(
+                [f"if {cond} begin"]
+                + [
+                    f"    {left} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {right};"
+                    for left, right in zip(lefts, rights)
+                ]
+                + ["end"]
+            )
         ),
         "\t",
     )
 
 
-def generate_mac_fsm_states(n_elements, start_time):
-    n_pair_states = n_elements - 1
-    return sorted(
-        [1 + 3 * i + start_time for i in range(n_pair_states + 2)]
-        + [3 * i + start_time for i in range(1, n_pair_states + 2)]
-    )
-
-
-def make_fmac_branches(pe_idx, fsm_states, init_val, args):
+def make_fmac_branches(pe, fsm_states, init_val, args):
     return indent(
         dedent(
             "\n".join(
                 [
                     f"""\
-        if ((1'b1 == current_fsm_state{fsm_states[0]})) begin
-            fmul_{pe_idx}_x <= {args[0]}; 
-            fmul_{pe_idx}_y <= {args[1]}; 
-            fmul_{pe_idx}_ce <= 1;
+        if (1'b1 == current_fsm_state{fsm_states[0]}) begin
+            {pe.fmul.x} <= {args[0]}; 
+            {pe.fmul.y} <= {args[1]}; 
+            {pe.fmul.ce} <= 1;
         end
-        if ((1'b1 == current_fsm_state{fsm_states[1]})) begin
-            fadd_{pe_idx}_x <= {init_val};
-            fadd_{pe_idx}_y <= fmul_{pe_idx}_r; 
-            fadd_{pe_idx}_ce <= 1;
+        if (1'b1 == current_fsm_state{fsm_states[1]}) begin
+            {pe.fadd.x} <= {init_val};
+            {pe.fadd.y} <= {pe.fmul.r}; 
+            {pe.fadd.ce} <= 1;
         end
     """
                 ]
                 + [
                     f"""\
-        // ****************
-        if ((1'b1 == current_fsm_state{fsm_state})) begin
-            fmul_{pe_idx}_x <= {args[2 * (i + 1)]};
-            fmul_{pe_idx}_y <= {args[2 * (i + 1) + 1]};
-            fmul_{pe_idx}_ce <= 1;
-            fadd_{pe_idx}_ce <= 1;
+        if (1'b1 == current_fsm_state{fsm_state}) begin
+            {pe.fmul.x} <= {args[2 * (i + 1)]};
+            {pe.fmul.y} <= {args[2 * (i + 1) + 1]};
+            {pe.fmul.ce} <= 1;
+            {pe.fadd.ce} <= 1;
         end
-        if ((1'b1 == current_fsm_state{fsm_states[2 * i + 2 + 1]})) begin
-            fadd_{pe_idx}_x <= fadd_{pe_idx}_r;
-            fadd_{pe_idx}_y <= fmul_{pe_idx}_r;
-            fadd_{pe_idx}_ce <= 1;
+        if (1'b1 == current_fsm_state{fsm_states[2 * i + 2 + 1]}) begin
+            {pe.fadd.x} <= {pe.fadd.r};
+            {pe.fadd.y} <= {pe.fmul.r};
+            {pe.fadd.ce} <= 1;
         end
         """
                     for i, fsm_state in enumerate(fsm_states[2:-1:2])
                 ]
                 + [
                     f"""\
-        if ((1'b1 == current_fsm_state{fsm_states[-1]})) begin
-            fadd_{pe_idx}_ce <= 1;
+        if (1'b1 == current_fsm_state{fsm_states[-1]}) begin
+            {pe.fadd.ce} <= 1;
         end
     """
                 ]

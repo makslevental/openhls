@@ -1,6 +1,6 @@
 `default_nettype none
-`include "flopoco_fmul_4_4.v"
-`include "flopoco_fadd_4_4.v"
+`include "flopoco_fmul_4_4.sv"
+`include "flopoco_fadd_4_4.sv"
 `timescale 1ns/1ps
 
 module fmul_fadd_tb;

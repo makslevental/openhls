@@ -33,7 +33,6 @@ __constant_2xf32 = np.array([1.039099e-01, -1.627121e-01, ]).reshape(2, )
 
 # fmt: on
 from bragghls import state
-pref = ".macs" if state.COLLAPSE_MACS else ""
 state.state = state.State(__file__.replace(".py", pref + ".mlir"))
 
 def forward(

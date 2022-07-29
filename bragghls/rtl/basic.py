@@ -7,13 +7,16 @@ from textwrap import dedent, indent
 @dataclass(frozen=True)
 class Wire:
     id: str
-    precision: int
+    bit_width: int
 
     def __str__(self):
         return f"{self.id}_wire"
 
     def instantiate(self):
-        return f"wire [{self.precision - 1}:0] {self};"
+        if self.bit_width > 1:
+            return f"wire [{self.bit_width - 1}:0] {self};"
+        else:
+            return f"wire {self};"
 
     def __lt__(self, other):
         return str(self) < str(other)
@@ -22,13 +25,16 @@ class Wire:
 @dataclass(frozen=True)
 class Reg:
     id: str
-    precision: int
+    bit_width: int
 
     def __str__(self):
         return f"{self.id}_reg"
 
     def instantiate(self):
-        return f"reg [{self.precision - 1}:0] {self};"
+        if self.bit_width > 1:
+            return f"reg [{self.bit_width - 1}:0] {self};"
+        else:
+            return f"reg {self};"
 
 
 def make_constant(v, precision):
@@ -63,6 +69,62 @@ def make_always_branch(left, right, cond, comb_or_seq=CombOrSeq.COMB):
                 {left} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {right}; 
             end
         """
+        ),
+        "\t",
+    )
+
+
+def generate_mac_fsm_states(n_elements, start_time):
+    n_pair_states = n_elements - 1
+    return sorted(
+        [1 + 3 * i + start_time for i in range(n_pair_states + 2)]
+        + [3 * i + start_time for i in range(1, n_pair_states + 2)]
+    )
+
+
+def make_fmac_branches(pe_idx, fsm_states, init_val, args):
+    return indent(
+        dedent(
+            "\n".join(
+                [
+                    f"""\
+        if ((1'b1 == current_fsm_state{fsm_states[0]})) begin
+            fmul_{pe_idx}_x <= {args[0]}; 
+            fmul_{pe_idx}_y <= {args[1]}; 
+            fmul_{pe_idx}_ce <= 1;
+        end
+        if ((1'b1 == current_fsm_state{fsm_states[1]})) begin
+            fadd_{pe_idx}_x <= {init_val};
+            fadd_{pe_idx}_y <= fmul_{pe_idx}_r; 
+            fadd_{pe_idx}_ce <= 1;
+        end
+    """
+                ]
+                + [
+                    f"""\
+        // ****************
+        if ((1'b1 == current_fsm_state{fsm_state})) begin
+            fmul_{pe_idx}_x <= {args[2 * (i + 1)]};
+            fmul_{pe_idx}_y <= {args[2 * (i + 1) + 1]};
+            fmul_{pe_idx}_ce <= 1;
+            fadd_{pe_idx}_ce <= 1;
+        end
+        if ((1'b1 == current_fsm_state{fsm_states[2 * i + 2 + 1]})) begin
+            fadd_{pe_idx}_x <= fadd_{pe_idx}_r;
+            fadd_{pe_idx}_y <= fmul_{pe_idx}_r;
+            fadd_{pe_idx}_ce <= 1;
+        end
+        """
+                    for i, fsm_state in enumerate(fsm_states[2:-1:2])
+                ]
+                + [
+                    f"""\
+        if ((1'b1 == current_fsm_state{fsm_states[-1]})) begin
+            fadd_{pe_idx}_ce <= 1;
+        end
+    """
+                ]
+            )
         ),
         "\t",
     )

@@ -126,11 +126,11 @@ cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
 cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/ip_cores/
 
-
-
-wget https://github.com/ghdl/ghdl/releases/download/nightly/ghdl-gha-ubuntu-20.04-llvm.tgz
-mkdir -p "${BRAGGHLS_DIR}"/build/ghdl
-tar -xvf ghdl-gha-ubuntu-20.04-llvm.tgz -C "${BRAGGHLS_DIR}"/build/
+if [ ! -f "${BRAGGHLS_DIR}"/build/ghdl/bin/ghdl ]; then
+  wget https://github.com/ghdl/ghdl/releases/download/nightly/ghdl-gha-ubuntu-20.04-llvm.tgz
+  mkdir -p "${BRAGGHLS_DIR}"/build/ghdl
+  tar -xvf ghdl-gha-ubuntu-20.04-llvm.tgz -C "${BRAGGHLS_DIR}"/build/ghdl
+fi
 
 
 # TODO

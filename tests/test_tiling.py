@@ -5,7 +5,6 @@ from bragghls.ops import Alias, ReduceAdd, FMAC
 from bragghls.runner import parfor, Forward
 
 from bragghls import state
-pref = ".macs" if state.COLLAPSE_MACS else ""
 state.state = state.State(__file__.replace(".py", pref + ".mlir"))
 
 def forward(

@@ -136,12 +136,16 @@ def traverse_mlir_op_region_block_iterators(op, handler):
                 traverse_mlir_op_region_block_iterators(child_op, handler)
 
 
-def transform_forward_py(fp):
-    new_tree = astor.parse_file(fp)
+def transform_forward(new_tree):
     new_tree = HoistGlobals().visit(new_tree)
     new_tree = RemoveIfExp().visit(new_tree)
     new_tree = RemoveMAC().visit(new_tree)
+    return new_tree
 
+
+def transform_forward_py(fp):
+    tree = astor.parse_file(fp)
+    new_tree = transform_forward(tree)
     new_fp = f"{fp.replace('.py', '_rewritten.py')}"
     with open(new_fp, "w") as f:
         f.write(astor.code_gen.to_source(new_tree))
@@ -155,8 +159,8 @@ def rewrite_schedule_vals(sched_str, macs_str):
         macs_op_id_data
     ) == set(sched_op_id_data)
     sched_val_to_macs_val = {
-        val: macs_op_id_data[op_id_opr][0]
-        for op_id_opr, (val, *_) in sched_op_id_data.items()
+        op.res: macs_op_id_data[op_id_opr].res
+        for op_id_opr, op in sched_op_id_data.items()
     }
 
     def repl(match):

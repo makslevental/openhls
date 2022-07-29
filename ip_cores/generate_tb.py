@@ -1,6 +1,4 @@
 import argparse
-import importlib.util
-import sys
 
 import numpy as np
 from jinja2 import Template
@@ -145,14 +143,6 @@ def test_dot(fp, size=4):
         [output],
     )
     open(f"{fp}/dot_tb.v", "w").write(tb_str)
-
-
-def run_py(py_fp):
-    spec = importlib.util.spec_from_file_location("py_spec", py_fp)
-    foo = importlib.util.module_from_spec(spec)
-    sys.modules["py_spec"] = foo
-    spec.loader.exec_module(foo)
-    foo.MyClass()
 
 
 if __name__ == "__main__":

@@ -7,11 +7,12 @@ from bragghls.rtl.basic import Reg, Wire
 from bragghls.util import remove_all_leading_whitespace
 
 
-def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):
+def generate_flopoco_fp(op_type, instance_name, id, ce, x, y, r, keep):
     return dedent(
         f"""\
             {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
                 .clk(clk),
+                .ce({ce}),
                 .X({x}),
                 .Y({y}),
                 .R({r})
@@ -56,6 +57,7 @@ class FAddOrMulIP(IP):
         self, op_type: OpType, pe_idx: Tuple[int, ...], precision: int, keep=True
     ):
         super().__init__(op_type, pe_idx, precision, keep)
+        self.ce = Reg(f"{self.instance_name}_ce", 1)
         self.x = Reg(f"{self.instance_name}_x", precision)
         self.y = Reg(f"{self.instance_name}_y", precision)
         self.r = Wire(f"{self.instance_name}_r", precision)
@@ -63,13 +65,21 @@ class FAddOrMulIP(IP):
     def instantiate(self):
         wires_regs = remove_all_leading_whitespace(
             f"""\
+                {self.ce.instantiate()}
                 {self.x.instantiate()}
                 {self.y.instantiate()}
                 {self.r.instantiate()}
             """
         )
         instance = generate_flopoco_fp(
-            self.op_type, self.instance_name, self.id, self.x, self.y, self.r, self.keep
+            self.op_type,
+            self.instance_name,
+            self.id,
+            self.ce,
+            self.x,
+            self.y,
+            self.r,
+            self.keep,
         )
         return wires_regs + instance
 
@@ -133,6 +143,7 @@ class PE:
     fmul: FMul
     frelu: ReLU
     fneg: Neg
+    idx: Tuple[int, ...]
 
 
 if __name__ == "__main__":

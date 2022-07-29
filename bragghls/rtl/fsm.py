@@ -12,10 +12,10 @@ class FSM:
         self.max_fsm_stage = max_fsm_stage
         self.fsm_idx_width = math.ceil(math.log10(max_fsm_stage))
 
-    def make_fsm_states(self, fsm_states):
+    def make_fsm_conditions(self, fsm_states):
         s = " | ".join(
             [
-                f"(1'b1 == current_state_fsm_state{str(i).zfill(self.fsm_idx_width)})"
+                f"(1'b1 == current_fsm_state{str(i).zfill(self.fsm_idx_width)})"
                 for i in fsm_states
             ]
         )
@@ -29,7 +29,7 @@ class FSM:
             ]
         )
         params += "\n\n"
-        params += f'(* max_fanout = {self.max_fanout}, fsm_encoding = "none" *) reg [{self.max_fsm_stage}:0] current_state_fsm;\n'
+        params += f'(* max_fanout = {self.max_fanout}, fsm_encoding = "none" *) reg [{self.max_fsm_stage}:0] current_fsm;\n'
         params += f"reg [{self.max_fsm_stage}:0] next_state_fsm;"
 
         return params
@@ -37,7 +37,7 @@ class FSM:
     def make_fsm_wires(self):
         wires = "\n".join(
             [
-                f"wire current_state_fsm_state{str(i).zfill(self.fsm_idx_width)};"
+                f"wire current_fsm_state{str(i).zfill(self.fsm_idx_width)};"
                 for i in range(1, self.max_fsm_stage + 1)
             ]
         )
@@ -49,14 +49,14 @@ class FSM:
             f"""\
                 always @ (posedge clk) begin
                     if (reset == 1'b1) begin
-                        current_state_fsm <= fsm_state{first_state};
+                        current_fsm <= fsm_state{first_state};
                     end else begin
-                        current_state_fsm <= next_state_fsm;
+                        current_fsm <= next_state_fsm;
                     end
                 end
 
                 always @ (*) begin
-                    case (current_state_fsm)
+                    case (current_fsm)
                 """
         )
         for i in range(1, self.max_fsm_stage):
@@ -103,7 +103,7 @@ class FSM:
         for i in range(1, self.max_fsm_stage + 1):
             fsm += dedent(
                 f"""\
-            assign current_state_fsm_state{str(i).zfill(self.fsm_idx_width)} = current_state_fsm[{fsm_2bit_width}'d{i - 1}];
+            assign current_fsm_state{str(i).zfill(self.fsm_idx_width)} = current_fsm[{fsm_2bit_width}'d{i - 1}];
                 """
             )
 

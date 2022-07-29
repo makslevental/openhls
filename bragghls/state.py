@@ -12,8 +12,6 @@ GLOBAL_MEMREF_ARG = "GLOBAL_MEMREF_ARG"
 CONSTANT = "CONSTANT"
 VAL_PREFIX = "%"
 DTYPE = "f32"
-COLLAPSE_MACS = bool(int(os.getenv("COLLAPSE_MACS", 0)))
-logger.debug(f"{COLLAPSE_MACS=}")
 DEBUG = bool(int(os.environ.get("DEBUG", "0")))
 INCLUDE_AUX_DEPS = True
 
@@ -31,12 +29,9 @@ class State:
     op_id_to_pe_idx = {}
     pe_deps = set()
 
-    def __init__(self, output_fp):
+    def __init__(self, output_file):
         self.op_graph.add_nodes_from([INPUT, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT])
-        self.output_file = open(output_fp, "w")
-
-    def set_output_file(self, fp):
-        self.output_file = open(fp, "w")
+        self.output_file = output_file
 
     def incr_var(self):
         self._var_count += 1
@@ -57,7 +52,7 @@ class State:
 
     def debug_print(self, *args):
         if DEBUG:
-            self.emit(["//"] + args)
+            self.emit(*(["//"] + list(args)))
 
     def add_val_source(self, v, src):
         self.val_source[v] = src
@@ -109,10 +104,6 @@ class State:
     @property
     def val_prefix(self):
         return VAL_PREFIX
-
-    @property
-    def collapse_macs(self):
-        return COLLAPSE_MACS
 
     @property
     def pe_idx(self):

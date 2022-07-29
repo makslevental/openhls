@@ -12,9 +12,9 @@ class Linear(nn.Module):
         super().__init__()
         self.linear1 = torch.nn.Linear(imgsz, imgsz)
 
-    def forward(self, x):
-        y = self.linear1(x)
-        return y.sum()
+    def forward(self, x, y):
+        x = self.linear1(x)
+        return (x * y).sum()
 
 
 class Dot(nn.Module):
@@ -42,11 +42,28 @@ def make_dot(size=11):
     return str(mlir_module)
 
 
+def make_linear(size=11):
+    with torch.no_grad():
+        mod = Linear(size)
+        mod.eval()
+        y = torch.randn(size)
+        x = torch.randn(size)
+        z = mod(x, y)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, size], torch.float32),
+            ([1, size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=11)
+    parser.add_argument("--size", type=int, default=4)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
-    dot_str = make_dot(args.size)
-    open(f"{args.out_dir}/dot.mlir", "w").write(dot_str)
+    dot_str = make_linear(args.size)
+    open(f"{args.out_dir}/linear.mlir", "w").write(dot_str)

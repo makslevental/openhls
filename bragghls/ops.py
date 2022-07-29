@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from functools import reduce
-from typing import Tuple
+from typing import Tuple, Any
 
 from bragghls import state
 from bragghls.state import idx_to_str
@@ -28,20 +28,6 @@ class OpType(Enum):
     FMAC = "fmac"
 
 
-FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3
-LATENCIES = {
-    OpType.ADD: 3,
-    OpType.SUB: 3,
-    OpType.MUL: 2,
-    OpType.DIV: 3,
-    OpType.GT: 1,
-    OpType.NEG: 1,
-    OpType.RELU: 1,
-    OpType.CST: 0,
-    OpType.COPY: 1,
-    OpType.FMAC: -1,
-}
-
 OPS = {op.value: op for op in OpType}
 
 
@@ -61,6 +47,8 @@ class Val:
     __truediv__ = overload_op(OpType.DIV)
     __gt__ = overload_op(OpType.GT)
     __neg__ = overload_op(OpType.NEG)
+    copy = overload_op(OpType.COPY)
+    relu = overload_op(OpType.RELU)
 
     def __repr__(self):
         return f"{state.state.val_prefix}val_{self.id}"
@@ -71,16 +59,18 @@ class Op:
     type: OpType
     pe_idx: Tuple[int, ...]
     op_id: int
-    args: Tuple[str]
+    args: Tuple[Any, ...]
     res: str
     overload: str = None
+    attrs: dict = None
 
     def __post_init__(self):
-        object.__setattr__(self, "op_id", state.state.curr_op_id)
-        state.state.incr_op_id()
+        if state.state is not None:
+            object.__setattr__(self, "op_id", state.state.curr_op_id)
+            state.state.incr_op_id()
 
-    def __repr__(self):
-        args = (", ".join(map(str, self.args)),)
+    def _make_args_attrs(self):
+        args_str = ", ".join(map(str, self.args))
         attrs = {
             "pe": self.pe_idx,
             "opr": self.type.value
@@ -88,12 +78,64 @@ class Op:
             else f"{self.type.value}.{self.overload}",
             "op_id": self.op_id,
         }
+        if self.attrs:
+            attrs.update(self.attrs)
         attrs_str = ", ".join([f'{n} = "{v}"' for n, v in attrs.items()])
-        if self.type == OpType.CST:
-            return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {args[0]} : {state.state.dtype}  }} : () -> {state.state.dtype}'
-        else:
-            return f'{self.res} = "{self.type.value}" ({", ".join(args)}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
+        return args_str, attrs_str
 
+    def __repr__(self):
+        args_str, attrs_str = self._make_args_attrs()
+        return f"{self.type.value}({args_str}) {{{attrs_str}}}"
+
+    def emit(self):
+        args_str, attrs_str = self._make_args_attrs()
+        if self.type == OpType.CST:
+            return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {self.args[0]} : {state.state.dtype}  }} : () -> {state.state.dtype}'
+        else:
+            return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
+
+
+FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3
+
+
+class Latencies:
+    latencies = {
+        OpType.ADD: 3,
+        OpType.SUB: 3,
+        OpType.MUL: 2,
+        OpType.DIV: 3,
+        OpType.GT: 1,
+        OpType.NEG: 1,
+        OpType.RELU: 1,
+        OpType.CST: 0,
+        OpType.COPY: 1,
+        OpType.FMAC: -1,
+    }
+    fmacs = set()
+
+    def __getitem__(self, op: Op):
+        if op.type == OpType.FMAC:
+            return FMAC_LATENCY(len(op.args) - 1)
+        else:
+            return self.latencies[op.type]
+
+    def add(self, op):
+        assert (
+            isinstance(op, tuple)
+            and len(op) == 2
+            and op[0] == OpType.FMAC
+            and isinstance(op[1], int)
+        )
+        self.fmacs.add(op[1])
+
+    def items(self):
+        return tuple(
+            list(self.latencies.items())
+            + [(f"fmac.{n_args}", FMAC_LATENCY(n_args)) for n_args in self.fmacs]
+        )
+
+
+LATENCIES = Latencies()
 
 CONSTANTS = set()
 
@@ -110,7 +152,7 @@ def make_constant(arg):
             args=(arg,),
             res=str(cst_v),
         )
-        state.state.emit(cst_op)
+        state.state.emit(cst_op.emit())
         CONSTANTS.add(cst_v)
     # TODO
     # state.state.add_op_res(cst_v, cst_op)
@@ -146,7 +188,7 @@ def create_new_op(
             continue
         state.state.add_edge(op, arg, op.res)
 
-    state.state.emit(op)
+    state.state.emit(op.emit())
 
     if add_aux_dep:
         state.state.maybe_add_aux_dep(pe_idx, op)
@@ -156,14 +198,6 @@ def create_new_op(
     state.state.add_op_res(res, op)
 
     return res
-
-
-def Alias(dst: "MemRef", src: "MemRef"):
-    from bragghls.memref import MemRef
-
-    assert isinstance(src, MemRef)
-    registers_to_copy = src.registers
-    dst.registers = registers_to_copy
 
 
 class FMAC:
@@ -199,12 +233,11 @@ class FMAC:
         assert len(init_val) == 1
         args = init_val + self.mul_vals
         op_res = FMACOp(len(args), self.pe_idx)(*args)
-        op_res = Copy(op_res)
+        op_res = op_res.copy()
         return op_res
 
 
 def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
 
@@ -214,7 +247,7 @@ def reducer(accum, val):
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
-        return accum + [Copy(val[0])]
+        return accum + [val[0].copy()]
 
 
 def ReduceAdd(vals):
@@ -225,12 +258,9 @@ def ReduceAdd(vals):
     return pairs[0][0] + pairs[0][1]
 
 
-ReLU = lambda x: overload_op(OpType.RELU)(x)
-Copy = lambda x: overload_op(OpType.COPY)(x)
-
-
 def FMACOp(n_args, pe_idx):
-    LATENCIES[f"{OpType.FMAC.value}.{n_args - 1}"] = ((n_args - 1) // 2) * 3 + 3
+    non_init_args = n_args - 1
+    LATENCIES.add((OpType.FMAC, non_init_args))
 
     def f(*args: "Tuple[Val]"):
         return create_new_op(
@@ -238,7 +268,7 @@ def FMACOp(n_args, pe_idx):
             args,
             pe_idx=pe_idx,
             add_aux_dep=True,
-            op_overload=f"{n_args - 1}",
+            op_overload=f"{non_init_args}",
         )
 
     return f

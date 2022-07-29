@@ -5,7 +5,7 @@ from typing import Tuple
 import numpy as np
 
 from bragghls import state
-from bragghls.ops import make_constant, Val
+from bragghls.ops import make_constant, Val, ReduceAdd
 from bragghls.state import idx_to_str
 
 MemRefIndex = Tuple[int, ...]
@@ -69,6 +69,14 @@ class MemRef:
     @property
     def numel(self):
         return np.prod(self.curr_shape)
+
+    def reduce_add(self):
+        return ReduceAdd(self.registers.flatten())
+
+    def alias(self, other_memref):
+        assert isinstance(other_memref, MemRef)
+        other_memref.registers = self.registers
+        return other_memref
 
 
 class GlobalMemRef:

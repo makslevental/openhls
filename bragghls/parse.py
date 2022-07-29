@@ -1,11 +1,11 @@
 import ast
 import re
 from dataclasses import dataclass
-from typing import Tuple, Dict
+from typing import Tuple, Any
 
 from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
-from bragghls.ops import OPS, OpType
+from bragghls.ops import OPS, OpType, Op
 
 
 def traverse_op_region_block_iterators(op, handler):
@@ -30,7 +30,7 @@ def parse_attrs_to_dict(attrs):
     return d
 
 
-reg_idents = re.compile(r"(%[\da-z_]*|([0-9]*[.])+[0-9]+)")
+reg_idents = re.compile(r"(%[\da-z_]*|([0-9]+\.[0-9]*))")
 reg_start_time = re.compile(r"lpStartTime = (\d+)")
 reg_opr = re.compile(r'opr = "(.*?)"')
 reg_pe = re.compile(r'pe = "(.*?)"')
@@ -49,12 +49,20 @@ class OpIdData:
     res_val: str
     opr: OpType
     pe_idx: Tuple[int, ...]
-    op_inputs: Dict[str, str]
+    op_inputs: Tuple[str, ...]
     start_time: int
+    overload: Any = None
 
     def __iter__(self):
         return iter(
-            (self.res_val, self.opr, self.pe_idx, self.op_inputs, self.start_time)
+            (
+                self.res_val,
+                self.opr,
+                self.pe_idx,
+                self.op_inputs,
+                self.start_time,
+                self.overload,
+            )
         )
 
     def __post_init__(self):
@@ -80,21 +88,30 @@ def parse_mlir_module(module_str):
             pe_idxs.add(pe_idx)
 
             res_val = idents[0][0]
-            op_inputs = [inp[0] for inp in idents[1:]]
+            args = tuple([inp[0] for inp in idents[1:]])
             if opr == "arith.constant":
-                op_inputs = [float(op_inputs[0])]
-                csts[res_val] = float(op_inputs[0])
+                args = tuple([float(args[0])])
+                csts[res_val] = float(args[0])
             else:
-                vals.update(set(op_inputs))
+                vals.update(set(args))
 
             start_time = reg_start_time.findall(line)
             if start_time:
                 start_time = int(start_time[0])
             else:
                 start_time = None
+            if opr != "arith.constant" and "." in opr:
+                opr, _overload = opr.split(".")
             opr = OPS[opr]
-            op_id_data[op_id, opr] = OpIdData(
-                res_val, opr, pe_idx, op_inputs, start_time
+            op_id_data[op_id, opr] = Op(
+                opr,
+                pe_idx,
+                op_id,
+                args,
+                res_val,
+                attrs={"start_time": start_time + 1}
+                if start_time is not None
+                else None,
             )
         elif "func.func" in line:
             assert idents

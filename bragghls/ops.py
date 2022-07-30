@@ -227,9 +227,7 @@ class FMAC:
         return Val(f"FAKE_MUL_{self.pe_idx}({a}, {b})")
 
     def Result(self):
-        from bragghls.memref import MemRefVal
-
-        init_val = [v for v in self.add_vals if isinstance(v, MemRefVal)]
+        init_val = [v for v in self.add_vals if "FAKE" not in v.name]
         assert len(init_val) == 1
         args = init_val + self.mul_vals
         op_res = FMACOp(len(args), self.pe_idx)(*args)

@@ -4,15 +4,15 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from bragghls.nn import compile_nn_module_to_mlir
+from bragghls.nn import compile_nn_module_to_mlir, set_weights
 
 
 class Linear(nn.Module):
-    def __init__(self, imgsz):
+    def __init__(self, imgsz, bias=True):
         super().__init__()
-        self.linear1 = torch.nn.Linear(imgsz, imgsz)
+        self.linear1 = torch.nn.Linear(imgsz, imgsz, bias=bias)
 
-    def forward(self, x, y):
+    def forward(self, x):
         return self.linear1(x).sum()
 
 
@@ -41,17 +41,18 @@ def make_dot(size=11):
     return str(mlir_module)
 
 
-def make_linear(size=11):
+def make_linear(size=11, simplify_weights=True):
     with torch.no_grad():
         mod = Linear(size)
         mod.eval()
-        y = torch.randn(size)
-        x = torch.randn(size)
-        z = mod(x, y)
+        if simplify_weights:
+            mod.apply(set_weights)
+        x = torch.ones(size)
+        z = mod(x)
+        print(z)
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
-            ([1, size], torch.float32),
             ([1, size], torch.float32),
         ],
     )
@@ -61,7 +62,7 @@ def make_linear(size=11):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=4)
+    parser.add_argument("--size", type=int, default=11)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_linear(args.size)

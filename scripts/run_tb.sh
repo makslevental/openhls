@@ -1,4 +1,4 @@
-set -e
+set -eox
 
 fullfile=$1
 
@@ -13,16 +13,17 @@ echo $dirname $filename_with_ext $extension $filename
 
 rm $dirname/$filename.vvp || echo 0
 if [[ "$extension" == "sv" ]]; then
-  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores -g2012 $dirname/"$filename"_tb.sv
+  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores -I $dirname -g2012 $dirname/"$filename"_tb.sv
 else
-  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores $dirname/"$filename"_tb.v
+  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores -I dirname $dirname/"$filename"_tb.v
 fi
 
 rm $dirname/*.vcd || echo 0
 vvp $dirname/$filename.vvp
+mv ${filename}_inner.vcd $dirname/
 
 if [[ "$(uname)" == 'Darwin' ]]; then
-  open -a Scansion $dirname/*.vcd
+  echo open -a Scansion $dirname/*.vcd
 else
-  gtkwave $dirname/*.vcd &
+  echo gtkwave $dirname/*.vcd &
 fi

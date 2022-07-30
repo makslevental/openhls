@@ -69,12 +69,12 @@ module {{ top_level }}_tb;
         #PERIOD;
         $display("count %0d res %11b", count, {{ output_wires[-1] }} );
         {% endfor %}
-        
-        // #{{ simulation_time }};
-        // {%- for output_wire in output_wires %}
-        // if({{ output_wire }} != {{ precision }}'b{{ to_flopoco(output_values[loop.index0]) }}) // {{ output_values[loop.index0] }})
-        //     $display("failed with sum %{{ precision }}b", {{ output_wire }});
-        // {%- endfor %}
+        {%- for output_wire in output_wires %}
+        if({{ output_wire }} != {{ precision }}'b{{ to_flopoco(output_values[loop.index0]) }}) // {{ output_values[loop.index0] }})
+            $display("failed with sum %{{ precision }}b", {{ output_wire }});
+        else
+            $display("passed with accum %11b", {{ output_wire }});
+        {%- endfor %}
         $finish();
     end
 

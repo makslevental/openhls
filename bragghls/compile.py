@@ -142,7 +142,7 @@ def main(args):
             pe_idxs,
         ) = parse_mlir_module(sched_and_rewritten_mlir)
 
-        verilog_file, input_wires, output_wires = emit_verilog(
+        verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
             args.precision,
             op_id_data,
@@ -170,13 +170,15 @@ def main(args):
             f"{name}.sv",
             clock_period=10,
             precision=11,
-            simulation_time=100,
-            input_wires=list(input_wires.keys()),
-            output_wires=list(output_wires.keys()),
+            simulation_time=max_fsm_stage,
+            input_wires=list(map(str, input_wires.values())),
+            output_wires=[f"output_{o}" for o in list(map(str, output_wires.values()))],
             input_values=vals,
-            output_values=[1.0],
+            output_values=[132.0],
         )
         tb_file = tb_file.replace("%", "v_")
+        tb_file = tb_file.replace("v_0", "%0")
+        tb_file = tb_file.replace("v_11", "%11")
         with open(f"{artifacts_dir}/{name}_tb.sv", "w") as f:
             f.write(tb_file)
 

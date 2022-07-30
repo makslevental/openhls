@@ -109,11 +109,13 @@ class FSM:
 
         return fsm
 
-
-def generate_mac_fsm_states(n_elements, start_time):
-    n_pair_states = n_elements - 1
-    fmul_states = [3 * i + start_time for i in range(n_pair_states + 2)]
-    fadd_states = [s + 2 for s in fmul_states]
-    all_states = sorted(fmul_states + fadd_states)
-    fmac_states, done_state = all_states[:-1], all_states[-1]
-    return fmac_states, done_state
+    def generate_mac_fsm_states(self, n_elements, start_time):
+        n_pair_states = n_elements - 1
+        fmul_states = [3 * i + start_time for i in range(n_pair_states + 2)]
+        fadd_states = [s + 2 for s in fmul_states]
+        all_states = [
+            f"current_fsm_state{str(s).zfill(self.fsm_idx_width)}"
+            for s in sorted(fmul_states + fadd_states)
+        ]
+        fmac_states, done_state = all_states[:-1], all_states[-1]
+        return fmac_states, done_state

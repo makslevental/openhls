@@ -1,11 +1,12 @@
 import ast
 import re
+import warnings
 from dataclasses import dataclass
 from typing import Tuple, Any
 
 from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
-from bragghls.ops import OPS, OpType, Op
+from bragghls.ops import OPS, OpType, Op, LATENCIES
 
 
 def traverse_op_region_block_iterators(op, handler):
@@ -77,6 +78,7 @@ def parse_mlir_module(module_str):
     csts = {}
     pe_idxs = set()
     op_id_data = {}
+    val_to_op = {}
     func_args = None
     returns = None
     for line in module_str.splitlines():
@@ -103,7 +105,7 @@ def parse_mlir_module(module_str):
             if opr != "arith.constant" and "." in opr:
                 opr, _overload = opr.split(".")
             opr = OPS[opr]
-            op_id_data[op_id, opr] = Op(
+            op = Op(
                 opr,
                 pe_idx,
                 op_id,
@@ -113,6 +115,22 @@ def parse_mlir_module(module_str):
                 if start_time is not None
                 else None,
             )
+            # super ugly hack but otherwise the op_ids don't match the emitted mlir
+            object.__setattr__(op, "op_id", op_id)
+            val_to_op[res_val] = op_id_data[op_id, opr] = op
+            # patch the start time incase the scheduler messed up
+            if opr == OpType.COPY and op.attrs is not None:
+                src_op = val_to_op[args[0]]
+                if (
+                    op.attrs["start_time"]
+                    != src_op.attrs["start_time"] + LATENCIES[src_op]
+                ):
+                    warnings.warn(
+                        f"overriding start time of {op} to {src_op.attrs['start_time'] + LATENCIES[src_op]}"
+                    )
+                    op.attrs["start_time"] = (
+                        src_op.attrs["start_time"] + LATENCIES[src_op]
+                    )
         elif "func.func" in line:
             assert idents
             func_args = [idn[0] for idn in idents]

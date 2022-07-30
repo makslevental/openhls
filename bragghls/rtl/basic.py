@@ -2,6 +2,8 @@ import enum
 from dataclasses import dataclass
 from textwrap import dedent, indent
 
+from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
+
 
 @dataclass(frozen=True)
 class Wire:
@@ -42,10 +44,8 @@ def make_constant(v, precision):
         return f"{precision}'b01001110000"
     else:
         # %val_cst_00
-        assert "cst" in v, v
-        v = v.split("_")[-1]
-        # TODO: put real constants here
-        return f"{precision}'b{int(v)}"
+        assert isinstance(v, (float, int))
+        return f"{precision}'b{convert_float_to_flopoco_binary_str(v)}"
 
 
 class CombOrSeq(enum.Enum):
@@ -83,12 +83,12 @@ def make_fmac_branches(pe, fsm_states, init_val, args):
             "\n".join(
                 [
                     f"""\
-        if (1'b1 == current_fsm_state{fsm_states[0]}) begin
+        if (1'b1 == {fsm_states[0]}) begin
             {pe.fmul.x} <= {args[0]}; 
             {pe.fmul.y} <= {args[1]}; 
             {pe.fmul.ce} <= 1;
         end
-        if (1'b1 == current_fsm_state{fsm_states[1]}) begin
+        if (1'b1 == {fsm_states[1]}) begin
             {pe.fadd.x} <= {init_val};
             {pe.fadd.y} <= {pe.fmul.r}; 
             {pe.fadd.ce} <= 1;
@@ -97,13 +97,13 @@ def make_fmac_branches(pe, fsm_states, init_val, args):
                 ]
                 + [
                     f"""\
-        if (1'b1 == current_fsm_state{fsm_state}) begin
+        if (1'b1 == {fsm_state}) begin
             {pe.fmul.x} <= {args[2 * (i + 1)]};
             {pe.fmul.y} <= {args[2 * (i + 1) + 1]};
             {pe.fmul.ce} <= 1;
             {pe.fadd.ce} <= 1;
         end
-        if (1'b1 == current_fsm_state{fsm_states[2 * i + 2 + 1]}) begin
+        if (1'b1 == {fsm_states[2 * i + 2 + 1]}) begin
             {pe.fadd.x} <= {pe.fadd.r};
             {pe.fadd.y} <= {pe.fmul.r};
             {pe.fadd.ce} <= 1;
@@ -113,7 +113,7 @@ def make_fmac_branches(pe, fsm_states, init_val, args):
                 ]
                 + [
                     f"""\
-        if (1'b1 == current_fsm_state{fsm_states[-1]}) begin
+        if (1'b1 == {fsm_states[-1]}) begin
             {pe.fadd.ce} <= 1;
         end
     """

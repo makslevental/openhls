@@ -14,16 +14,38 @@ from bragghls.rtl.basic import (
     make_fmac_branches,
     CombOrSeq,
 )
-from bragghls.rtl.fsm import FSM, generate_mac_fsm_states
+from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
 from bragghls.state import DEBUG
 
-FMAC_RES_VAL_MAP = {}
 ALREADY_CE = set()
 
 
-def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires):
+def build_ip_res_val_map(pe, op_datas: list[Op], vals):
+    ip_res_val_map = {}
+    for op in op_datas:
+        res_val = vals.get(op.res, op.res)
+        if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
+            if op.type == OpType.ADD:
+                ip_res_val_map[res_val] = pe.fadd.r
+            elif op.type == OpType.ADD:
+                ip_res_val_map[res_val] = pe.fadd.r
+            else:
+                raise Exception("wtfbbq")
+        elif op.type in {OpType.NEG, OpType.RELU}:
+            pass
+        elif op.type in {OpType.COPY}:
+            pass
+        elif op.type == OpType.FMAC:
+            ip_res_val_map[res_val] = pe.fadd.r
+        else:
+            raise NotImplementedError
+
+    return ip_res_val_map
+
+
+def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_map):
     tree_conds = []
     not_latches = set()
     for op in op_datas:
@@ -35,16 +57,11 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires):
         end_time = start_time + LATENCIES[op]
         res_val = vals.get(op.res, op.res)
         in_a = vals.get(args[0], input_wires.get(args[0], args[0]))
+        in_a = ip_res_val_map.get(in_a, in_a)
 
         if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
             in_b = vals.get(args[1], input_wires.get(args[1], args[1]))
-            # if op.type == OpType.ADD and (ip.ce, start_time - 2) not in ALREADY_CE:
-            #     ALREADY_CE.add((ip.ce, start_time - 2))
-            #     tree_conds.append(
-            #         make_always_branch(
-            #             [ip.ce], [1], fsm.make_fsm_conditions([start_time - 2])
-            #         )
-            #     )
+            in_b = ip_res_val_map.get(in_b, in_b)
 
             tree_conds.append(
                 make_always_branch(
@@ -53,15 +70,25 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires):
                     fsm.make_fsm_conditions([start_time]),
                 )
             )
-            tree_conds.append(
-                make_always_branch(
-                    [res_val], [ip.r], fsm.make_fsm_conditions([end_time])
+            if op.type == OpType.ADD and (ip.ce, start_time + 1) not in ALREADY_CE:
+                ALREADY_CE.add((ip.ce, start_time + 1))
+                tree_conds.append(
+                    make_always_branch(
+                        [ip.ce], [1], fsm.make_fsm_conditions([start_time + 1])
+                    )
                 )
-            )
 
-            not_latches.update({ip.x, ip.y, ip.r, ip.ce})
+            not_latches.update({ip.x, ip.y, ip.ce})
             if "val" in str(res_val):
                 not_latches.add(res_val)
+
+            if op.type == OpType.ADD:
+                ip_res_val_map[res_val] = pe.fadd.r
+            elif op.type == OpType.ADD:
+                ip_res_val_map[res_val] = pe.fadd.r
+            else:
+                raise Exception("wtfbbq")
+
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
@@ -76,20 +103,18 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires):
             if "val" in str(res_val):
                 not_latches.add(res_val)
         elif op.type in {OpType.COPY}:
-            in_a = FMAC_RES_VAL_MAP.get(in_a, in_a)
             tree_conds.append(
                 make_always_branch(
                     [res_val], [in_a], fsm.make_fsm_conditions([start_time])
                 )
             )
         elif op.type == OpType.FMAC:
-            fmac_states, done_state = generate_mac_fsm_states(
+            fmac_states, done_state = fsm.generate_mac_fsm_states(
                 (len(args) - 1) // 2, start_time
             )
-            init_val = vals.get(op.args[0], input_wires[op.args[0]])
             args = [vals.get(a, input_wires[a]) for a in op.args[1:]]
-            tree_conds.append(make_fmac_branches(pe, fmac_states, init_val, args))
-            FMAC_RES_VAL_MAP[res_val] = pe.fadd.r
+            tree_conds.append(make_fmac_branches(pe, fmac_states, in_a, args))
+            ip_res_val_map[res_val] = pe.fadd.r
         else:
             raise NotImplementedError
 
@@ -133,7 +158,11 @@ def emit_verilog(
 
     for name, val_reg in sorted(vals.items()):
         if name in csts:
-            emit(val_reg.instantiate()[:-1], "=", f"{make_constant(name, precision)};")
+            emit(
+                val_reg.instantiate()[:-1],
+                "=",
+                f"{make_constant(csts[name], precision)};",
+            )
         else:
             emit(val_reg.instantiate())
 
@@ -156,18 +185,21 @@ def emit_verilog(
         pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)
+    ip_res_val_map = {}
     for pe, op_datas in pe_to_ops.items():
-        emit(make_pe_always(fsm, pe, op_datas, vals, input_wires))
+        ip_res_val_map.update(build_ip_res_val_map(pe, op_datas, vals))
+    for pe, op_datas in pe_to_ops.items():
+        emit(make_pe_always(fsm, pe, op_datas, vals, input_wires, ip_res_val_map))
     emit(fsm.make_fsm())
 
     for v, wire in output_wires.items():
         reg = Reg(wire.id, wire.bit_width)
-        emit(f"assign output_{wire} = {reg};")
+        emit(f"assign output_{wire} = {ip_res_val_map[reg]};")
 
     emit("endmodule")
 
     s.seek(0)
-    return s.read(), input_wires, output_wires
+    return s.read(), input_wires, output_wires, fsm.max_fsm_stage
 
 
 def main(fp):

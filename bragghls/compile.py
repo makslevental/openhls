@@ -11,10 +11,17 @@ import numpy as np
 
 import bragghls.runner
 import bragghls.state
+from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
+from bragghls.flopoco.ops import (
+    MemRef as FPMemRef,
+    GlobalMemRef as FPGlobalMemRef,
+    FMAC as FPFMAC,
+)
+from bragghls.memref import MemRef, GlobalMemRef
 from bragghls.parse import parse_mlir_module
 from bragghls.rtl.emit_verilog import emit_verilog
 from bragghls.rtl.generate_tb import generate
-from bragghls.runner import Forward
+from bragghls.runner import Forward, get_default_args
 from bragghls.transforms import transform_forward, rewrite_schedule_vals
 from scripts.hack_affine_scf import scf_to_affine
 
@@ -60,6 +67,32 @@ def run_rewrite(mod):
     Forward(mod.forward)
     file.seek(0)
     return file.read()
+
+
+def run_model_with_fp_number(mod, wE, wF):
+    file = io.StringIO()
+    bragghls.state.state = bragghls.state.State(file)
+    args = get_default_args(mod.forward)
+    test_args = {}
+    outputs = {}
+    for name, arg in args.items():
+        if isinstance(arg, MemRef) and arg.input:
+            test_args[name] = FPMemRef.from_memref(arg, wE, wF, np.ones(arg.curr_shape))
+        elif isinstance(arg, MemRef) and arg.output:
+            outputs[name] = test_args[name] = FPMemRef.from_memref(
+                arg, wE, wF, np.ones(arg.curr_shape)
+            )
+        elif isinstance(arg, GlobalMemRef):
+            test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)
+        else:
+            raise Exception("wtfbbq")
+
+    mod.FMAC = FPFMAC
+    mod.MemRef = FPMemRef
+    mod.GlobalMemRef = FPGlobalMemRef
+    mod.forward(**test_args)
+    assert len(outputs) == 1
+    return next(iter(outputs.values())).registers[0]
 
 
 def run_circt(mlir_output):
@@ -144,7 +177,7 @@ def main(args):
 
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
-            args.precision,
+            args.wE + args.wF + 3,
             op_id_data,
             func_args,
             returns,
@@ -165,16 +198,19 @@ def main(args):
         else:
             vals = np.linspace(0, 1, len(input_wires))
 
+        res = run_model_with_fp_number(mod, args.wE, args.wF)
+        print(res, res.fp.binstr())
+
         tb_file = generate(
             f"{name}_inner",
             f"{name}.sv",
             clock_period=10,
-            precision=11,
+            precision=args.wE + args.wF + 3,
             simulation_time=max_fsm_stage,
             input_wires=list(map(str, input_wires.values())),
             output_wires=[f"output_{o}" for o in list(map(str, output_wires.values()))],
             input_values=vals,
-            output_values=[132.0],
+            output_values=[convert_flopoco_binary_str_to_float(res.fp.binstr())],
         )
         tb_file = tb_file.replace("%", "v_")
         tb_file = tb_file.replace("v_0", "%0")
@@ -191,7 +227,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--rewrite", default=False, action="store_true")
     parser.add_argument("-s", "--schedule", default=False, action="store_true")
     parser.add_argument("-v", "--verilog", default=False, action="store_true")
-    parser.add_argument("--precision", default=4 + 4 + 3)
+    parser.add_argument("--wE", default=4)
+    parser.add_argument("--wF", default=4)
     parser.add_argument("-b", "--testbench", default=False, action="store_true")
     args = parser.parse_args()
     main(args)

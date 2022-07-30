@@ -2,7 +2,7 @@ import enum
 from dataclasses import dataclass
 from textwrap import dedent, indent
 
-from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
+from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
 
 
 @dataclass(frozen=True)

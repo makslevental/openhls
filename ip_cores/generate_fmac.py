@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from jinja2 import Template
 
-from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str, FPNumber
+from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
 from bragghls.state import DEBUG
 
 

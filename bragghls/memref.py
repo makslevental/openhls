@@ -34,9 +34,9 @@ class MemRef:
         self.output = output
 
     def __setitem__(self, index, value):
+        assert not self.input
         if isinstance(value, (float, bool, int)):
             value = make_constant(value)
-        assert not self.input
         self.registers[index] = value
 
     def __getitem__(self, index: MemRefIndex):

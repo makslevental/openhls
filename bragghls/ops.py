@@ -4,7 +4,6 @@ from functools import reduce
 from typing import Tuple, Any
 
 from bragghls import state
-from bragghls.state import idx_to_str
 from bragghls.util import extend_idx
 
 
@@ -205,18 +204,9 @@ class FMAC:
         assert pe_idx
         pe_idx = extend_idx(pe_idx)
         self.pe_idx = pe_idx
-        self.res_reg = idx_to_str(pe_idx)
         state.state.debug_print(f"MAC {pe_idx} starts")
-        self.most_recent_add = None
-        self.most_recent_mul = None
-        self.first_add = None
         self.mul_vals = []
         self.add_vals = []
-
-    def _collapse(self, op_type, prev_res, a, b):
-        prev_op = state.state.get_arg_src(prev_res)
-        res = create_new_op(op_type, (a, b), pe_idx=prev_op.pe_idx, res=prev_res)
-        return res
 
     def Add(self, a, b):
         self.add_vals.extend((a, b))

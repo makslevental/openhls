@@ -83,7 +83,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--out_dir", type=Path, default=Path(__file__).parent / "cnn_bragghls_artifacts"
     )
-    parser.add_argument("--size", type=int, default=4)
+    parser.add_argument("--size", type=int, default=16)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
 

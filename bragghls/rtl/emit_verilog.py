@@ -191,6 +191,7 @@ def emit_verilog(
         pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)
+    print(f"num pes {len(pe_to_ops)}")
     ip_res_val_map = {}
     for pe, op_datas in pe_to_ops.items():
         ip_res_val_map.update(build_ip_res_val_map(pe, op_datas, vals))

@@ -24,7 +24,7 @@ async def reset_dut(dut, duration_ns):
     dut._log.debug("Reset complete")
 
 
-def set_inputs(mod, dut=None):
+def set_inputs(mod, dut, wE, wF):
     args = get_default_args(mod.forward)
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
@@ -35,7 +35,7 @@ def set_inputs(mod, dut=None):
         test_inputs[inp_name] = np.random.random(inp_memref.curr_shape)
         # print(f"inputs {test_inputs[inp_name]}")
     test_inputs, outputs = run_model_with_fp_number(
-        mod, test_inputs, wE=int(os.getenv("WE")), wF=int(os.getenv("WF"))
+        mod, test_inputs, wE=wE, wF=wF
     )
     # print(f"test_inputs {test_inputs}")
 

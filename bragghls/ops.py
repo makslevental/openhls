@@ -231,7 +231,8 @@ def chunks(lst, n):
 
 
 def reducer(accum, val):
-    state.state.pe_idx = state.state.get_arg_src(val[0]).pe_idx
+    if isinstance(val, Val):
+        state.state.pe_idx = state.state.get_arg_src(val[0]).pe_idx
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
@@ -242,7 +243,8 @@ def ReduceAdd(vals):
     pairs = list(chunks(list(vals), 2))
     while len(pairs) > 1:
         pairs = list(chunks(reduce(reducer, pairs, []), 2))
-    state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
+    if isinstance(pairs[0][0], Val):
+        state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
     return pairs[0][0] + pairs[0][1]
 
 

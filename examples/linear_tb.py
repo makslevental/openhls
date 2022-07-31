@@ -16,6 +16,8 @@ async def linear_test(dut):
     MAX_FSM_STAGE = int(os.getenv("MAX_FSM_STAGE"))  # 16
     LATENCY = MAX_FSM_STAGE + 1
     TEST_VECTORS = int(os.getenv("N_TEST_VECTORS"))
+    WE = int(os.getenv("WE"))
+    WF = int(os.getenv("WF"))
 
     clock = Clock(dut.clk, 2, units="ns")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start())  # Start the clock
@@ -29,7 +31,7 @@ async def linear_test(dut):
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm)
         if i % LATENCY == 0:
-            outputs = set_inputs(linear_rewritten, dut)
+            outputs = set_inputs(linear_rewritten, dut, WE, WF)
             output = outputs["_6"].registers[0]
             dut.ce.value = 1
             dut.reset.value = 1
@@ -47,6 +49,7 @@ async def linear_test(dut):
                     output_wire.value.binstr,
                     output.fp.binstr(),
                 )
+                print(f"passed {i}")
             else:
                 print(f"overflow {i}")
 

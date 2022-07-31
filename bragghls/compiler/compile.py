@@ -100,6 +100,7 @@ def main(args):
         with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "r") as f:
             pythonized_mlir = f.read()
 
+    output_name = "UNKNOWN"
     if args.rewrite:
         rewritten_py_code = rewrite(pythonized_mlir)
         if DEBUG:
@@ -110,14 +111,17 @@ def main(args):
             )
         else:
             mod = import_module_from_string("pythonized_mlir", rewritten_py_code)
-
-        rewritten_mlir_output, output_name = run_rewrite(mod)
-        if DEBUG:
-            with open(f"{artifacts_dir}/{name}.rewritten.mlir", "w") as f:
-                f.write(rewritten_mlir_output)
     else:
-        with open(f"{artifacts_dir}/{name}.rewritten.mlir", "r") as f:
-            rewritten_mlir_output = f.read()
+        mod = import_module_from_fp(
+            "pythonized_mlir", f"{artifacts_dir}/{name}_rewritten.py"
+        )
+
+    rewritten_mlir_output, output_name = run_rewrite(mod)
+    if DEBUG:
+        with open(f"{artifacts_dir}/{name}.rewritten.mlir", "w") as f:
+            f.write(rewritten_mlir_output)
+    with open(f"{artifacts_dir}/{name}.rewritten.mlir", "r") as f:
+        rewritten_mlir_output = f.read()
 
     if args.schedule:
         scheduled_mlir = run_circt(rewritten_mlir_output)

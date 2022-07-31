@@ -29,10 +29,10 @@ def set_inputs(mod, wE, wF, dut=None):
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
-        # scale = np.random.randint(-5, 5) or 1
-        # scale = 2
-        # test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
-        test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        scale = np.random.randint(-5, 5) or 1
+        scale = 1
+        test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
+        # test_inputs[inp_name] = np.random.random(inp_memref.shape)
         # print(f"inputs {test_inputs[inp_name]}")
     test_inputs, outputs = run_model_with_fp_number(
         mod, test_inputs, wE=wE, wF=wF

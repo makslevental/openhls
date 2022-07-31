@@ -6,6 +6,7 @@ from typing import Tuple, Any
 import numpy as np
 
 from bragghls import state
+from bragghls.state import DTYPE
 from bragghls.util import extend_idx
 
 
@@ -91,9 +92,9 @@ class Op:
     def emit(self):
         args_str, attrs_str = self._make_args_attrs()
         if self.type == OpType.CST:
-            return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {self.args[0]} : {state.state.dtype}  }} : () -> {state.state.dtype}'
+            return f'{self.res} = "{self.type.value}" () {{  {attrs_str}, value = {self.args[0]} : {DTYPE}  }} : () -> {DTYPE}'
         else:
-            return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
+            return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([DTYPE] * len(self.args))}) -> {DTYPE}'
 
 
 FMAC_LATENCY = lambda n_elements: 3 * n_elements + 2
@@ -218,12 +219,13 @@ class FMAC:
         self.mul_vals.extend((a, b))
         return Val(f"FMAC_MUL_{self.pe_idx}({a}, {b})")
 
-    def Result(self):
+    def Result(self, copy=True):
         init_val = [v for v in self.add_vals if "FMAC" not in v.name]
         assert len(init_val) == 1
         args = init_val + self.mul_vals
         op_res = FMACOp(len(args), self.pe_idx)(*args)
-        op_res = op_res.copy()
+        if copy:
+            op_res = op_res.copy()
         return op_res
 
 
@@ -238,7 +240,7 @@ def reducer(accum, val):
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
-        return accum + [val[0].copy()]
+        return accum + val
 
 
 def ReduceAdd(vals, initial_val=None):

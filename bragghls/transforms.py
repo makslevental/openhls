@@ -12,35 +12,7 @@ class RemoveMAC(ast.NodeTransformer):
     has_fma = False
     final_assign = None
 
-    def visit_FunctionDef(self, node):
-        if node.name == "body":
-            self.body_args = node.args.args
-            self.generic_visit(node)
-            if self.has_fma and node.name == "body":
-                fma = Name(id="fma")
-                node.body.insert(
-                    0,
-                    Assign(
-                        targets=[fma],
-                        value=Call(
-                            func=Name(id="FMAC"), args=self.body_args, keywords=[]
-                        ),
-                        type_comment=None,
-                    ),
-                )
-                node.body.append(
-                    Assign(
-                        targets=[self.final_assign],
-                        value=Call(func=Name(id="fma.Result"), args=[], keywords=[]),
-                        type_comment=None,
-                    )
-                )
-                self.has_fma = False
-
-        self.generic_visit(node)
-        return node
-
-    def visit_For(self, node):
+    def visit_body(self, node):
         assigns = [b for b in node.body if isinstance(b, Assign)]
         if len(assigns) > 1:
             for i in range(len(assigns) - 1):
@@ -74,6 +46,38 @@ class RemoveMAC(ast.NodeTransformer):
 
         self.generic_visit(node)
         return node
+
+    def visit_FunctionDef(self, node):
+        if node.name == "body":
+            self.body_args = node.args.args
+            self.visit_body(node)
+            self.generic_visit(node)
+            if self.has_fma and node.name == "body":
+                fma = Name(id="fma")
+                node.body.insert(
+                    0,
+                    Assign(
+                        targets=[fma],
+                        value=Call(
+                            func=Name(id="FMAC"), args=self.body_args, keywords=[]
+                        ),
+                        type_comment=None,
+                    ),
+                )
+                node.body.append(
+                    Assign(
+                        targets=[self.final_assign],
+                        value=Call(func=Name(id="fma.Result"), args=[], keywords=[]),
+                        type_comment=None,
+                    )
+                )
+                self.has_fma = False
+
+        self.generic_visit(node)
+        return node
+
+    def visit_For(self, node):
+        return self.visit_body(node)
 
 
 class RemoveIfExp(ast.NodeTransformer):

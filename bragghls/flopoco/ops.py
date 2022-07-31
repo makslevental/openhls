@@ -239,7 +239,7 @@ class FMAC:
         self.result = a * b
         return self.result
 
-    def Result(self):
+    def Result(self, copy):
         return self.result
 
     def __repr__(self):

@@ -11,7 +11,7 @@ class Wire:
     bit_width: int
 
     def __str__(self):
-        return f"{self.id}_wire"
+        return f"{self.id}"
 
     def instantiate(self):
         if self.bit_width > 1:
@@ -29,7 +29,7 @@ class Reg:
     bit_width: int
 
     def __str__(self):
-        return f"{self.id}_reg"
+        return f"{self.id}"
 
     def instantiate(self):
         if self.bit_width > 1:

@@ -94,7 +94,7 @@ class Op:
             return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([state.state.dtype] * len(self.args))}) -> {state.state.dtype}'
 
 
-FMAC_LATENCY = lambda n_args: ((n_args - 1) // 2) * 4 + 3 - 1
+FMAC_LATENCY = lambda n_elements: 3 * n_elements + 2
 
 
 class Latencies:
@@ -114,7 +114,7 @@ class Latencies:
 
     def __getitem__(self, op: Op):
         if op.type == OpType.FMAC:
-            return FMAC_LATENCY(len(op.args) - 1)
+            return FMAC_LATENCY((len(op.args) - 1) // 2)
         else:
             return self.latencies[op.type]
 
@@ -130,7 +130,7 @@ class Latencies:
     def items(self):
         return tuple(
             list(self.latencies.items())
-            + [(f"fmac.{n_args}", FMAC_LATENCY(n_args)) for n_args in self.fmacs]
+            + [(f"fmac.{n_args}", FMAC_LATENCY(n_args // 2)) for n_args in self.fmacs]
         )
 
 

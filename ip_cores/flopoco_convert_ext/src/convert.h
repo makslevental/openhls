@@ -60,9 +60,8 @@ std::string unsignedBinary(const mpz_class &x, int size) {
     return s;
 }
 
-void bin2fp(int wE, int wF, const char *x, mpfr_t sig) {
-    std::string _x(x);
-    char *p = _x.data();
+void bin2fp(int wE, int wF, char *x, mpfr_t sig) {
+    char *p = x;
     int l = 0;
     while (*p) {
         if (*p != '0' && *p != '1') {
@@ -85,7 +84,7 @@ void bin2fp(int wE, int wF, const char *x, mpfr_t sig) {
     mpfr_init2(sig, wF + 1);
     mpfr_set_d(sig, 1.0, MPFR_RNDN); // this will be the implicit one
 
-    p = _x.data() + 3 + wE;
+    p = x + 3 + wE;
     for (int i = 0; i < wF; i++) {
         mpfr_mul(sig, sig, two, MPFR_RNDN);
         if (*p == '1') {
@@ -103,7 +102,7 @@ void bin2fp(int wE, int wF, const char *x, mpfr_t sig) {
 
     // exponent
     int exp = 0;
-    p = _x.data() + 3;
+    p = x + 3;
     for (int i = 0; i < wE; i++) {
         exp = exp << 1;
         if (*p == '1') {
@@ -127,7 +126,7 @@ void bin2fp(int wE, int wF, const char *x, mpfr_t sig) {
 }
 
 
-std::string bin2fpstr(int wE, int wF, const char *x) {
+std::string bin2fpstr(int wE, int wF, char *x) {
     // maybe use this instead? https://stackoverflow.com/questions/26265979/mpfr-library-how-can-you-add-two-mprf-t-variables-and-print-the-result
     mpfr_t sig;
     bin2fp(wE, wF, x, sig);

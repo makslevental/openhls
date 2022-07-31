@@ -1,4 +1,3 @@
-import itertools
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -54,17 +53,18 @@ class MemRef:
         return self
 
     @property
-    def val_names(self):
+    def val_names_map(self):
         assert self.input or self.output
-        val_names = []
+        val_names = {}
         if self.input:
-            for idx in itertools.product(*[range(s) for s in self.curr_shape]):
-                val_names.append(f"%{self.arr_name}_{idx_to_str(idx)}")
+            for idx in np.ndindex(*self.curr_shape):
+                val_names[idx] = f"%{self.arr_name}_{idx_to_str(idx)}"
         elif self.output:
             assert len(self.registers)
-            val_names = sorted([str(v) for v in self.registers.ravel()])
+            for idx, val in np.ndenumerate(self.registers):
+                val_names[idx] = val
 
-        return sorted(val_names)
+        return val_names
 
     @property
     def numel(self):
@@ -86,13 +86,17 @@ class GlobalMemRef:
         self.curr_shape = global_array.shape
         self.vals = np.empty(self.curr_shape, dtype=object)
         for idx, v in np.ndenumerate(global_array):
-            v = MemRefVal(f"{self.name}__", idx)
+            v = MemRefVal(f"{self.name}", idx)
             state.state.add_global_memref_arg(v)
             self.vals[idx] = v
 
     @property
-    def val_names(self):
-        return sorted([str(v) for v in self.vals.ravel()])
+    def val_names_map(self):
+        val_names = {}
+        for idx, val in np.ndenumerate(self.vals):
+            val_names[idx] = val
+
+        return val_names
 
     def __getitem__(self, index: MemRefIndex):
         if isinstance(index, int):

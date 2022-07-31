@@ -153,15 +153,17 @@ def transform_forward_py(fp):
 
 
 def rewrite_schedule_vals(sched_str, macs_str):
-    macs_op_id_data, *_ = parse_mlir_module(macs_str)
-    sched_op_id_data, *_ = parse_mlir_module(sched_str)
+    macs_op_id_data, mac_func_args, *_ = parse_mlir_module(macs_str)
+    sched_op_id_data, sched_func_args, *_ = parse_mlir_module(sched_str)
     assert len(sched_op_id_data) == len(macs_op_id_data) and set(
         macs_op_id_data
     ) == set(sched_op_id_data)
+    assert len(mac_func_args) == len(sched_func_args)
     sched_val_to_macs_val = {
         op.res: macs_op_id_data[op_id_opr].res
         for op_id_opr, op in sched_op_id_data.items()
     }
+    sched_val_to_macs_val.update(dict(zip(sched_func_args, mac_func_args)))
 
     def repl(match):
         g = match.group()
@@ -173,8 +175,7 @@ def rewrite_schedule_vals(sched_str, macs_str):
 
     lines = []
     for line in sched_str.splitlines():
-        if "op_id" in line or "return" in line:
-            line = reg_idents.sub(repl, line)
+        line = reg_idents.sub(repl, line)
         lines.append(line)
 
     return "\n".join(lines)

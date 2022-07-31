@@ -7,21 +7,13 @@ import shutil
 from subprocess import Popen, PIPE
 
 import astor
-import numpy as np
 
 import bragghls.runner
 import bragghls.state
-from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
-from bragghls.flopoco.ops import (
-    MemRef as FPMemRef,
-    GlobalMemRef as FPGlobalMemRef,
-    FMAC as FPFMAC,
-)
-from bragghls.memref import MemRef, GlobalMemRef
 from bragghls.parse import parse_mlir_module
 from bragghls.rtl.emit_verilog import emit_verilog
-from bragghls.rtl.generate_tb import generate
-from bragghls.runner import Forward, get_default_args
+from bragghls.runner import Forward
+from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.transforms import transform_forward, rewrite_schedule_vals
 from scripts.hack_affine_scf import scf_to_affine
 
@@ -43,7 +35,7 @@ def import_module_from_fp(name: str, fp: str):
 def translate(affine_mlir_str):
     p = Popen(
         [
-            shutil.which("bragghls_translate"),
+            shutil.which("bragghls_translate", path=os.getenv("BRAGGHLS_PATH")),
             "--emit-hlspy",
             "--mlir-print-elementsattrs-with-hex-if-larger=-1",
         ],
@@ -66,39 +58,14 @@ def run_rewrite(mod):
     bragghls.state.state = bragghls.state.State(file)
     Forward(mod.forward)
     file.seek(0)
-    return file.read()
-
-
-def run_model_with_fp_number(mod, wE, wF):
-    file = io.StringIO()
-    bragghls.state.state = bragghls.state.State(file)
-    args = get_default_args(mod.forward)
-    test_args = {}
-    outputs = {}
-    for name, arg in args.items():
-        if isinstance(arg, MemRef) and arg.input:
-            test_args[name] = FPMemRef.from_memref(arg, wE, wF, np.ones(arg.curr_shape))
-        elif isinstance(arg, MemRef) and arg.output:
-            outputs[name] = test_args[name] = FPMemRef.from_memref(
-                arg, wE, wF, np.ones(arg.curr_shape)
-            )
-        elif isinstance(arg, GlobalMemRef):
-            test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)
-        else:
-            raise Exception("wtfbbq")
-
-    mod.FMAC = FPFMAC
-    mod.MemRef = FPMemRef
-    mod.GlobalMemRef = FPGlobalMemRef
-    mod.forward(**test_args)
-    assert len(outputs) == 1
-    return next(iter(outputs.values())).registers[0]
+    s = file.read()
+    return s
 
 
 def run_circt(mlir_output):
     p = Popen(
         [
-            shutil.which("circt-opt"),
+            shutil.which("circt-opt", path=os.getenv("BRAGGHLS_PATH")),
             "-test-lp-scheduler=with=Problem",
             "-allow-unregistered-dialect",
         ],
@@ -116,26 +83,26 @@ def run_circt(mlir_output):
 def main(args):
     dirname, filename = os.path.split(args.fp)
     name, ext = os.path.splitext(filename)
-    artifacts_dir = f"{dirname}/{name}_bragghls_artifacts"
+    artifacts_dir = f"{dirname}"
     os.makedirs(artifacts_dir, exist_ok=True)
 
     if args.translate:
         affine_mlir_str = scf_to_affine(args.fp)
         pythonized_mlir = translate(affine_mlir_str)
         if DEBUG:
-            with open(f"{artifacts_dir}/{name}.py", "w") as f:
+            with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "w") as f:
                 f.write(pythonized_mlir)
     else:
-        with open(f"{artifacts_dir}/{name}.py", "r") as f:
+        with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "r") as f:
             pythonized_mlir = f.read()
 
     if args.rewrite:
         rewritten_py_code = rewrite(pythonized_mlir)
         if DEBUG:
-            with open(f"{artifacts_dir}/{name}.rewritten.py", "w") as f:
+            with open(f"{artifacts_dir}/{name}_rewritten.py", "w") as f:
                 f.write(rewritten_py_code)
             mod = import_module_from_fp(
-                "pythonized_mlir", f"{artifacts_dir}/{name}.rewritten.py"
+                "pythonized_mlir", f"{artifacts_dir}/{name}_rewritten.py"
             )
         else:
             mod = import_module_from_string("pythonized_mlir", rewritten_py_code)
@@ -185,38 +152,22 @@ def main(args):
             vals,
             csts,
             pe_idxs,
+            include_outer_module=not args.testbench,
         )
         verilog_file = verilog_file.replace("%", "v_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
 
+        print(f"{max_fsm_stage=}")
+
     if args.testbench:
-        if DEBUG:
-            vals = np.linspace(1, len(input_wires), len(input_wires))
-            vals = np.ones_like(vals)
-            print("test vals ", vals)
-        else:
-            vals = np.linspace(0, 1, len(input_wires))
-
-        res = run_model_with_fp_number(mod, args.wE, args.wF)
-        print(res, res.fp.binstr())
-
-        tb_file = generate(
-            f"{name}_inner",
-            f"{name}.sv",
-            clock_period=10,
-            precision=args.wE + args.wF + 3,
-            simulation_time=max_fsm_stage,
-            input_wires=list(map(str, input_wires.values())),
-            output_wires=[f"output_{o}" for o in list(map(str, output_wires.values()))],
-            input_values=vals,
-            output_values=[convert_flopoco_binary_str_to_float(res.fp.binstr())],
+        testbench_runner(
+            proj_path=f"{artifacts_dir}",
+            sv_file_name=f"{name}.sv",
+            top_level=name,
+            py_module=f"{name}_tb",
+            max_fsm_stage=max_fsm_stage,
         )
-        tb_file = tb_file.replace("%", "v_")
-        tb_file = tb_file.replace("v_0", "%0")
-        tb_file = tb_file.replace("v_11", "%11")
-        with open(f"{artifacts_dir}/{name}_tb.sv", "w") as f:
-            f.write(tb_file)
 
 
 if __name__ == "__main__":

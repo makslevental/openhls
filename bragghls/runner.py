@@ -3,7 +3,14 @@ import io
 import itertools
 from textwrap import indent, dedent
 
+import numpy as np
+
 from bragghls import state
+from bragghls.flopoco.ops import (
+    MemRef as FPMemRef,
+    GlobalMemRef as FPGlobalMemRef,
+    FMAC as FPFMAC,
+)
 from bragghls.memref import MemRef, GlobalMemRef
 from bragghls.ops import LATENCIES, OpType
 from bragghls.state import logger
@@ -44,28 +51,36 @@ def get_default_args(func):
     }
 
 
-def make_args_globals(args):
-    inputs = []
-    output = []
-    globals = []
-    for _arg_name, arg in args.items():
+def get_py_module_args_globals(args):
+    inputs = {}
+    outputs = {}
+    globals = {}
+    for arg_name, arg in args.items():
         if isinstance(arg, MemRef):
             if arg.input:
-                inputs.extend(arg.val_names)
+                inputs[arg_name] = arg
             elif arg.output:
-                output.append(arg)
+                outputs[arg_name] = arg
         elif isinstance(arg, GlobalMemRef):
-            globals.extend(arg.val_names)
+            globals[arg_name] = arg
 
-    assert len(output) == 1
-    output = output[0]
-    return inputs, globals, output
+    return inputs, globals, outputs
 
 
 def MLIRForward(args, forward):
-    inputs, globals, output = make_args_globals(args)
-    output_dtypes = ", ".join([state.state.dtype] * output.numel)
-    inps_globals = [f"{v}: {state.state.dtype}" for v in inputs + globals]
+    inputs, globals, outputs = get_py_module_args_globals(args)
+
+    input_names = sorted(
+        [str(name) for inp in inputs.values() for name in inp.val_names_map.values()]
+    )
+    global_names = sorted(
+        [str(name) for inp in globals.values() for name in inp.val_names_map.values()]
+    )
+
+    assert len(outputs) == 1
+    output_arg = next(iter(outputs.values()))
+    output_dtypes = ", ".join([state.state.dtype] * len(output_arg.val_names_map))
+    inps_globals = [f"{v}: {state.state.dtype}" for v in input_names + global_names]
     state.state.emit(
         f"func.func @forward({', '.join(inps_globals)}) -> ({output_dtypes})\n"
     )
@@ -79,7 +94,8 @@ def MLIRForward(args, forward):
     OLD_FILE.write(state.state.read_output_file())
     state.state.swap_output_file(OLD_FILE)
 
-    state.state.emit(f"return {', '.join(output.val_names)}: {output_dtypes}")
+    output_names = sorted([str(val) for val in output_arg.val_names_map.values()])
+    state.state.emit(f"return {', '.join(output_names)}: {output_dtypes}")
     state.state.emit("}")
 
 
@@ -100,3 +116,30 @@ def make_output_file(fp=None):
 def Forward(forward):
     args = get_default_args(forward)
     MLIRForward(args, forward)
+
+
+def run_model_with_fp_number(mod, inputs, wE, wF):
+    file = io.StringIO()
+    state.state = state.State(file)
+    args = get_default_args(mod.forward)
+    test_args = {}
+    outputs = {}
+    for name, arg in args.items():
+        if isinstance(arg, MemRef) and arg.input:
+            test_args[name] = FPMemRef.from_memref(arg, wE, wF, inputs[name])
+        elif isinstance(arg, MemRef) and arg.output:
+            outputs[name] = test_args[name] = FPMemRef.from_memref(
+                arg, wE, wF, np.zeros(arg.curr_shape)
+            )
+        elif isinstance(arg, GlobalMemRef):
+            test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)
+        else:
+            raise Exception("wtfbbq")
+
+    FPFMAC.wE = wE
+    FPFMAC.wF = wF
+    mod.FMAC = FPFMAC
+    mod.MemRef = FPMemRef
+    mod.GlobalMemRef = FPGlobalMemRef
+    mod.forward(**test_args)
+    return test_args, outputs

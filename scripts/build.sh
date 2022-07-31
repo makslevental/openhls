@@ -124,7 +124,7 @@ fi
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target bragghls_translate
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
-cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/ip_cores/
+cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/bragghls/flopoco/
 
 if [ ! -f "${BRAGGHLS_DIR}"/build/ghdl/bin/ghdl ]; then
   wget https://github.com/ghdl/ghdl/releases/download/nightly/ghdl-gha-ubuntu-20.04-llvm.tgz

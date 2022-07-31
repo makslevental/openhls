@@ -20,8 +20,16 @@ PYBIND11_MODULE(flopoco_converter, m) {
            py::arg("wE"), py::arg("wF"))
       .def("__add__",
            [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x + y; })
+//      .def("__sub__",
+//           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x + -y; })
       .def("__mul__",
            [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x * y; })
+      .def("__eq__",
+           [](flopoco::FPNumber &x, flopoco::FPNumber &y) {
+             auto z = (x + (-y));
+             auto zero = flopoco::FPNumber(0.0, x.wE, x.wF);
+             return (z.fraction == zero.fraction && z.exponent == zero.exponent);
+           })
       .def("binstr",
            [](flopoco::FPNumber &x) {
              mpfr_t mpx;
@@ -29,13 +37,12 @@ PYBIND11_MODULE(flopoco_converter, m) {
              x.getMPFR(mpx);
              return fp2binstr(mpx, x.wE, x.wF);
            })
-      .def("__repr__",
-           [](flopoco::FPNumber &x) {
-             mpfr_t mpx;
-             mpfr_init2(mpx, 1 + x.wF);
-             x.getMPFR(mpx);
-             auto binstr = fp2binstr(mpx, x.wE, x.wF);
-             auto fpstr = bin2fpstr(x.wE, x.wF, binstr.c_str());
-             return "<FPNumber " + fpstr + ":" + binstr + ">"; });
-
+      .def("__repr__", [](flopoco::FPNumber &x) {
+        mpfr_t mpx;
+        mpfr_init2(mpx, 1 + x.wF);
+        x.getMPFR(mpx);
+        auto binstr = fp2binstr(mpx, x.wE, x.wF);
+        auto fpstr = bin2fpstr(x.wE, x.wF, binstr.data());
+        return "<FPNumber " + fpstr + ":" + binstr + ">";
+      });
 }

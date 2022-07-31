@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 
 import torch
@@ -28,9 +29,6 @@ def make_dot(size=11):
     with torch.no_grad():
         mod = Dot()
         mod.eval()
-        y = torch.randn(size)
-        x = torch.randn(size)
-        # z = mod(x, y)
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
@@ -41,15 +39,12 @@ def make_dot(size=11):
     return str(mlir_module)
 
 
-def make_linear(size=11, simplify_weights=True):
+def make_linear(size=11, simplify_weights=False):
     with torch.no_grad():
         mod = Linear(size)
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
-        x = torch.ones(size)
-        z = mod(x)
-        print(z)
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
@@ -61,9 +56,12 @@ def make_linear(size=11, simplify_weights=True):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
-    parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=11)
+    parser.add_argument(
+        "--out_dir", type=Path, default=Path(__file__).parent / "linear_bragghls_artifacts"
+    )
+    parser.add_argument("--size", type=int, default=2)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_linear(args.size)
+    os.makedirs(f"{args.out_dir}", exist_ok=True)
     open(f"{args.out_dir}/linear.mlir", "w").write(dot_str)

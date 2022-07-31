@@ -2,6 +2,7 @@ import argparse
 import os
 from collections import defaultdict
 from io import StringIO
+from textwrap import dedent
 
 from bragghls.ops import OpType, LATENCIES, Op
 from bragghls.parse import parse_mlir_module
@@ -47,7 +48,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
 
 def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_map):
     tree_conds = []
-    not_latches = set()
+    not_latches = {pe.fadd.x, pe.fadd.y, pe.fmul.x, pe.fmul.y}
     for op in op_datas:
         if DEBUG:
             tree_conds.append(f"\n\t// {op.emit()} start")
@@ -78,7 +79,6 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                     )
                 )
 
-            not_latches.update({ip.x, ip.y, ip.ce})
             if "val" in str(res_val):
                 not_latches.add(res_val)
 
@@ -135,7 +135,16 @@ def cluster_pes(pes, op_id_data):
 
 
 def emit_verilog(
-    ip_name, precision, op_id_data, func_args, returns, return_time, vals, csts, pe_idxs
+    ip_name,
+    precision,
+    op_id_data,
+    func_args,
+    returns,
+    return_time,
+    vals,
+    csts,
+    pe_idxs,
+    include_outer_module=True,
 ):
     input_wires = {v: Wire(v, precision) for v in func_args}
     output_wires = {v: Wire(v, precision) for v in returns}
@@ -153,6 +162,7 @@ def emit_verilog(
             list(input_wires.values()),
             list(f"output_{v}" for v in output_wires.values()),
             precision,
+            include_outer_module,
         )
     )
 
@@ -196,6 +206,19 @@ def emit_verilog(
         reg = Reg(wire.id, wire.bit_width)
         emit(f"assign output_{wire} = {ip_res_val_map[reg]};")
 
+    emit(
+        dedent(
+            f"""\
+            `ifdef COCOTB_SIM
+            initial begin
+              $dumpfile ("{ip_name}.vcd");
+              $dumpvars (0, {ip_name});
+              #1;
+            end
+            `endif
+            """
+        )
+    )
     emit("endmodule")
 
     s.seek(0)

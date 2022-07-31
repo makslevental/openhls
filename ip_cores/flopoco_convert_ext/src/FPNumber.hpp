@@ -167,6 +167,7 @@ namespace flopoco{
 		 * @param x how many ULPs to increment it with.
 		 */
 		FPNumber &operator+=(int x);
+        FPNumber &operator-();
 
         FPNumber operator*(FPNumber x);
         FPNumber operator+(FPNumber x);

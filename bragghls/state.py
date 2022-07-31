@@ -3,7 +3,7 @@ import os
 
 import networkx as nx
 
-logging.basicConfig(encoding="utf-8", level=logging.DEBUG)
+logging.basicConfig(encoding="utf-8", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 INPUT = "INPUT"

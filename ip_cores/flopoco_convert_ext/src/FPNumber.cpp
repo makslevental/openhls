@@ -398,6 +398,10 @@ namespace flopoco {
         return operator-=(-x);
     }
 
+    FPNumber &FPNumber::operator-() {
+      sign = 1 - sign;
+    }
+
     FPNumber FPNumber::operator*(FPNumber fpy) {
         auto fpx = this;
         if (fpx->wE != fpy.wE)

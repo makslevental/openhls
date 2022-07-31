@@ -8,11 +8,11 @@ from cocotb.triggers import FallingEdge, RisingEdge
 
 # from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.tb_runner import set_inputs
-from linear_bragghls_artifacts import linear_rewritten
+from cnn_bragghls_artifacts import cnn_rewritten
 
 
 @cocotb.test()
-async def linear_test(dut):
+async def cnn_test(dut):
     MAX_FSM_STAGE = int(os.getenv("MAX_FSM_STAGE"))  # 16
     LATENCY = MAX_FSM_STAGE + 1
     TEST_VECTORS = int(os.getenv("N_TEST_VECTORS"))
@@ -29,8 +29,8 @@ async def linear_test(dut):
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm)
         if i % LATENCY == 0:
-            outputs = set_inputs(linear_rewritten, dut)
-            output = outputs["_6"].registers[0]
+            outputs = set_inputs(cnn_rewritten, dut)
+            output = outputs["_9"].registers[0]
             dut.ce.value = 1
             dut.reset.value = 1
         elif i % LATENCY == 1:
@@ -38,10 +38,7 @@ async def linear_test(dut):
         elif i % LATENCY == LATENCY - 1:
             # print(outputs["_6"].registers[0].fp)
             # print(convert_flopoco_binary_str_to_float(output_wire.value.binstr))
-            if (
-                output_wire.value.binstr[0] != "1"
-                and outputs["_6"].registers[0].fp.binstr()[0] != "1"
-            ):
+            if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
                 assert output_wire.value.binstr == output.fp.binstr(), (
                     i,
                     output_wire.value.binstr,

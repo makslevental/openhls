@@ -59,7 +59,7 @@ def testbench_runner(
     python_search=(Path(__file__) / "../../../examples").resolve(),
     wE=4,
     wF=4,
-    n_test_vectors=10,
+    n_test_vectors=5,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()

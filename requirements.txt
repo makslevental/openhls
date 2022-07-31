@@ -7,6 +7,8 @@ torchvision
 networkx
 astor
 jinja2
+cocotb
+matplotlib
 
 # Build requirements.
 pybind11

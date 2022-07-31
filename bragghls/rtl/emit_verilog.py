@@ -82,13 +82,6 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
             if "val" in str(res_val):
                 not_latches.add(res_val)
 
-            if op.type == OpType.ADD:
-                ip_res_val_map[res_val] = pe.fadd.r
-            elif op.type == OpType.ADD:
-                ip_res_val_map[res_val] = pe.fadd.r
-            else:
-                raise Exception("wtfbbq")
-
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
@@ -112,9 +105,12 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
             fmac_states, done_state = fsm.generate_mac_fsm_states(
                 (len(args) - 1) // 2, start_time
             )
-            args = [vals.get(a, input_wires[a]) for a in op.args[1:]]
+            args = []
+            for arg in op.args[1:]:
+                arg = vals.get(arg, input_wires.get(arg, ip_res_val_map.get(arg)))
+                assert arg is not None
+                args.append(arg)
             tree_conds.append(make_fmac_branches(pe, fmac_states, in_a, args))
-            ip_res_val_map[res_val] = pe.fadd.r
         else:
             raise NotImplementedError
 

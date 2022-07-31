@@ -103,7 +103,9 @@ class RemoveIfExp(ast.NodeTransformer):
         elif node in self.subs:
             return Assign(
                 targets=node.targets,
-                value=Call(func=Name(id="ReLU"), args=self.subs[node], keywords=[]),
+                value=Call(
+                    func=Name(id=f"{self.subs[node][0].id}.relu"), args=[], keywords=[]
+                ),
                 type_comment=None,
             )
         else:

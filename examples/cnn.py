@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 
 import torch
@@ -36,7 +37,7 @@ class ConvPlusReLU(nn.Module):
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):
-        return self.relu(self.conv2(self.conv1(x)))
+        return self.conv2(self.conv1(x)).sum()
 
 
 def make_single_small_cnn(
@@ -79,10 +80,14 @@ def make_double_small_cnn(scale=1, img_size=11, simplify_weights=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
-    parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--size", type=int, default=11)
+    parser.add_argument(
+        "--out_dir", type=Path, default=Path(__file__).parent / "cnn_bragghls_artifacts"
+    )
+    parser.add_argument("--size", type=int, default=4)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
 
-    dot_str = make_single_small_cnn(args.size, simplify_weights=True)
-    open(f"{args.out_dir}/small_cnn.mlir", "w").write(dot_str)
+    dot_str = make_single_small_cnn(args.size, simplify_weights=False)
+    os.makedirs(f"{args.out_dir}", exist_ok=True)
+    open(f"{args.out_dir}/cnn.mlir", "w").write(dot_str)
+

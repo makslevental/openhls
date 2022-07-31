@@ -24,27 +24,28 @@ async def reset_dut(dut, duration_ns):
     dut._log.debug("Reset complete")
 
 
-def set_inputs(mod, dut, wE, wF):
+def set_inputs(mod, wE, wF, dut=None):
     args = get_default_args(mod.forward)
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
         # scale = np.random.randint(-5, 5) or 1
-        # scale = np.random.uniform()
-        # test_inputs[inp_name] = np.ones(inp_memref.curr_shape) * scale
-        test_inputs[inp_name] = np.random.random(inp_memref.curr_shape)
+        # scale = 2
+        # test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
+        test_inputs[inp_name] = np.random.random(inp_memref.shape)
         # print(f"inputs {test_inputs[inp_name]}")
     test_inputs, outputs = run_model_with_fp_number(
         mod, test_inputs, wE=wE, wF=wF
     )
     # print(f"test_inputs {test_inputs}")
 
-    for _, inp_memref in test_inputs.items():
-        for inp_name, fpval in inp_memref.val_names_map.items():
-            inp_name = inp_name.replace("%", "v_")
-            if hasattr(dut, inp_name):
-                mod_obj = getattr(dut, inp_name)
-                mod_obj.value = int(fpval.fp.binstr(), 2)
+    if dut is not None:
+        for _, inp_memref in test_inputs.items():
+            for inp_name, fpval in inp_memref.val_names_map.items():
+                inp_name = inp_name.replace("%", "v_")
+                if hasattr(dut, inp_name):
+                    mod_obj = getattr(dut, inp_name)
+                    mod_obj.value = int(fpval.fp.binstr(), 2)
 
     return outputs
 
@@ -55,6 +56,7 @@ def testbench_runner(
     top_level,
     py_module,
     max_fsm_stage,
+    output_name,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
     python_search=(Path(__file__) / "../../../examples").resolve(),
     wE=4,
@@ -84,6 +86,7 @@ def testbench_runner(
             "WF": str(wF),
             "MAX_FSM_STAGE": str(max_fsm_stage),
             "N_TEST_VECTORS": str(n_test_vectors),
+            "OUTPUT_NAME": output_name,
         },
         build_dir=proj_path,
         sim_dir=proj_path,

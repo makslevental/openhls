@@ -5,7 +5,7 @@ import numpy as np
 
 from bragghls import state
 from bragghls.ops import make_constant, Val, ReduceAdd
-from bragghls.state import idx_to_str
+from bragghls.util import idx_to_str
 
 MemRefIndex = Tuple[int, ...]
 
@@ -25,8 +25,7 @@ class MemRefVal(Val):
 class MemRef:
     def __init__(self, name, *shape, input=False, output=False):
         self.arr_name = name
-        self.curr_shape = shape
-        self.prev_shape = shape
+        self.shape = shape
         self.pe_index = shape
         self.registers = np.empty(shape, dtype=object)
         self.input = input
@@ -57,7 +56,7 @@ class MemRef:
         assert self.input or self.output
         val_names = {}
         if self.input:
-            for idx in np.ndindex(*self.curr_shape):
+            for idx in np.ndindex(*self.shape):
                 val_names[idx] = f"%{self.arr_name}_{idx_to_str(idx)}"
         elif self.output:
             assert len(self.registers)
@@ -68,23 +67,22 @@ class MemRef:
 
     @property
     def numel(self):
-        return np.prod(self.curr_shape)
+        return np.prod(self.shape)
 
     def reduce_add(self):
         return ReduceAdd(self.registers.flatten())
 
     def alias(self, other_memref):
         assert isinstance(other_memref, MemRef)
-        other_memref.registers = self.registers
-        return other_memref
+        self.registers = other_memref.registers
 
 
 class GlobalMemRef:
     def __init__(self, global_name, global_array: np.ndarray):
         self.name = global_name
         self.global_array = global_array
-        self.curr_shape = global_array.shape
-        self.vals = np.empty(self.curr_shape, dtype=object)
+        self.shape = global_array.shape
+        self.vals = np.empty(self.shape, dtype=object)
         for idx, v in np.ndenumerate(global_array):
             v = MemRefVal(f"{self.name}", idx)
             state.state.add_global_memref_arg(v)
@@ -105,4 +103,4 @@ class GlobalMemRef:
 
     @property
     def numel(self):
-        return np.prod(self.curr_shape)
+        return np.prod(self.shape)

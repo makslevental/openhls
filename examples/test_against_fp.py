@@ -9,8 +9,8 @@ from bragghls.runner import (
 import numpy as np
 import os
 
-from linear_bragghls_artifacts import linear_rewritten as fp_mod
-from linear import Linear
+from bragghls.testbench.tb_runner import set_inputs
+from cnn_bragghls_artifacts import cnn_rewritten
 
 
 def test_against_fp(wE, wF):
@@ -33,4 +33,9 @@ def test_against_fp(wE, wF):
         print(res)
 
 
-test_against_fp(4, 4)
+# test_against_fp(4, 4)
+
+def test_with():
+    print(set_inputs(cnn_rewritten, 4, 4))
+
+test_with()

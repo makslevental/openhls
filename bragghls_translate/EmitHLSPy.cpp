@@ -1169,11 +1169,11 @@ void ModuleEmitter::emitStore(memref::StoreOp op) {
 void ModuleEmitter::emitMemCpy(memref::CopyOp op) {
 //  indent() << "memcpy(";
   indent() << "";
+//  emitValue(op.target());
+//  os << " = ";
   emitValue(op.target());
-  os << " = ";
-  emitValue(op.getSource());
   os << ".alias(";
-  emitValue(op.target());
+  emitValue(op.getSource());
   os << ")";
 //  os << ", ";
 
@@ -1604,7 +1604,7 @@ std::string getValIdent(Value &value) {
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
 from bragghls.memref import MemRef, GlobalMemRef
-from bragghls.ops import FMAC
+from bragghls.ops import FMAC, ReduceAdd, Copy
 from bragghls.runner import parfor, Forward, make_output_file
 import os
 

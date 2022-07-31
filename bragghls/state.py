@@ -134,7 +134,3 @@ class State:
 
 
 state = None
-
-
-def idx_to_str(idx):
-    return "_".join(map(str, idx))

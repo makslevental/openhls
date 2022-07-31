@@ -7,7 +7,7 @@ import numpy as np
 
 import bragghls.state
 from bragghls.ops import chunks
-from bragghls.state import idx_to_str
+from bragghls.util import idx_to_str
 
 try:
     from . import flopoco_converter
@@ -83,21 +83,19 @@ class Val:
     # relu = overload_op(OpType.RELU)
 
     def __repr__(self):
-        return str(self.fp)
+        return str(f"<IEEE {self.ieee}> {self.fp}")
 
 
 def mul(x: Val, y: Val):
     assert x.wE == y.wE
     assert x.wF == y.wF
-    prod = x.ieee * y.ieee
-    return Val(prod, x.wE, x.wF, x.fp * y.fp)
+    return Val(x.ieee * y.ieee, x.wE, x.wF, x.fp * y.fp)
 
 
 def add(x: Val, y: Val):
     assert x.wE == y.wE
     assert x.wF == y.wF
-    sum = x.ieee + y.ieee
-    return Val(sum, x.wE, x.wF, x.fp + y.fp)
+    return Val(x.ieee + y.ieee, x.wE, x.wF, x.fp + y.fp)
 
 
 # def sub(x: Val, y: Val):
@@ -112,8 +110,7 @@ class MemRef:
         self, name, *shape, input=False, output=False, registers=None, wE=WE, wF=WF
     ):
         self.arr_name = name
-        self.curr_shape = shape
-        self.prev_shape = shape
+        self.shape = shape
         self.pe_index = shape
         if registers is not None:
             self.registers = registers
@@ -140,7 +137,7 @@ class MemRef:
 
     @property
     def numel(self):
-        return np.prod(self.curr_shape)
+        return np.prod(self.shape)
 
     def reduce_add(self):
         return ReduceAdd(self.registers.flatten())
@@ -156,15 +153,14 @@ class MemRef:
 
     def alias(self, other_memref):
         assert isinstance(other_memref, MemRef)
-        other_memref.registers = self.registers
-        return other_memref
+        self.registers = other_memref.registers
 
     @staticmethod
     def from_memref(memref, wE, wF, vals: np.ndarray = None):
         registers = None
         if vals is not None:
-            assert vals.shape == memref.curr_shape
-            registers = np.empty(memref.curr_shape, dtype=object)
+            assert vals.shape == memref.shape
+            registers = np.empty(memref.shape, dtype=object)
             for idx, x in np.ndenumerate(vals):
                 v = Val(x, wE, wF)
                 try:
@@ -174,7 +170,7 @@ class MemRef:
                 registers[idx] = v
         return MemRef(
             memref.arr_name,
-            memref.curr_shape,
+            memref.shape,
             input=memref.input,
             output=memref.output,
             registers=registers,
@@ -191,8 +187,8 @@ class GlobalMemRef:
     def __init__(self, global_name, global_array: np.ndarray, wE=WE, wF=WF):
         self.name = global_name
         self.global_array = global_array
-        self.curr_shape = global_array.shape
-        self.vals = np.empty(self.curr_shape, dtype=object)
+        self.shape = global_array.shape
+        self.vals = np.empty(self.shape, dtype=object)
         for idx, v in np.ndenumerate(global_array):
             v = Val(v, wE, wF)
             try:
@@ -216,7 +212,7 @@ class GlobalMemRef:
 
     @property
     def numel(self):
-        return np.prod(self.curr_shape)
+        return np.prod(self.shape)
 
     @staticmethod
     def from_global_memref(memref, wE, wF):

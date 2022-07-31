@@ -18,6 +18,7 @@ async def linear_test(dut):
     TEST_VECTORS = int(os.getenv("N_TEST_VECTORS"))
     WE = int(os.getenv("WE"))
     WF = int(os.getenv("WF"))
+    OUTPUT_NAME = os.getenv("OUTPUT_NAME")
 
     clock = Clock(dut.clk, 2, units="ns")  # Create a 10us period clock on port clk
     cocotb.start_soon(clock.start())  # Start the clock
@@ -31,8 +32,8 @@ async def linear_test(dut):
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm)
         if i % LATENCY == 0:
-            outputs = set_inputs(linear_rewritten, dut, WE, WF)
-            output = outputs["_6"].registers[0]
+            outputs = set_inputs(linear_rewritten, WE, WF, dut)
+            output = outputs[OUTPUT_NAME].registers[0]
             dut.ce.value = 1
             dut.reset.value = 1
         elif i % LATENCY == 1:
@@ -42,7 +43,7 @@ async def linear_test(dut):
             # print(convert_flopoco_binary_str_to_float(output_wire.value.binstr))
             if (
                 output_wire.value.binstr[0] != "1"
-                and outputs["_6"].registers[0].fp.binstr()[0] != "1"
+                and output.fp.binstr()[0] != "1"
             ):
                 assert output_wire.value.binstr == output.fp.binstr(), (
                     i,

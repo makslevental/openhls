@@ -3,6 +3,8 @@ from enum import Enum
 from functools import reduce
 from typing import Tuple, Any
 
+import numpy as np
+
 from bragghls import state
 from bragghls.util import extend_idx
 
@@ -210,14 +212,14 @@ class FMAC:
 
     def Add(self, a, b):
         self.add_vals.extend((a, b))
-        return Val(f"FAKE_ADD_{self.pe_idx}({a}, {b})")
+        return Val(f"FMAC_ADD_{self.pe_idx}({a}, {b})")
 
     def Mul(self, a, b):
         self.mul_vals.extend((a, b))
-        return Val(f"FAKE_MUL_{self.pe_idx}({a}, {b})")
+        return Val(f"FMAC_MUL_{self.pe_idx}({a}, {b})")
 
     def Result(self):
-        init_val = [v for v in self.add_vals if "FAKE" not in v.name]
+        init_val = [v for v in self.add_vals if "FMAC" not in v.name]
         assert len(init_val) == 1
         args = init_val + self.mul_vals
         op_res = FMACOp(len(args), self.pe_idx)(*args)
@@ -239,13 +241,23 @@ def reducer(accum, val):
         return accum + [val[0].copy()]
 
 
-def ReduceAdd(vals):
+def ReduceAdd(vals, initial_val=None):
+    if len(vals) == 1:
+        return vals[0]
+    if initial_val is None:
+        initial_val = []
     pairs = list(chunks(list(vals), 2))
     while len(pairs) > 1:
-        pairs = list(chunks(reduce(reducer, pairs, []), 2))
+        pairs = list(chunks(reduce(reducer, pairs, initial_val), 2))
     if isinstance(pairs[0][0], Val):
         state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
     return pairs[0][0] + pairs[0][1]
+
+
+def Copy(dst, src):
+    assert dst.registers.shape == src.registers.shape
+    for idx, val in np.ndenumerate(src.registers):
+        dst.registers[idx] = val.copy()
 
 
 def FMACOp(n_args, pe_idx):

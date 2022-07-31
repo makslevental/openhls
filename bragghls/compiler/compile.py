@@ -12,7 +12,7 @@ import bragghls.runner
 import bragghls.state
 from bragghls.parse import parse_mlir_module
 from bragghls.rtl.emit_verilog import emit_verilog
-from bragghls.runner import Forward
+from bragghls.runner import Forward, get_default_args
 from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.transforms import transform_forward, rewrite_schedule_vals
 from scripts.hack_affine_scf import scf_to_affine
@@ -59,7 +59,11 @@ def run_rewrite(mod):
     Forward(mod.forward)
     file.seek(0)
     s = file.read()
-    return s
+
+    args = get_default_args(mod.forward)
+    output_name = next(arg_name for arg_name, arg in args.items() if hasattr(arg, "output") and arg.output)
+
+    return s, output_name
 
 
 def run_circt(mlir_output):
@@ -86,7 +90,7 @@ def main(args):
     artifacts_dir = f"{dirname}"
     os.makedirs(artifacts_dir, exist_ok=True)
 
-    if args.translate:
+    if args.translate and not os.path.exists(f"{artifacts_dir}/{name}_pythonized_mlir.py"):
         affine_mlir_str = scf_to_affine(args.fp)
         pythonized_mlir = translate(affine_mlir_str)
         if DEBUG:
@@ -107,7 +111,7 @@ def main(args):
         else:
             mod = import_module_from_string("pythonized_mlir", rewritten_py_code)
 
-        rewritten_mlir_output = run_rewrite(mod)
+        rewritten_mlir_output, output_name = run_rewrite(mod)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}.rewritten.mlir", "w") as f:
                 f.write(rewritten_mlir_output)
@@ -167,8 +171,10 @@ def main(args):
             top_level=name,
             py_module=f"{name}_tb",
             max_fsm_stage=max_fsm_stage,
+            output_name=output_name
         )
 
+    os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
 
 if __name__ == "__main__":
     DEBUG = bool(int(os.getenv("DEBUG", "0")))

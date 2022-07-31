@@ -41,7 +41,7 @@ def make_dot(size=11):
 
 def make_linear(size=11, simplify_weights=False):
     with torch.no_grad():
-        mod = Linear(size)
+        mod = Linear(size, bias=True)
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--out_dir", type=Path, default=Path(__file__).parent / "linear_bragghls_artifacts"
     )
-    parser.add_argument("--size", type=int, default=10)
+    parser.add_argument("--size", type=int, default=8)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_linear(args.size)

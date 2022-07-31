@@ -129,7 +129,7 @@ def run_model_with_fp_number(mod, inputs, wE, wF):
             test_args[name] = FPMemRef.from_memref(arg, wE, wF, inputs[name])
         elif isinstance(arg, MemRef) and arg.output:
             outputs[name] = test_args[name] = FPMemRef.from_memref(
-                arg, wE, wF, np.zeros(arg.curr_shape)
+                arg, wE, wF, np.zeros(arg.shape)
             )
         elif isinstance(arg, GlobalMemRef):
             test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)

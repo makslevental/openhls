@@ -1,5 +1,6 @@
 import argparse
 import os
+import warnings
 from collections import defaultdict
 from io import StringIO
 from textwrap import dedent
@@ -30,10 +31,10 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
         if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
             if op.type == OpType.ADD:
                 ip_res_val_map[res_val] = pe.fadd.r
-            elif op.type == OpType.ADD:
-                ip_res_val_map[res_val] = pe.fadd.r
+            # elif op.type == OpType.MUL:
+            #     ip_res_val_map[res_val] = pe.fmul.r
             else:
-                raise Exception("wtfbbq")
+                warnings.warn(f"not mapping {res_val} to {op}")
         elif op.type in {OpType.NEG, OpType.RELU}:
             pass
         elif op.type in {OpType.COPY}:

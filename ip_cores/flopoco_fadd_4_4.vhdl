@@ -15,7 +15,7 @@ use std.textio.all;
 library work;
 
 entity RightShifter_5_by_max_7_F400_uid4 is
-   port ( clk, rst, ce : in std_logic;
+   port ( clk, rst : in std_logic;
           X : in  std_logic_vector(4 downto 0);
           S : in  std_logic_vector(2 downto 0);
           R : out  std_logic_vector(11 downto 0)   );
@@ -31,8 +31,6 @@ begin
    process(clk)
       begin
          if clk'event and clk = '1' then
-            if ce = '1' then
-            end if;
          end if;
       end process;
    level0<= X;
@@ -61,7 +59,7 @@ use std.textio.all;
 library work;
 
 entity IntAdder_8_f400_uid8 is
-   port ( clk, rst, ce : in std_logic;
+   port ( clk, rst : in std_logic;
           X : in  std_logic_vector(7 downto 0);
           Y : in  std_logic_vector(7 downto 0);
           Cin : in  std_logic;
@@ -73,8 +71,6 @@ begin
    process(clk)
       begin
          if clk'event and clk = '1' then
-            if ce = '1' then
-            end if;
          end if;
       end process;
    --Classical
@@ -98,7 +94,7 @@ use std.textio.all;
 library work;
 
 entity LZCShifter_9_to_9_counting_16_F400_uid16 is
-   port ( clk, rst, ce : in std_logic;
+   port ( clk, rst : in std_logic;
           I : in  std_logic_vector(8 downto 0);
           Count : out  std_logic_vector(3 downto 0);
           O : out  std_logic_vector(8 downto 0)   );
@@ -119,11 +115,9 @@ begin
    process(clk)
       begin
          if clk'event and clk = '1' then
-            if ce = '1' then
-               count3_d1 <=  count3;
-               count2_d1 <=  count2;
-               level2_d1 <=  level2;
-            end if;
+            count3_d1 <=  count3;
+            count2_d1 <=  count2;
+            level2_d1 <=  level2;
          end if;
       end process;
    level4 <= I ;
@@ -163,7 +157,7 @@ use std.textio.all;
 library work;
 
 entity IntAdder_11_f400_uid20 is
-   port ( clk, rst, ce : in std_logic;
+   port ( clk, rst : in std_logic;
           X : in  std_logic_vector(10 downto 0);
           Y : in  std_logic_vector(10 downto 0);
           Cin : in  std_logic;
@@ -175,8 +169,6 @@ begin
    process(clk)
       begin
          if clk'event and clk = '1' then
-            if ce = '1' then
-            end if;
          end if;
       end process;
    --Classical
@@ -201,7 +193,7 @@ use std.textio.all;
 library work;
 
 entity fadd is
-   port ( clk, rst, ce : in std_logic;
+   port ( clk, rst : in std_logic;
           X : in  std_logic_vector(4+4+2 downto 0);
           Y : in  std_logic_vector(4+4+2 downto 0);
           R : out  std_logic_vector(4+4+2 downto 0)   );
@@ -209,14 +201,14 @@ end entity;
 
 architecture arch of fadd is
    component RightShifter_5_by_max_7_F400_uid4 is
-      port ( clk, rst, ce : in std_logic;
+      port ( clk, rst : in std_logic;
              X : in  std_logic_vector(4 downto 0);
              S : in  std_logic_vector(2 downto 0);
              R : out  std_logic_vector(11 downto 0)   );
    end component;
 
    component IntAdder_8_f400_uid8 is
-      port ( clk, rst, ce : in std_logic;
+      port ( clk, rst : in std_logic;
              X : in  std_logic_vector(7 downto 0);
              Y : in  std_logic_vector(7 downto 0);
              Cin : in  std_logic;
@@ -224,14 +216,14 @@ architecture arch of fadd is
    end component;
 
    component LZCShifter_9_to_9_counting_16_F400_uid16 is
-      port ( clk, rst, ce : in std_logic;
+      port ( clk, rst : in std_logic;
              I : in  std_logic_vector(8 downto 0);
              Count : out  std_logic_vector(3 downto 0);
              O : out  std_logic_vector(8 downto 0)   );
    end component;
 
    component IntAdder_11_f400_uid20 is
-      port ( clk, rst, ce : in std_logic;
+      port ( clk, rst : in std_logic;
              X : in  std_logic_vector(10 downto 0);
              Y : in  std_logic_vector(10 downto 0);
              Cin : in  std_logic;
@@ -292,19 +284,17 @@ begin
    process(clk)
       begin
          if clk'event and clk = '1' then
-            if ce = '1' then
-               newX_d1 <=  newX;
-               expX_d1 <=  expX;
-               signX_d1 <=  signX;
-               EffSub_d1 <=  EffSub;
-               EffSub_d2 <=  EffSub_d1;
-               sXsYExnXY_d1 <=  sXsYExnXY;
-               excRt_d1 <=  excRt;
-               excRt_d2 <=  excRt_d1;
-               signR_d1 <=  signR;
-               shiftedFracY_d1 <=  shiftedFracY;
-               extendedExpInc_d1 <=  extendedExpInc;
-            end if;
+            newX_d1 <=  newX;
+            expX_d1 <=  expX;
+            signX_d1 <=  signX;
+            EffSub_d1 <=  EffSub;
+            EffSub_d2 <=  EffSub_d1;
+            sXsYExnXY_d1 <=  sXsYExnXY;
+            excRt_d1 <=  excRt;
+            excRt_d2 <=  excRt_d1;
+            signR_d1 <=  signR;
+            shiftedFracY_d1 <=  shiftedFracY;
+            extendedExpInc_d1 <=  extendedExpInc;
          end if;
       end process;
 -- Exponent difference and swap  --
@@ -338,7 +328,6 @@ begin
    RightShifterComponent: RightShifter_5_by_max_7_F400_uid4  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
-                 ce => ce,
                  R => shiftedFracY,
                  S => shiftVal,
                  X => fracY);
@@ -354,7 +343,6 @@ begin
    fracAdder: IntAdder_8_f400_uid8  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
-                 ce => ce,
                  Cin => cInAddFar,
                  R => fracAddResult,
                  X => fracXfar,
@@ -364,7 +352,6 @@ begin
    LZC_component: LZCShifter_9_to_9_counting_16_F400_uid16  -- pipelineDepth=1 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
-                 ce => ce,
                  Count => nZerosNew,
                  I => fracGRS,
                  O => shiftedFrac);
@@ -381,7 +368,6 @@ begin
    roundingAdder: IntAdder_11_f400_uid20  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
-                 ce => ce,
                  Cin => addToRoundBit,
                  R => RoundedExpFrac,
                  X => expFrac,

@@ -20,7 +20,7 @@ fi
 
 rm $dirname/*.vcd || echo 0
 vvp $dirname/$filename.vvp
-mv ${filename}_inner.vcd $dirname/
+mv ${filename}_inner.vcd $dirname/ || echo 0
 
 if [[ "$(uname)" == 'Darwin' ]]; then
   echo open -a Scansion $dirname/*.vcd

@@ -37,7 +37,7 @@ class ConvPlusReLU(nn.Module):
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):
-        return self.conv2(self.conv1(x)).sum()
+        return self.relu(self.conv2(self.conv1(x)).sum())
 
 
 def make_single_small_cnn(

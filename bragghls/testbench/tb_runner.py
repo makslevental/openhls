@@ -23,7 +23,9 @@ async def reset_dut(dut, duration_ns):
     await Timer(duration_ns, units="ns")
     dut._log.debug("Reset complete")
 
-FIXED =  np.linspace(0, 0.1, 11)
+
+FIXED = np.linspace(0, 0.1, 11)
+
 
 def set_inputs(mod, wE, wF, dut=None):
     args = get_default_args(mod.forward)
@@ -71,8 +73,8 @@ def testbench_runner(
         proj_path / sv_file_name,
         ip_cores_path / "flopoco_fmul_4_4.sv",
         ip_cores_path / "flopoco_fadd_4_4.sv",
-        ip_cores_path / "frelu.sv",
-        ip_cores_path / "fneg.sv",
+        ip_cores_path / "flopoco_relu.sv",
+        ip_cores_path / "flopoco_neg.sv",
     ]
     runner = get_runner("icarus")()
     runner.build(

@@ -71,16 +71,9 @@ class Val:
         if self.fp.sign() == 0:
             return self
         else:
-            return Val(0, self.wE, self.wF, flopoco_converter.FPNumber(0, self.wE, self.wF))
-
-    # __add__ = overload_op(OpType.ADD)
-    # __sub__ = overload_op(OpType.SUB)
-    # __mul__ = overload_op(OpType.MUL)
-    # __truediv__ = overload_op(OpType.DIV)
-    # __gt__ = overload_op(OpType.GT)
-    # __neg__ = overload_op(OpType.NEG)
-    # copy = overload_op(OpType.COPY)
-    # relu = overload_op(OpType.RELU)
+            return Val(
+                0, self.wE, self.wF, flopoco_converter.FPNumber(0, self.wE, self.wF)
+            )
 
     def __repr__(self):
         return str(f"<IEEE {self.ieee}> {self.fp}")
@@ -126,7 +119,7 @@ class MemRef:
         if isinstance(value, (float, int)):
             value = Val(value, self.wE, self.wF)
         self.registers[index] = value
-    
+
     def zero(self):
         for idx in np.ndindex(*self.shape):
             self.registers[idx] = Val(0.0, self.wE, self.wF)

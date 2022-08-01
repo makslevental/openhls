@@ -9,7 +9,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import warnings
 from contextlib import suppress
 from typing import Dict, List, Mapping, Optional, Sequence, Type, Union
 from xml.etree import cElementTree as ET

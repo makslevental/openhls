@@ -1,6 +1,6 @@
+import numpy as np
 import torch
 from torch import nn
-import numpy as np
 from torch_mlir import run_pipeline_with_repro_report
 from torch_mlir.dialects.torch.importer.jit_ir import ClassAnnotator, ModuleBuilder
 
@@ -62,7 +62,9 @@ def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
 
     return mb.module
 
-FIXED =  np.linspace(0, 0.1, 101)
+
+FIXED = np.linspace(0, 0.1, 101)
+
 
 def set_weights(mod, typ=torch.float32, val=1, requires_grad=False, fixed=False):
     np.random.random_sample()

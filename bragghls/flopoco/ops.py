@@ -60,9 +60,9 @@ class Val:
         v = add(self, other)
         return v
 
-    # def __sub__(self, other: "Val"):
-    #     v = sub(self, other)
-    #     return v
+    def __sub__(self, other: "Val"):
+        v = sub(self, other)
+        return v
 
     def copy(self):
         return self
@@ -71,7 +71,7 @@ class Val:
         if self.fp.sign() == 0:
             return self
         else:
-            return flopoco_converter.FPNumber(0, self.wE, self.wF)
+            return Val(0, self.wE, self.wF, flopoco_converter.FPNumber(0, self.wE, self.wF))
 
     # __add__ = overload_op(OpType.ADD)
     # __sub__ = overload_op(OpType.SUB)
@@ -98,11 +98,11 @@ def add(x: Val, y: Val):
     return Val(x.ieee + y.ieee, x.wE, x.wF, x.fp + y.fp)
 
 
-# def sub(x: Val, y: Val):
-#     assert x.wE == y.wE
-#     assert x.wF == y.wF
-#     diff = x.ieee + y.ieee
-#     return Val(diff, x.wE, x.wF, x.fp - y.fp)
+def sub(x: Val, y: Val):
+    assert x.wE == y.wE
+    assert x.wF == y.wF
+    diff = x.ieee - y.ieee
+    return Val(diff, x.wE, x.wF, x.fp - y.fp)
 
 
 class MemRef:
@@ -251,12 +251,18 @@ class FMAC:
 
 
 if __name__ == "__main__":
-    for i in range(100):
-        fp2bin = flopoco_converter.fp2binstr(4, 4, str(i))
-        fpnumber = str(Val(i, 4, 4)).split(" ")[1].split(":")[1].replace(">", "")
-        if fp2bin != fpnumber:
-            print(i, f"{fp2bin=}", f"{fpnumber=}")
-            print(
-                flopoco_converter.bin2fp(4, 4, fp2bin),
-                flopoco_converter.bin2fp(4, 4, fpnumber),
-            )
+    # for i in range(100):
+    #     fp2bin = flopoco_converter.fp2binstr(4, 4, str(i))
+    #     fpnumber = str(Val(i, 4, 4)).split(" ")[1].split(":")[1].replace(">", "")
+    #     if fp2bin != fpnumber:
+    #         print(i, f"{fp2bin=}", f"{fpnumber=}")
+    #         print(
+    #             flopoco_converter.bin2fp(4, 4, fp2bin),
+    #             flopoco_converter.bin2fp(4, 4, fpnumber),
+    #         )
+
+    five = Val(-5.0, 4, 4)
+    print(five.fp.sign())
+    four = Val(4.0, 4, 4)
+    print(four.fp.sign())
+    print((four - five).relu())

@@ -1,3 +1,4 @@
+#include <iostream>
 /*
   The floating-point numbers used in for FloPoCo
 
@@ -400,6 +401,7 @@ namespace flopoco {
 
     FPNumber &FPNumber::operator-() {
       sign = 1 - sign;
+      return *this;
     }
 
     FPNumber FPNumber::operator*(FPNumber fpy) {

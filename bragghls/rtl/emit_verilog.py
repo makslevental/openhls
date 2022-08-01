@@ -36,7 +36,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
             else:
                 warnings.warn(f"not mapping {res_val} to {op}")
         elif op.type in {OpType.NEG, OpType.RELU}:
-            pass
+            ip_res_val_map[res_val] = pe.frelu.res
         elif op.type in {OpType.COPY}:
             pass
         elif op.type == OpType.FMAC:
@@ -61,7 +61,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
         in_a = vals.get(args[0], input_wires.get(args[0], args[0]))
         in_a = ip_res_val_map.get(in_a, in_a)
 
-        if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
+        if op.type in {OpType.MUL, OpType.DIV, OpType.ADD}:
             in_b = vals.get(args[1], input_wires.get(args[1], args[1]))
             in_b = ip_res_val_map.get(in_b, in_b)
 

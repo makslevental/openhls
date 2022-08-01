@@ -18,7 +18,7 @@ void negoneplusnegone() {
     std::string s = "-2.0";
     auto negtwo_bin_str = fpstr2bin(wE, wF, s);
     std::cout << negtwo_bin_str << "\n";
-    std::cout << bin2fpstr(wE, wF, negtwo_bin_str.c_str()) << "\n";
+    std::cout << bin2fpstr(wE, wF, negtwo_bin_str.data()) << "\n";
 }
 
 using namespace flopoco;
@@ -29,14 +29,14 @@ int main(int argc, char *argv[]) {
     FPNumber negtwo(4, 4);
     negtwo = -2.0;
     FPNumber negone(4, 4);
-    negone = -3.0;
-    auto r = negone * negtwo;
+    negone = 5.0;
+    auto r = -negone;
 
     mpfr_t mpx;
     mpfr_init2(mpx, 1 + 4);
     r.getMPFR(mpx);
     auto rs = fp2binstr(mpx, 4, 4);
     std::cout << rs << "\n";
-    auto ss = bin2fpstr(4, 4, rs.c_str());
+    auto ss = bin2fpstr(4, 4, rs.data());
     std::cout << ss << "\n";
 }

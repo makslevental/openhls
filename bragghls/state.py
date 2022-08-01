@@ -93,6 +93,18 @@ class State:
         assert arg in self.val_source
         return self.val_source[arg]
 
+    def update_current_pe_idx(self, *, pe_idx=None, val=None):
+        assert pe_idx is not None or val is not None
+        if val is not None:
+            src = self.get_arg_src(val)
+            if isinstance(src, str):
+                assert src in {INPUT, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT}
+                return
+            else:
+                self.pe_idx = src.pe_idx
+        else:
+            self.pe_idx = pe_idx
+
     @property
     def dtype(self):
         return DTYPE

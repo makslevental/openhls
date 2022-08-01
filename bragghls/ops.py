@@ -6,7 +6,7 @@ from typing import Tuple, Any
 import numpy as np
 
 from bragghls import state
-from bragghls.state import DTYPE
+from bragghls.state import DTYPE, CONSTANT
 from bragghls.util import extend_idx
 
 
@@ -154,6 +154,7 @@ def make_constant(arg):
             args=(arg,),
             res=str(cst_v),
         )
+        state.state.val_source[cst_v] = CONSTANT
         state.state.emit(cst_op.emit())
         CONSTANTS.add(cst_v)
     # TODO
@@ -226,6 +227,7 @@ class FMAC:
         op_res = FMACOp(len(args), self.pe_idx)(*args)
         if copy:
             op_res = op_res.copy()
+        state.state.debug_print(f"MAC {self.pe_idx} starts")
         return op_res
 
 
@@ -235,8 +237,8 @@ def chunks(lst, n):
 
 
 def reducer(accum, val):
-    if isinstance(val, Val):
-        state.state.pe_idx = state.state.get_arg_src(val[0]).pe_idx
+    if isinstance(val[0], Val):
+        state.state.update_current_pe_idx(val=val[0])
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
@@ -252,7 +254,7 @@ def ReduceAdd(vals, initial_val=None):
     while len(pairs) > 1:
         pairs = list(chunks(reduce(reducer, pairs, initial_val), 2))
     if isinstance(pairs[0][0], Val):
-        state.state.pe_idx = state.state.get_arg_src(pairs[0][0]).pe_idx
+        state.state.update_current_pe_idx(val=pairs[0][0])
     return pairs[0][0] + pairs[0][1]
 
 

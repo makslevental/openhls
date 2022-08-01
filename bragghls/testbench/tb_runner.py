@@ -23,20 +23,20 @@ async def reset_dut(dut, duration_ns):
     await Timer(duration_ns, units="ns")
     dut._log.debug("Reset complete")
 
+FIXED =  np.linspace(0, 0.1, 11)
 
 def set_inputs(mod, wE, wF, dut=None):
     args = get_default_args(mod.forward)
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
-        scale = np.random.randint(-5, 5) or 1
-        scale = 1
-        test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
-        # test_inputs[inp_name] = np.random.random(inp_memref.shape)
-        # print(f"inputs {test_inputs[inp_name]}")
-    test_inputs, outputs = run_model_with_fp_number(
-        mod, test_inputs, wE=wE, wF=wF
-    )
+        # if DEBUG:
+        # scale = np.random.randint(-10, 10) or 1
+        # np_inputs = test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
+        # else:
+        np_inputs = test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        # np_inputs = test_inputs[inp_name] = np.random.choice(FIXED, np.prod(inp_memref.shape)).reshape(inp_memref.shape)
+    test_inputs, outputs = run_model_with_fp_number(mod, test_inputs, wE=wE, wF=wF)
     # print(f"test_inputs {test_inputs}")
 
     if dut is not None:
@@ -47,6 +47,8 @@ def set_inputs(mod, wE, wF, dut=None):
                     mod_obj = getattr(dut, inp_name)
                     mod_obj.value = int(fpval.fp.binstr(), 2)
 
+    # print(f"inputs {np_inputs}")
+    print(f"outputs {outputs}")
     return outputs
 
 
@@ -61,7 +63,7 @@ def testbench_runner(
     python_search=(Path(__file__) / "../../../examples").resolve(),
     wE=4,
     wF=4,
-    n_test_vectors=5,
+    n_test_vectors=20,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()

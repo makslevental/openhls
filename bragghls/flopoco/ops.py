@@ -24,7 +24,7 @@ def reducer(accum, val):
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
-        return accum + [val[0].copy()]
+        return accum + val
 
 
 def ReduceAdd(vals):
@@ -126,6 +126,10 @@ class MemRef:
         if isinstance(value, (float, int)):
             value = Val(value, self.wE, self.wF)
         self.registers[index] = value
+    
+    def zero(self):
+        for idx in np.ndindex(*self.shape):
+            self.registers[idx] = Val(0.0, self.wE, self.wF)
 
     def __getitem__(self, index):
         v = self.registers[index]
@@ -239,7 +243,7 @@ class FMAC:
         self.result = a * b
         return self.result
 
-    def Result(self, copy):
+    def Result(self, copy=None):
         return self.result
 
     def __repr__(self):

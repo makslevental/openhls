@@ -36,6 +36,10 @@ class MemRef:
         if isinstance(value, (float, bool, int)):
             value = make_constant(value)
         self.registers[index] = value
+    
+    def zero(self):
+        for idx in np.ndindex(*self.shape):
+            self.registers[idx] = make_constant(0.0)
 
     def __getitem__(self, index: MemRefIndex):
         if self.registers[index] is None:

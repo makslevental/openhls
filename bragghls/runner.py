@@ -102,7 +102,7 @@ def MLIRForward(args, forward):
 def parfor(ranges):
     def wrapper(body):
         for i, idx in enumerate(itertools.product(*ranges)):
-            state.state.pe_idx = extend_idx(idx)
+            state.state.update_current_pe_idx(pe_idx=extend_idx(idx))
             body(*idx)
 
     return wrapper

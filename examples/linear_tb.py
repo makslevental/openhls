@@ -1,4 +1,4 @@
-# import pydevd
+import pydevd
 # pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True)
 import os
 
@@ -6,7 +6,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge, RisingEdge
 
-# from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
+from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.tb_runner import set_inputs
 from linear_bragghls_artifacts import linear_rewritten
 
@@ -30,7 +30,7 @@ async def linear_test(dut):
     )
 
     for i in range(LATENCY * TEST_VECTORS):
-        # print(dut.current_fsm)
+        # print(dut.current_fsm.value)
         if i % LATENCY == 0:
             outputs = set_inputs(linear_rewritten, WE, WF, dut)
             output = outputs[OUTPUT_NAME].registers[0]
@@ -39,17 +39,16 @@ async def linear_test(dut):
         elif i % LATENCY == 1:
             dut.reset.value = 0
         elif i % LATENCY == LATENCY - 1:
-            # print(outputs["_6"].registers[0].fp)
-            # print(convert_flopoco_binary_str_to_float(output_wire.value.binstr))
-            if (
-                output_wire.value.binstr[0] != "1"
-                and output.fp.binstr()[0] != "1"
-            ):
-                assert output_wire.value.binstr == output.fp.binstr(), (
-                    i,
-                    output_wire.value.binstr,
-                    output.fp.binstr(),
-                )
+            if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
+                if output_wire.value.binstr != output.fp.binstr():
+                    incorrect_output = output_wire.value.binstr
+                    await FallingEdge(dut.clk)
+                    await FallingEdge(dut.clk)
+                    assert False, (
+                        f"clk {i}",
+                        f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output)}:{incorrect_output}>",
+                        f"true {output.fp}",
+                    )
                 print(f"passed {i}")
             else:
                 print(f"overflow {i}")

@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+import numpy as np
 from torch_mlir import run_pipeline_with_repro_report
 from torch_mlir.dialects.torch.importer.jit_ir import ClassAnnotator, ModuleBuilder
 
@@ -61,18 +62,40 @@ def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
 
     return mb.module
 
+FIXED =  np.linspace(0, 0.1, 101)
 
-def set_weights(mod, typ=torch.float32, val=1, requires_grad=False):
+def set_weights(mod, typ=torch.float32, val=1, requires_grad=False, fixed=False):
+    np.random.random_sample()
     for m in mod.modules():
         if hasattr(m, "weight"):
-            nn.init.constant_(m.weight, val)
-            m.weight.requires_grad_(False)
-            m.weight = torch.nn.Parameter(
-                m.weight.type(typ), requires_grad=requires_grad
-            )
+            if fixed:
+                m.weight = torch.nn.Parameter(
+                    torch.from_numpy(
+                        np.random.choice(FIXED, m.weight.numel())
+                        .astype(np.float16, casting="unsafe")
+                        .reshape(m.weight.shape)
+                    ).type(typ),
+                    requires_grad=requires_grad,
+                )
+            else:
+                nn.init.constant_(m.weight, val)
+                m.weight.requires_grad_(False)
+                m.weight = torch.nn.Parameter(
+                    m.weight.type(typ), requires_grad=requires_grad
+                )
         if hasattr(m, "bias") and m.bias is not None:
-            nn.init.constant_(m.bias, val)
-            m.bias.requires_grad_(False)
-            m.bias = torch.nn.Parameter(
-                m.bias.type(torch.float32), requires_grad=requires_grad
-            )
+            if fixed:
+                m.bias = torch.nn.Parameter(
+                    torch.from_numpy(
+                        np.random.choice(FIXED, m.bias.numel())
+                        .astype(np.float16, casting="unsafe")
+                        .reshape(m.bias.shape)
+                    ).type(typ),
+                    requires_grad=requires_grad,
+                )
+            else:
+                nn.init.constant_(m.bias, val)
+                m.bias.requires_grad_(False)
+                m.bias = torch.nn.Parameter(
+                    m.bias.type(typ), requires_grad=requires_grad
+                )

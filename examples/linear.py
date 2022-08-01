@@ -39,9 +39,9 @@ def make_dot(size=11):
     return str(mlir_module)
 
 
-def make_linear(size=11, simplify_weights=False):
+def make_linear(size=11, simplify_weights=False, bias=True):
     with torch.no_grad():
-        mod = Linear(size, bias=True)
+        mod = Linear(size, bias=bias)
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
@@ -62,6 +62,6 @@ if __name__ == "__main__":
     parser.add_argument("--size", type=int, default=8)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
-    dot_str = make_linear(args.size)
+    dot_str = make_linear(args.size, simplify_weights=False, bias=True)
     os.makedirs(f"{args.out_dir}", exist_ok=True)
     open(f"{args.out_dir}/linear.mlir", "w").write(dot_str)

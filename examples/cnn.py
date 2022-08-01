@@ -30,10 +30,10 @@ class DoubleCNN(nn.Module):
 
 
 class ConvPlusReLU(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, out_channels, bias):
         super().__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=True)
-        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=True)
+        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
+        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias)
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):
@@ -41,13 +41,11 @@ class ConvPlusReLU(nn.Module):
 
 
 def make_single_small_cnn(
-    in_channels=2, out_channels=8, img_size=11, simplify_weights=False
+    in_channels=2, out_channels=8, img_size=11, simplify_weights=False, bias=True
 ):
     with torch.no_grad():
-        mod = ConvPlusReLU(in_channels, out_channels)
+        mod = ConvPlusReLU(in_channels, out_channels, bias)
         mod.eval()
-        t = torch.randn((1, in_channels, img_size, img_size))
-        y = mod(t)
         if simplify_weights:
             mod.apply(set_weights)
 

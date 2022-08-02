@@ -31,8 +31,8 @@ class DoubleCNN(nn.Module):
 class ConvPlusReLU(nn.Module):
     def __init__(self, in_channels, out_channels, bias):
         super().__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
-        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias)
+        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias)
+        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias)
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):

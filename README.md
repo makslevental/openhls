@@ -1,41 +1,114 @@
 # BraggHLS
 
 - [BraggHLS](#bragghls)
+- [TL;DR](#tl-dr)
+- [Repo structure](#repo-structure)
 - [Current status](#current-status)
 - [Building](#building)
-  * [Requirements](#requirements)
-  * [Build steps](#build-steps)
+    * [Requirements](#requirements)
+    * [Build steps](#build-steps)
 - [Running](#running)
 
 This a framework for lowering PyTorch models to RTL using high-level synthesis (HLS) techniques.
 Crucially, we do **not** use any existing HLS tools (such as Xilinx's Vitis).
-In addition, there are no fixed architecture designs (with the exception of [FloPoCo's](http://flopoco.org/) floating point IPs) - no systolic arrays, no matrix multipliers - i.e., models are actually compiled.
-The particular, driving, use case is low-latency [Bragg peak detection](https://arxiv.org/abs/2008.08198) for high-energy diffraction microscopy (HEDM).
+In addition, there are no fixed architecture designs (with the exception of [FloPoCo's](http://flopoco.org/) floating
+point IPs) - no systolic arrays, no matrix multipliers - i.e., models are actually compiled.
+The particular, driving, use case is low-latency [Bragg peak detection](https://arxiv.org/abs/2008.08198) for
+high-energy diffraction microscopy (HEDM).
 
 The "flow" is PyTorch -> MLIR -> python -> MLIR -> RTL.
+
+# TL;DR
+
+Turn this
+
+```python
+class ConvPlusReLU(nn.Module):
+    def __init__(self, in_channels, out_channels, bias):
+        super().__init__()
+        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias)
+        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias)
+        self.relu = torch.nn.ReLU()
+
+    def forward(self, x):
+        return self.relu(self.conv2(self.conv1(x)).sum())
+```
+
+into this
+
+```mlir
+#map = affine_map<(d0, d1) -> (d0 + d1)>
+module attributes {torch.debug_module_name = "ConvPlusReLU"} {
+  memref.global "private" constant @__constant_8x2x3x3xf32 : memref<8x2x3x3xf32> = dense<>
+  memref.global "private" constant @__constant_8xf32 : memref<8xf32> = dense<[...]>
+  memref.global "private" constant @__constant_2x8x3x3xf32 : memref<2x8x3x3xf32> = dense<"">
+  memref.global "private" constant @__constant_2xf32 : memref<2xf32> = dense<[...]>
+  func.func @forward(%arg0: memref<1x2x11x11xf32>) -> memref<f32> {
+    %c8 = arith.constant 8 : index
+    %c1 = arith.constant 1 : index
+   
+    ...
+   
+    %5 = memref.alloca() : memref<1x8x9x9xf32>
+    memref.copy %4, %5 : memref<1x8x9x9xf32> to memref<1x8x9x9xf32>
+    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c8, %c9, %c9) step (%c1, %c1, %c1, %c1) {
+      scf.for %arg5 = %c0 to %c2 step %c1 {
+        scf.for %arg6 = %c0 to %c3 step %c1 {
+          scf.for %arg7 = %c0 to %c3 step %c1 {
+            %14 = affine.apply #map(%arg3, %arg6)
+            %15 = affine.apply #map(%arg4, %arg7)
+            %16 = memref.load %arg0[%arg1, %arg5, %14, %15] : memref<1x2x11x11xf32>
+            %17 = memref.load %3[%arg2, %arg5, %arg6, %arg7] : memref<8x2x3x3xf32>
+            %18 = memref.load %5[%arg1, %arg2, %arg3, %arg4] : memref<1x8x9x9xf32>
+            %19 = arith.mulf %16, %17 : f32
+            %20 = arith.addf %18, %19 : f32
+            memref.store %20, %5[%arg1, %arg2, %arg3, %arg4] : memref<1x8x9x9xf32>
+          }
+        }
+      }
+      scf.yield
+    }
+    ...
+  }
+}
+```
+
+into this
+
+![alt text](docs/images/small_cnn.png)
+
+at ~200MHz (for 122 intervals).
+
+# Repo structure
 
 This project has a lot of moving parts; the directory structure tells the tale:
 
 - [bragghls/](bragghls) - the core python library
-  - [compiler/compiler.py](bragghls/compiler.py) - python script the drives the entire flow
-  - [flopoco/](bragghls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/) nonstandard floating point representation and IEEE754 (for purposes of RTL generation *and* simulation)
-  - [ir/](bragghls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of PyTorch models.
-  - [rtl/](bragghls/rtl) - functionality related to emitting RTL (SystemVerilog)
-  - [testbench/](bragghls/testbench) - testbench runners via [cocotb](https://www.cocotb.org/) and [iverilog](http://iverilog.icarus.com/)
+    - [compiler/compiler.py](bragghls/compiler.py) - python script the drives the entire flow
+    - [flopoco/](bragghls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/)
+      nonstandard floating point representation and IEEE754 (for purposes of RTL generation *and* simulation)
+    - [ir/](bragghls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of
+      PyTorch models.
+    - [rtl/](bragghls/rtl) - functionality related to emitting RTL (SystemVerilog)
+    - [testbench/](bragghls/testbench) - testbench runners via [cocotb](https://www.cocotb.org/)
+      and [iverilog](http://iverilog.icarus.com/)
 - [bragghls_translate/](bragghls_translate) - MLIR parser/emitter translation library for translating MLIR to python
 - [examples/](examples) - obviously...
-- [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench generation
-    - [flopoco_convert_ext/](ip_cores/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and FloPoCo's floating point representation
+- [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
+  generation
+    - [flopoco_convert_ext/](ip_cores/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
+      FloPoCo's floating point representation
 - [scripts/](scripts) - helper scripts for things like generating new FloPoCo IPs and building the entire project
 - [tests/](tests) - obviously...
 
 # Current status
 
-[linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling) but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
+[linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling)
+but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
 
 # Building
 
-The build steps are many and tortuous. 
+The build steps are many and tortuous.
 
 ## Requirements
 
@@ -47,13 +120,13 @@ The build steps are many and tortuous.
 6. [Icarus Verilog](http://iverilog.icarus.com/) (`sudo apt-get install iverilog`)
 7. Patience
 
-On Linux you can `bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"` for Clang and 
+On Linux you can `bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"` for Clang and
 
 ```shell
 sudo apt-get install libgmp3-dev libmpfr-dev libmpfi-dev iverilog
 ```
 
-On Mac you can 
+On Mac you can
 
 ```shell
 brew install llvm gmp mpfr mpfi icarus-verilog
@@ -71,13 +144,14 @@ Everything else should be taken care of by the build script (if I didn't miss an
    This will take a while due to our dependency on LLVM.
 2. `pip install -r requirements.txt` to get `cmake` and `pybind11` and `ninja` and necessary python packages
 3. Run the build script [scripts/build.sh](scripts/build.sh) which will:
-   1. Build all of LLVM
-   2. Build Torch-MLIR against LLVM
-   3. Build CIRCT against LLVM
-   4. Build `bragghls_translate` and `flopoco_converter`
-   5. Download GHDL and unpack it (this step is optional if you don't want to generate new IP)
+    1. Build all of LLVM
+    2. Build Torch-MLIR against LLVM
+    3. Build CIRCT against LLVM
+    4. Build `bragghls_translate` and `flopoco_converter`
+    5. Download GHDL and unpack it (this step is optional if you don't want to generate new IP)
 
-You will need all the relevant executables (`circt-opt`, `torch-mlir-opt`, etc.) in your path **and in an env variable BRAGGHLS_PATH**. 
+You will need all the relevant executables (`circt-opt`, `torch-mlir-opt`, etc.) in your path **and in an env variable
+BRAGGHLS_PATH**.
 See [.envrc](.envrc) for a way to add all of them (or just use [direnv](https://direnv.net/)).
 You will also need the following environment variables exported:
 
@@ -93,7 +167,8 @@ The above are the correct numbers for the 4,4 FloPoCo IP cores.
 
 # Running
 
-Assuming everything built successfully and you have all of the correct paths and environment variables, run any of the scripts in [examples](examples) to generate MLIR IR.
+Assuming everything built successfully and you have all of the correct paths and environment variables, run any of the
+scripts in [examples](examples) to generate MLIR IR.
 Then the main [compiler driver](bragghls/compiler/compile.py) can be run with the following arguments
 
 ```shell
@@ -113,7 +188,9 @@ options:
   --wF WF          Bit width of fraction
 ```
 
-For example, running [examples/linear.py](examples/linear.py) produces an artifacts folder at [examples/linear_bragghls_artifacts](examples/linear_bragghls_artifacts) which will contains a `linear.mlir` file that looks like
+For example, running [examples/linear.py](examples/linear.py) produces an artifacts folder
+at [examples/linear_bragghls_artifacts](examples/linear_bragghls_artifacts) which will contains a `linear.mlir` file
+that looks like
 
 ```mlir
 module attributes {torch.debug_module_name = "Linear"} {
@@ -137,9 +214,11 @@ module attributes {torch.debug_module_name = "Linear"} {
 ```
 
 Then running (from top-level in the source directory)
+
 ```shell
 python bragghls/compiler.py examples/linear_bragghls_artifacts/linear.mlir --t -r -s -v -b --wE 4 --wF 4
 ```
+
 will generate `linear.sv` and run the automatically generated (no artifact) testbench, and produce the following output:
 
 ```

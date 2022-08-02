@@ -1,14 +1,19 @@
 from textwrap import dedent, indent
 
 from bragghls.rtl.basic import make_constant
+from bragghls.state import USING_FLOPOCO
 
 
 def make_top_module_decl(
-    ip_name, input_wires, output_wires, signal_width, include_outer_module
+    ip_name, input_wires, output_wires, width_exp, width_frac, include_outer_module
 ):
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
+    else:
+        raise Exception("not using flopoco thus invalid signal width")
     inputs = input_wires
     outputs = output_wires
-    base_inputs = ["clk", "reset"]
+    base_inputs = ["clk", "rst"]
     input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
 
     base_outputs = []
@@ -44,7 +49,7 @@ def make_top_module_decl(
             "\n".join(
                 [
                     # TODO: put real net values here
-                    f"""reg {inp} = {make_constant(None, signal_width)};"""
+                    f"""reg {inp} = {make_constant(None, width_exp, width_frac)};"""
                     for inp in input_ports[2:]
                 ]
             )

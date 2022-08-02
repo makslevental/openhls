@@ -538,10 +538,15 @@ use std.textio.all;
 library work;
 
 entity fmul is
+   generic (
+    id : integer := 8
+   );
    port ( clk, rst : in std_logic;
           X : in  std_logic_vector(4+4+2 downto 0);
           Y : in  std_logic_vector(4+4+2 downto 0);
           R : out  std_logic_vector(4+4+2 downto 0)   );
+   attribute use_dsp48 : string;
+   attribute use_dsp48 of fmul : entity is "yes";
 end entity;
 
 architecture arch of fmul is

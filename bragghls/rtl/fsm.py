@@ -50,7 +50,7 @@ class FSM:
         fsm = dedent(
             f"""\
                 always @ (posedge clk) begin
-                    if (reset == 1'b1) begin
+                    if (rst == 1'b1) begin
                         current_fsm <= fsm_state{first_state};
                     end else begin
                         current_fsm <= next_state_fsm;

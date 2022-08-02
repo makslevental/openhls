@@ -88,9 +88,9 @@ async def test_tb(dut):
         if i % LATENCY == 0:
             outputs = set_inputs(module, WE, WF, dut)
             output = outputs[OUTPUT_NAME].registers[0]
-            dut.reset.value = 1
+            dut.rst.value = 1
         elif i % LATENCY == 1:
-            dut.reset.value = 0
+            dut.rst.value = 0
         elif i % LATENCY == LATENCY - 1:
             if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
                 if output_wire.value.binstr != output.fp.binstr():

@@ -1062,8 +1062,10 @@ module intmultiplier_usingdsp_6_6_12_unsigned_f600_uid4
   assign n263_o = compressionresult6[11:0];
 endmodule
 
-module fmul
-  (input  clk,
+(* USE_DSP48 = "yes" *) module fmul
+    #(parameter
+        ID=1
+    )(input  clk,
    input  rst,
    input  [12:0] X,
    input  [12:0] Y,

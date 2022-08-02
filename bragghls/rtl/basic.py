@@ -59,7 +59,7 @@ class CombOrSeq(enum.Enum):
 
 
 def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.SEQ):
-    vals_to_init = [f"\t{v} = 1'b0;" for v in vals_to_init]
+    vals_to_init = [f"\t{v} <= 1'b0;" for v in vals_to_init]
 
     return "\n".join(
         [f"always @ ({comb_or_seq.value}) begin"] + vals_to_init + conds + ["end"]

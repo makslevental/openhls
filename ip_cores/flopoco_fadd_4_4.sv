@@ -250,8 +250,10 @@ module rightshifter_5_by_max_7_f400_uid4
   assign n340_o = {level2, 4'b0000};
 endmodule
 
-module fadd
-  (input  clk,
+(* USE_DSP48 = "yes" *) module fadd
+  #(parameter
+        ID=1
+  )(input  clk,
    input  rst,
    input  [10:0] X,
    input  [10:0] Y,

@@ -148,7 +148,7 @@ def emit_verilog(
             ip_name,
             list(input_wires.values()),
             list(f"output_{v}" for v in output_wires.values()),
-            signal_width,
+            width_exp, width_frac,
             include_outer_module,
         )
     )

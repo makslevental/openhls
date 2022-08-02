@@ -61,7 +61,7 @@ if __name__ == "__main__":
         type=Path,
         default=Path(__file__).parent / "linear_bragghls_artifacts",
     )
-    parser.add_argument("--size", type=int, default=8)
+    parser.add_argument("--size", type=int, default=4)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_linear(args.size, simplify_weights=False, bias=True)

@@ -11,6 +11,7 @@ import bragghls.state
 from bragghls.ir.parse import parse_mlir_module
 from bragghls.ir.transforms import transform_forward, rewrite_schedule_vals
 from bragghls.rtl.emit_verilog import emit_verilog
+from bragghls.rtl.ip import generate_imports_tcl
 from bragghls.runner import Forward, get_default_args
 from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.util import import_module_from_fp, import_module_from_string
@@ -155,6 +156,10 @@ def main(args):
         verilog_file = verilog_file.replace("%", "v_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
+            
+        imports_file = generate_imports_tcl(f"{name}.sv", args.wE, args.wF)
+        with open(f"{artifacts_dir}/imports.tcl", "w") as f:
+            f.write(imports_file)
 
         print(f"{max_fsm_stage=}")
 

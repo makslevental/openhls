@@ -303,8 +303,10 @@ module rightshifter_6_by_max_8_f600_uid4
   assign n397_o = level4[20:7];
 endmodule
 
-module fadd
-  (input  clk,
+(* USE_DSP48 = "yes" *) module fadd
+  #(parameter
+      ID=1
+  )(input  clk,
    input  rst,
    input  [12:0] X,
    input  [12:0] Y,

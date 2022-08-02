@@ -12,6 +12,7 @@ def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):
         f"""\
             {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
                 .clk(clk),
+                .rst(rst),
                 .X({x}),
                 .Y({y}),
                 .R({r})
@@ -24,7 +25,7 @@ def generate_xilinx_fp(op_type, instance_name, id, signal_width, a, b, res, keep
     return f"""\
             {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}, {signal_width}) {instance_name}(
                 .clk(clk),
-                .reset(0'b1),
+                .rst(0'b1),
                 .clk_enable(1'b1),
                 .a({a}),
                 .b({b}),
@@ -145,6 +146,32 @@ class PE:
     frelu: ReLU
     fneg: Neg
     idx: Tuple[int, ...]
+
+
+def generate_imports_tcl(sv_filename, wE, wF):
+    return dedent(
+        f"""\
+    add_files -fileset constrs_1 -norecurse alveo-u280-xdc.xdc
+    import_files -fileset constrs_1 alveo-u280-xdc.xdc
+
+    add_files -norecurse -scan_for_includes {sv_filename} -force
+    import_files -norecurse {sv_filename} -force
+
+    add_files -norecurse -scan_for_includes flopoco_relu.sv -force
+    import_files -norecurse flopoco_relu.sv -force
+    
+    add_files -norecurse -scan_for_includes flopoco_neg.sv -force
+    import_files -norecurse flopoco_neg.sv -force
+
+    add_files -norecurse -scan_for_includes flopoco_fadd_{wE}_{wF}.sv -force
+    import_files -norecurse flopoco_fadd_{wE}_{wF}.sv -force
+    
+    add_files -norecurse -scan_for_includes flopoco_fmul_{wE}_{wF}.sv -force
+    import_files -norecurse flopoco_fmul_{wE}_{wF}.sv -force
+
+    update_compile_order -fileset sources_1
+    """
+    )
 
 
 if __name__ == "__main__":

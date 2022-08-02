@@ -1008,8 +1008,10 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
   assign n219_o = compressionresult6[9:0];
 endmodule
 
-module fmul
-  (input  clk,
+(* USE_DSP48 = "yes" *) module fmul
+    #(parameter
+        ID=1
+ )(input  clk,
    input  rst,
    input  [10:0] X,
    input  [10:0] Y,

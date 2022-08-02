@@ -31,7 +31,8 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
             else:
                 warnings.warn(f"not mapping {res_val} to {op} in ip_res_val_map")
         elif op.type in {OpType.NEG, OpType.RELU}:
-            ip_res_val_map[res_val] = pe.frelu.res
+            ip = getattr(pe, op.type.value, None)
+            ip_res_val_map[res_val] = ip.res
         elif op.type in {OpType.COPY}:
             pass
         elif op.type == OpType.FMAC:
@@ -178,6 +179,7 @@ def emit_verilog(
         frelu = ReLU(pe_idx, signal_width)
         emit(frelu.instantiate())
         fneg = Neg(pe_idx, signal_width)
+        emit(fneg.instantiate())
         pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)

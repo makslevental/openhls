@@ -1,4 +1,5 @@
 import argparse
+import os
 from pathlib import Path
 
 import torch
@@ -306,9 +307,14 @@ def make_braggn(scale, img_size=11, simplify_weights=True):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
-    parser.add_argument("--out_dir", type=Path, default=Path("."))
-    parser.add_argument("--scale", type=int, default=4)
+    parser.add_argument(
+        "--out_dir",
+        type=Path,
+        default=Path(__file__).parent / "braggnn_bragghls_artifacts",
+    )
+    parser.add_argument("--scale", type=int, default=1)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_braggn(args.scale)
-    open(f"{args.out_dir}/braggnn_{args.scale}.mlir", "w").write(dot_str)
+    os.makedirs(f"{args.out_dir}", exist_ok=True)
+    open(f"{args.out_dir}/braggnn.mlir", "w").write(dot_str)

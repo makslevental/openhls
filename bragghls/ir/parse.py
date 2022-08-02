@@ -140,11 +140,9 @@ def parse_mlir_module(module_str):
                 start_time = int(start_time[0])
             else:
                 start_time = None
-            returns, return_time = idents[0][0], start_time
-            if not isinstance(returns, list):
-                returns = [returns]
-                for r in returns:
-                    vals.add(r)
+            returns, return_time = [idn[0] for idn in idents], start_time
+            for r in returns:
+                vals.add(r)
         else:
             continue
     assert func_args and returns

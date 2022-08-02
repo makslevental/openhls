@@ -33,6 +33,13 @@ def ReduceAdd(vals):
     return pairs[0][0] + pairs[0][1]
 
 
+def check_make_val(v, wE, wF):
+    if not isinstance(v, Val):
+        assert isinstance(v, (float, int)), v
+        v = Val(v, wE, wF)
+    return v
+
+
 @dataclass(frozen=True)
 class Val:
     ieee: float
@@ -48,20 +55,26 @@ class Val:
             )
         object.__setattr__(self, "name", str(self))
 
-    def __mul__(self, other: "Val"):
+    def __mul__(self, other):
+        other = check_make_val(other, self.wE, self.wF)
         v = mul(self, other)
         return v
 
     def __eq__(self, other):
         return self.fp == other.fp
 
-    def __add__(self, other: "Val"):
+    def __add__(self, other):
+        other = check_make_val(other, self.wE, self.wF)
         v = add(self, other)
         return v
 
-    def __sub__(self, other: "Val"):
+    def __sub__(self, other):
+        other = check_make_val(other, self.wE, self.wF)
         v = sub(self, other)
         return v
+
+    def __neg__(self):
+        return Val(-self.ieee, self.wE, self.wF)
 
     def copy(self):
         return self

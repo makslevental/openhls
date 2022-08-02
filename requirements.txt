@@ -15,6 +15,6 @@ pybind11
 cmake
 ninja
 
--f https://github.com/llvm/torch-mlir/releases
---pre
-torch-mlir
+# -f https://github.com/llvm/torch-mlir/releases
+# --pre
+# torch-mlir

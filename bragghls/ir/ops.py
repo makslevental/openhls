@@ -259,6 +259,10 @@ def Copy(dst, src):
         dst.registers[idx] = val.copy()
 
 
+def SelfCopy(memref):
+    Copy(memref, memref)
+
+
 def FMACOp(n_args, pe_idx):
     non_init_args = n_args - 1
     LATENCIES.add((OpType.FMAC, non_init_args))

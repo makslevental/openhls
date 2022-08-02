@@ -79,9 +79,7 @@ def main(args):
     artifacts_dir = f"{dirname}"
     os.makedirs(artifacts_dir, exist_ok=True)
 
-    if args.translate and not os.path.exists(
-        f"{artifacts_dir}/{name}_pythonized_mlir.py"
-    ):
+    if args.translate:
         affine_mlir_str = scf_to_affine(args.fp)
         pythonized_mlir = translate(affine_mlir_str)
         if DEBUG:
@@ -106,10 +104,11 @@ def main(args):
             "pythonized_mlir", f"{artifacts_dir}/{name}_rewritten.py"
         )
 
-    rewritten_mlir_output, output_name = run_rewrite(mod)
     if DEBUG:
+        rewritten_mlir_output, output_name = run_rewrite(mod)
         with open(f"{artifacts_dir}/{name}.rewritten.mlir", "w") as f:
             f.write(rewritten_mlir_output)
+
     with open(f"{artifacts_dir}/{name}.rewritten.mlir", "r") as f:
         rewritten_mlir_output = f.read()
 
@@ -122,22 +121,22 @@ def main(args):
         sched_and_rewritten_mlir = rewrite_schedule_vals(
             scheduled_mlir, rewritten_mlir_output
         )
-        if DEBUG:
-            with open(f"{artifacts_dir}/{name}.rewritten.sched.mlir", "w") as f:
-                f.write(sched_and_rewritten_mlir)
-    else:
+        with open(f"{artifacts_dir}/{name}.rewritten.sched.mlir", "w") as f:
+            f.write(sched_and_rewritten_mlir)
+
+    if args.verilog or args.testbench:
         with open(f"{artifacts_dir}/{name}.rewritten.sched.mlir", "r") as f:
             sched_and_rewritten_mlir = f.read()
 
-    (
-        op_id_data,
-        func_args,
-        returns,
-        return_time,
-        vals,
-        csts,
-        pe_idxs,
-    ) = parse_mlir_module(sched_and_rewritten_mlir)
+        (
+            op_id_data,
+            func_args,
+            returns,
+            return_time,
+            vals,
+            csts,
+            pe_idxs,
+        ) = parse_mlir_module(sched_and_rewritten_mlir)
 
     if args.verilog:
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
@@ -158,10 +157,9 @@ def main(args):
             f.write(verilog_file)
 
         print(f"{max_fsm_stage=}")
-    else:
-        max_fsm_stage = return_time + 1
 
     if args.testbench:
+        max_fsm_stage = return_time + 1
         testbench_runner(
             proj_path=f"{artifacts_dir}",
             module_fp=os.path.abspath(f"{artifacts_dir}/{name}_rewritten.py"),

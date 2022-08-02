@@ -41,11 +41,23 @@ The build steps are many and tortuous.
 
 1. A compiler (GCC or Clang)
 2. Python (>= 3.10) (recommended to use conda)
-3. [GNU MP Bignum Library](https://gmplib.org/) (`sudo apt-get install libgmp3-dev`)
-4. [GNU Multiple Precision Floating-Point Reliable Library](https://www.mpfr.org/) (`sudo apt-get install libmpfr-dev libmpfi-dev`)
-4. [Multiple Precision Floating-point Interval library](http://perso.ens-lyon.fr/nathalie.revol/software.html) (`sudo apt-get libmpfi-dev`)
-5. [Icarus Verilog](http://iverilog.icarus.com/) (`sudo apt-get install iverilog`)
-5. Patience
+3. [GNU MP Bignum Library](https://gmplib.org/)
+4. [GNU Multiple Precision Floating-Point Reliable Library](https://www.mpfr.org/)
+5. [Multiple Precision Floating-point Interval library](http://perso.ens-lyon.fr/nathalie.revol/software.html)
+6. [Icarus Verilog](http://iverilog.icarus.com/) (`sudo apt-get install iverilog`)
+7. Patience
+
+On Linux you can `bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"` for Clang and 
+
+```shell
+sudo apt-get install libgmp3-dev libmpfr-dev libmpfi-dev iverilog
+```
+
+On Mac you can 
+
+```shell
+brew install llvm gmp mpfr mpfi icarus-verilog
+```
 
 Everything else should be taken care of by the build script (if I didn't miss anything...).
 

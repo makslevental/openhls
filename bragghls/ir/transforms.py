@@ -4,7 +4,7 @@ from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
 
-from bragghls.parse import parse_mlir_module, reg_idents
+from bragghls.ir.parse import parse_mlir_module, reg_idents
 
 
 class RemoveMAC(ast.NodeTransformer):

@@ -6,7 +6,7 @@ from typing import Tuple, Any
 
 from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
-from bragghls.ops import OPS, OpType, Op, LATENCIES
+from bragghls.ir.ops import OpType, OPS, Op, LATENCIES
 
 
 def traverse_op_region_block_iterators(op, handler):

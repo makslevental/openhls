@@ -5,7 +5,7 @@ import torch
 from torch import nn
 from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
 
-from bragghls.nn import compile_nn_module_to_mlir, set_weights
+from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
 
 
 class Exp(nn.Module):

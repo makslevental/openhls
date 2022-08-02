@@ -2,17 +2,16 @@ from dataclasses import dataclass
 from textwrap import dedent
 from typing import Tuple
 
-from bragghls.ops import OpType
+from bragghls.ir.ops import OpType
 from bragghls.rtl.basic import Reg, Wire
 from bragghls.util import remove_all_leading_whitespace
 
 
-def generate_flopoco_fp(op_type, instance_name, id, ce, x, y, r, keep):
+def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):
     return dedent(
         f"""\
             {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
                 .clk(clk),
-                .ce({ce}),
                 .X({x}),
                 .Y({y}),
                 .R({r})
@@ -21,9 +20,9 @@ def generate_flopoco_fp(op_type, instance_name, id, ce, x, y, r, keep):
     )
 
 
-def generate_xilinx_fp(op_type, instance_name, id, precision, a, b, res, keep):
+def generate_xilinx_fp(op_type, instance_name, id, signal_width, a, b, res, keep):
     return f"""\
-            {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}, {precision}) {instance_name}(
+            {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}, {signal_width}) {instance_name}(
                 .clk(clk),
                 .reset(0'b1),
                 .clk_enable(1'b1),
@@ -39,7 +38,7 @@ IP_ID = 0
 
 class IP:
     def __init__(
-        self, op_type: OpType, pe_idx: Tuple[int, ...], precision: int, keep=True
+        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
     ):
         global IP_ID
         IP_ID += 1
@@ -47,25 +46,23 @@ class IP:
         self.id = IP_ID
         self.op_type = op_type.value
         self.pe_idx_str = "_".join(map(str, pe_idx))
-        self.precision = precision
+        self.signal_width = signal_width
         self.keep = keep
         self.instance_name = f"{self.op_type}_{self.pe_idx_str}"
 
 
 class FAddOrMulIP(IP):
     def __init__(
-        self, op_type: OpType, pe_idx: Tuple[int, ...], precision: int, keep=True
+        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
     ):
-        super().__init__(op_type, pe_idx, precision, keep)
-        self.ce = Reg(f"{self.instance_name}_ce", 1)
-        self.x = Reg(f"{self.instance_name}_x", precision)
-        self.y = Reg(f"{self.instance_name}_y", precision)
-        self.r = Wire(f"{self.instance_name}_r", precision)
+        super().__init__(op_type, pe_idx, signal_width, keep)
+        self.x = Reg(f"{self.instance_name}_x", signal_width)
+        self.y = Reg(f"{self.instance_name}_y", signal_width)
+        self.r = Wire(f"{self.instance_name}_r", signal_width)
 
     def instantiate(self):
         wires_regs = remove_all_leading_whitespace(
             f"""\
-                {self.ce.instantiate()}
                 {self.x.instantiate()}
                 {self.y.instantiate()}
                 {self.r.instantiate()}
@@ -75,7 +72,6 @@ class FAddOrMulIP(IP):
             self.op_type,
             self.instance_name,
             self.id,
-            self.ce,
             self.x,
             self.y,
             self.r,
@@ -85,19 +81,19 @@ class FAddOrMulIP(IP):
 
 
 class FAdd(FAddOrMulIP):
-    def __init__(self, pe_idx, precision):
-        super().__init__(OpType.ADD, pe_idx, precision)
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.ADD, pe_idx, signal_width)
 
 
 class FMul(FAddOrMulIP):
-    def __init__(self, pe_idx, precision):
-        super().__init__(OpType.MUL, pe_idx, precision)
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.MUL, pe_idx, signal_width)
 
 
-def generate_relu_or_neg(op_type, id, precision, instance_name, a, res):
+def generate_relu_or_neg(op_type, id, signal_width, instance_name, a, res):
     op = dedent(
         f"""\
-            {op_type} #({id}, {precision}) {instance_name}(
+            {op_type} #({id}, {signal_width}) {instance_name}(
                 .a({a}),
                 .res({res})
             );
@@ -108,11 +104,11 @@ def generate_relu_or_neg(op_type, id, precision, instance_name, a, res):
 
 class ReLUOrNegIP(IP):
     def __init__(
-        self, op_type: OpType, pe_idx: Tuple[int, ...], precision: int, keep=True
+        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
     ):
-        super().__init__(op_type, pe_idx, precision, keep)
-        self.a = Reg(f"{self.instance_name}_a", precision)
-        self.res = Wire(f"{self.instance_name}_res", precision)
+        super().__init__(op_type, pe_idx, signal_width, keep)
+        self.a = Reg(f"{self.instance_name}_a", signal_width)
+        self.res = Wire(f"{self.instance_name}_res", signal_width)
 
     def instantiate(self):
         wires_regs = remove_all_leading_whitespace(
@@ -122,19 +118,24 @@ class ReLUOrNegIP(IP):
             """
         )
         instance = generate_relu_or_neg(
-            self.op_type, self.id, self.precision, self.instance_name, self.a, self.res
+            self.op_type,
+            self.id,
+            self.signal_width,
+            self.instance_name,
+            self.a,
+            self.res,
         )
         return wires_regs + instance
 
 
 class ReLU(ReLUOrNegIP):
-    def __init__(self, pe_idx, precision):
-        super().__init__(OpType.RELU, pe_idx, precision)
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.RELU, pe_idx, signal_width)
 
 
 class Neg(ReLUOrNegIP):
-    def __init__(self, pe_idx, precision):
-        super().__init__(OpType.NEG, pe_idx, precision)
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.NEG, pe_idx, signal_width)
 
 
 @dataclass(frozen=True)

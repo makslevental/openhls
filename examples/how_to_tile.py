@@ -1,8 +1,9 @@
 #############################
 # linear
 ###########################
-_4 = MemRef('_4', 8, 8)
+_4 = MemRef("_4", 8, 8)
 _4.zero()
+
 
 @parfor(ranges=(range(0, 8, 1), range(0, 1, 1), range(0, 8, 1)))
 def body(_arg3, _arg1, _arg2):
@@ -14,6 +15,7 @@ def body(_arg3, _arg1, _arg2):
     _11 = fma.Add(_9, _10)
     _4[_arg3, _arg2] = _11
     _4[_arg3, _arg2] = fma.Result(copy=False)
+
 
 _4.registers = np.vstack([_4.registers, _2.registers])
 _4.registers = np.apply_along_axis(ReduceAdd, 0, _4.registers)[np.newaxis]
@@ -54,4 +56,3 @@ Copy(_7, _7)
 #############################
 # conv
 ###########################
-

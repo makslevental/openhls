@@ -1603,8 +1603,8 @@ std::string getValIdent(Value &value) {
 /// Top-level MLIR module emitter.
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
-from bragghls.memref import MemRef, GlobalMemRef
-from bragghls.ops import FMAC, ReduceAdd, Copy
+from bragghls.ir.memref import MemRef, GlobalMemRef
+from bragghls.ir.ops import FMAC, ReduceAdd, Copy
 from bragghls.runner import parfor, Forward, make_output_file
 import os
 

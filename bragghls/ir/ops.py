@@ -6,8 +6,8 @@ from typing import Tuple, Any
 import numpy as np
 
 from bragghls import state
-from bragghls.state import DTYPE, CONSTANT
-from bragghls.util import extend_idx
+from bragghls.state import DTYPE, CONSTANT, ADD_LATENCY, MUL_LATENCY
+from bragghls.util import extend_idx, chunks
 
 
 def overload_op(type):
@@ -97,14 +97,14 @@ class Op:
             return f'{self.res} = "{self.type.value}" ({args_str}) {{  {attrs_str}  }} : ({", ".join([DTYPE] * len(self.args))}) -> {DTYPE}'
 
 
-FMAC_LATENCY = lambda n_elements: 3 * n_elements + 2
+FMAC_LATENCY = lambda n_elements: MUL_LATENCY + ADD_LATENCY * n_elements
 
 
 class Latencies:
     latencies = {
-        OpType.ADD: 3,
-        OpType.SUB: 3,
-        OpType.MUL: 2,
+        OpType.ADD: ADD_LATENCY,
+        OpType.SUB: ADD_LATENCY,
+        OpType.MUL: MUL_LATENCY,
         OpType.DIV: 3,
         OpType.GT: 1,
         OpType.NEG: 1,
@@ -229,11 +229,6 @@ class FMAC:
             op_res = op_res.copy()
         state.state.debug_print(f"MAC {self.pe_idx} starts")
         return op_res
-
-
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
 
 
 def reducer(accum, val):

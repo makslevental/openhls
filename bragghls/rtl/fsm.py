@@ -1,6 +1,8 @@
 import math
 from textwrap import dedent, indent
 
+from bragghls.state import MUL_LATENCY, ADD_LATENCY
+
 
 def get_fsm_idx_width(max_fsm_stage):
     return math.ceil(math.log10(max_fsm_stage))
@@ -110,12 +112,18 @@ class FSM:
         return fsm
 
     def generate_mac_fsm_states(self, n_elements, start_time):
-        n_pair_states = n_elements - 1
-        fmul_states = [3 * i + start_time for i in range(n_pair_states + 2)]
-        fadd_states = [s + 2 for s in fmul_states]
-        all_states = [
+        fmul_states = [start_time]
+        fadd_states = [start_time + MUL_LATENCY]
+        for i in range(n_elements - 1):
+            fadd_states.append(fadd_states[-1] + ADD_LATENCY)
+            fmul_states.append(fadd_states[-1] - MUL_LATENCY)
+        done_state = fadd_states[-1] + ADD_LATENCY
+        fmul_states = [
             f"current_fsm_state{str(s).zfill(self.fsm_idx_width)}"
-            for s in sorted(fmul_states + fadd_states)
+            for s in sorted(fmul_states)
         ]
-        fmac_states, done_state = all_states[:-1], all_states[-1]
-        return fmac_states, done_state
+        fadd_states = [
+            f"current_fsm_state{str(s).zfill(self.fsm_idx_width)}"
+            for s in sorted(fadd_states)
+        ]
+        return fmul_states, fadd_states, done_state

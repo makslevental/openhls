@@ -11,8 +11,8 @@ from bragghls.flopoco.ops import (
     GlobalMemRef as FPGlobalMemRef,
     FMAC as FPFMAC,
 )
-from bragghls.memref import MemRef, GlobalMemRef
-from bragghls.ops import LATENCIES, OpType
+from bragghls.ir.memref import MemRef, GlobalMemRef
+from bragghls.ir.ops import OpType, LATENCIES
 from bragghls.state import logger
 from bragghls.util import extend_idx
 
@@ -134,7 +134,7 @@ def run_model_with_fp_number(mod, inputs, wE, wF):
         elif isinstance(arg, GlobalMemRef):
             test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)
         else:
-            raise Exception("wtfbbq")
+            raise Exception("neither a globalmemref nor a memref")
 
     FPFMAC.wE = wE
     FPFMAC.wF = wF

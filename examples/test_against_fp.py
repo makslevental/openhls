@@ -1,16 +1,14 @@
+import numpy as np
 import torch
-
 from bragghls.nn import set_weights
+from cnn_bragghls_artifacts import cnn_rewritten
+
 from bragghls.runner import (
     run_model_with_fp_number,
     get_default_args,
     get_py_module_args_globals,
 )
-import numpy as np
-import os
-
 from bragghls.testbench.tb_runner import set_inputs
-from cnn_bragghls_artifacts import cnn_rewritten
 
 
 def test_against_fp(wE, wF):
@@ -29,13 +27,19 @@ def test_against_fp(wE, wF):
         )
         print(str(outputs["_6"][0]).split(":")[0].split(" ")[1], end=", ")
 
-        res = pytorch_mod(torch.from_numpy(np_test_inputs[inp_name]).to(torch.float32)).numpy().item()
+        res = (
+            pytorch_mod(torch.from_numpy(np_test_inputs[inp_name]).to(torch.float32))
+            .numpy()
+            .item()
+        )
         print(res)
 
 
 # test_against_fp(4, 4)
 
+
 def test_with():
     print(set_inputs(cnn_rewritten, 4, 4))
+
 
 test_with()

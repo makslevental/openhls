@@ -1,6 +1,5 @@
 import argparse
 import ast
-import importlib.util
 import io
 import os
 import shutil
@@ -8,28 +7,14 @@ from subprocess import Popen, PIPE
 
 import astor
 
-import bragghls.runner
 import bragghls.state
-from bragghls.parse import parse_mlir_module
+from bragghls.ir.parse import parse_mlir_module
+from bragghls.ir.transforms import transform_forward, rewrite_schedule_vals
 from bragghls.rtl.emit_verilog import emit_verilog
 from bragghls.runner import Forward, get_default_args
 from bragghls.testbench.tb_runner import testbench_runner
-from bragghls.transforms import transform_forward, rewrite_schedule_vals
+from bragghls.util import import_module_from_fp, import_module_from_string
 from scripts.hack_affine_scf import scf_to_affine
-
-
-def import_module_from_string(name: str, source: str):
-    spec = importlib.util.spec_from_loader(name, loader=None)
-    module = importlib.util.module_from_spec(spec)
-    exec(source, module.__dict__)
-    return module
-
-
-def import_module_from_fp(name: str, fp: str):
-    spec = importlib.util.spec_from_file_location(name, fp)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
 
 
 def translate(affine_mlir_str):
@@ -106,7 +91,6 @@ def main(args):
         with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "r") as f:
             pythonized_mlir = f.read()
 
-    output_name = "UNKNOWN"
     if args.rewrite:
         rewritten_py_code = rewrite(pythonized_mlir)
         if DEBUG:
@@ -158,7 +142,8 @@ def main(args):
 
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
-            args.wE + args.wF + 3,
+            args.wE,
+            args.wF,
             op_id_data,
             func_args,
             returns,
@@ -177,11 +162,13 @@ def main(args):
     if args.testbench:
         testbench_runner(
             proj_path=f"{artifacts_dir}",
+            module_fp=os.path.abspath(f"{artifacts_dir}/{name}_rewritten.py"),
             sv_file_name=f"{name}.sv",
             top_level=name,
-            py_module=f"{name}_tb",
             max_fsm_stage=max_fsm_stage,
             output_name=output_name,
+            wE=args.wE,
+            wF=args.wF,
         )
 
     os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
@@ -195,8 +182,10 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--rewrite", default=False, action="store_true")
     parser.add_argument("-s", "--schedule", default=False, action="store_true")
     parser.add_argument("-v", "--verilog", default=False, action="store_true")
+    parser.add_argument("-b", "--testbench", default=False, action="store_true")
     parser.add_argument("--wE", default=4)
     parser.add_argument("--wF", default=4)
-    parser.add_argument("-b", "--testbench", default=False, action="store_true")
     args = parser.parse_args()
+    args.wE = int(args.wE)
+    args.wF = int(args.wF)
     main(args)

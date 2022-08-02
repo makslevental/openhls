@@ -1,12 +1,9 @@
-import argparse
-import os
 import warnings
 from collections import defaultdict
 from io import StringIO
 from textwrap import dedent
 
-from bragghls.ops import OpType, LATENCIES, Op
-from bragghls.parse import parse_mlir_module
+from bragghls.ir.ops import Op, OpType, LATENCIES
 from bragghls.rtl.basic import (
     Wire,
     Reg,
@@ -19,9 +16,7 @@ from bragghls.rtl.basic import (
 from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
-from bragghls.state import DEBUG
-
-ALREADY_CE = set()
+from bragghls.state import DEBUG, USING_FLOPOCO
 
 
 def build_ip_res_val_map(pe, op_datas: list[Op], vals):
@@ -34,7 +29,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
             # elif op.type == OpType.MUL:
             #     ip_res_val_map[res_val] = pe.fmul.r
             else:
-                warnings.warn(f"not mapping {res_val} to {op}")
+                warnings.warn(f"not mapping {res_val} to {op} in ip_res_val_map")
         elif op.type in {OpType.NEG, OpType.RELU}:
             ip_res_val_map[res_val] = pe.frelu.res
         elif op.type in {OpType.COPY}:
@@ -67,22 +62,11 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
 
             tree_conds.append(
                 make_always_branch(
-                    [ip.x, ip.y, ip.ce],
+                    [ip.x, ip.y],
                     [in_a, in_b, 1],
                     fsm.make_fsm_conditions([start_time]),
                 )
             )
-            if op.type == OpType.ADD and (ip.ce, start_time + 1) not in ALREADY_CE:
-                ALREADY_CE.add((ip.ce, start_time + 1))
-                tree_conds.append(
-                    make_always_branch(
-                        [ip.ce], [1], fsm.make_fsm_conditions([start_time + 1])
-                    )
-                )
-
-            if "val" in str(res_val):
-                not_latches.add(res_val)
-
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
@@ -94,8 +78,6 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                     [res_val], [ip.res], fsm.make_fsm_conditions([end_time])
                 )
             )
-            if "val" in str(res_val):
-                not_latches.add(res_val)
         elif op.type in {OpType.COPY}:
             tree_conds.append(
                 make_always_branch(
@@ -103,7 +85,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                 )
             )
         elif op.type == OpType.FMAC:
-            fmac_states, done_state = fsm.generate_mac_fsm_states(
+            fmul_states, fadd_states, done_state = fsm.generate_mac_fsm_states(
                 (len(args) - 1) // 2, start_time
             )
             args = []
@@ -111,9 +93,11 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                 arg = vals.get(arg, input_wires.get(arg, ip_res_val_map.get(arg)))
                 assert arg is not None
                 args.append(arg)
-            tree_conds.append(make_fmac_branches(pe, fmac_states, in_a, args))
+            tree_conds.append(
+                make_fmac_branches(pe, fmul_states, fadd_states, in_a, args)
+            )
         else:
-            raise NotImplementedError
+            raise NotImplementedError(str(op))
 
         if DEBUG:
             tree_conds.append(f"\t// {op.emit()} end\n")
@@ -133,7 +117,8 @@ def cluster_pes(pes, op_id_data):
 
 def emit_verilog(
     ip_name,
-    precision,
+    width_exp,
+    width_frac,
     op_id_data,
     func_args,
     returns,
@@ -143,9 +128,13 @@ def emit_verilog(
     pe_idxs,
     include_outer_module=True,
 ):
-    input_wires = {v: Wire(v, precision) for v in func_args}
-    output_wires = {v: Wire(v, precision) for v in returns}
-    vals = {v: Reg(v, precision) for v in vals}
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
+    else:
+        raise Exception("precision not right since not using flopoco")
+    input_wires = {v: Wire(v, signal_width) for v in func_args}
+    output_wires = {v: Wire(v, signal_width) for v in returns}
+    vals = {v: Reg(v, signal_width) for v in vals}
 
     s = StringIO()
 
@@ -158,7 +147,7 @@ def emit_verilog(
             ip_name,
             list(input_wires.values()),
             list(f"output_{v}" for v in output_wires.values()),
-            precision,
+            signal_width,
             include_outer_module,
         )
     )
@@ -168,7 +157,7 @@ def emit_verilog(
             emit(
                 val_reg.instantiate()[:-1],
                 "=",
-                f"{make_constant(csts[name], precision)};",
+                f"{make_constant(csts[name], width_exp, width_frac)};",
             )
         else:
             emit(val_reg.instantiate())
@@ -182,13 +171,13 @@ def emit_verilog(
         if pe_idx[0] < 0:
             continue
 
-        fadd = FAdd(pe_idx, precision)
+        fadd = FAdd(pe_idx, signal_width)
         emit(fadd.instantiate())
-        fmul = FMul(pe_idx, precision)
+        fmul = FMul(pe_idx, signal_width)
         emit(fmul.instantiate())
-        frelu = ReLU(pe_idx, precision)
+        frelu = ReLU(pe_idx, signal_width)
         emit(frelu.instantiate())
-        fneg = Neg(pe_idx, precision)
+        fneg = Neg(pe_idx, signal_width)
         pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)
@@ -201,7 +190,7 @@ def emit_verilog(
     emit(fsm.make_fsm())
 
     for v, wire in output_wires.items():
-        reg = Reg(wire.id, wire.bit_width)
+        reg = Reg(wire.id, wire.signal_width)
         emit(f"assign output_{wire} = {ip_res_val_map[reg]};")
 
     emit(
@@ -221,42 +210,3 @@ def emit_verilog(
 
     s.seek(0)
     return s.read(), input_wires, output_wires, fsm.max_fsm_stage
-
-
-def main(fp):
-    dirname, filename = os.path.split(args.fp)
-    filebasename, _ext = os.path.splitext(filename)
-    ip_name = filebasename.split("_")[0]
-    rewritten_sched_mlir_str = open(args.fp).read()
-
-    (
-        op_id_data,
-        func_args,
-        returns,
-        return_time,
-        vals,
-        csts,
-        pe_idxs,
-    ) = parse_mlir_module(rewritten_sched_mlir_str)
-
-    verilog_file = emit_verilog(
-        ip_name,
-        args.precision,
-        op_id_data,
-        func_args,
-        returns,
-        return_time,
-        vals,
-        csts,
-        pe_idxs,
-    )
-    verilog_file = verilog_file.replace("%", "v_")
-    with open(f"{dirname}/{ip_name}.v", "w") as f:
-        f.write(verilog_file)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("fp")
-    parser.add_argument("--precision", default=11)
-    args = parser.parse_args()

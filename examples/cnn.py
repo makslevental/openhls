@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from bragghls.nn import set_weights, compile_nn_module_to_mlir
+from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
 
 
 class DoubleCNN(nn.Module):
@@ -24,9 +24,8 @@ class DoubleCNN(nn.Module):
         w = self.conv2_2(y)
         u = self.conv2_3(y)
         uuu = z + w + u
-        uu = self.conv3(uuu * uuu.sum())
-        ww = self.conv4(uu)
-        return ww
+        uu = self.conv3(uuu)
+        return uu.sum()
 
 
 class ConvPlusReLU(nn.Module):
@@ -79,7 +78,9 @@ def make_double_small_cnn(scale=1, img_size=11, simplify_weights=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument(
-        "--out_dir", type=Path, default=Path(__file__).parent / "cnn_bragghls_artifacts"
+        "--out_dir",
+        type=Path,
+        default=Path(__file__).parent / "small_cnn_bragghls_artifacts",
     )
     parser.add_argument("--size", type=int, default=5)
     args = parser.parse_args()
@@ -87,5 +88,4 @@ if __name__ == "__main__":
 
     dot_str = make_single_small_cnn(img_size=args.size, simplify_weights=False)
     os.makedirs(f"{args.out_dir}", exist_ok=True)
-    open(f"{args.out_dir}/cnn.mlir", "w").write(dot_str)
-
+    open(f"{args.out_dir}/small_cnn.mlir", "w").write(dot_str)

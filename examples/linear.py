@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from bragghls.nn import compile_nn_module_to_mlir, set_weights
+from bragghls.ir.nn import compile_nn_module_to_mlir, set_weights
 
 
 class Linear(nn.Module):
@@ -57,7 +57,9 @@ def make_linear(size=11, simplify_weights=False, bias=True):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument(
-        "--out_dir", type=Path, default=Path(__file__).parent / "linear_bragghls_artifacts"
+        "--out_dir",
+        type=Path,
+        default=Path(__file__).parent / "linear_bragghls_artifacts",
     )
     parser.add_argument("--size", type=int, default=8)
     args = parser.parse_args()

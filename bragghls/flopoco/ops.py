@@ -6,16 +6,15 @@ from functools import reduce
 import numpy as np
 
 import bragghls.state
-from bragghls.ops import chunks
-from bragghls.util import idx_to_str
+from bragghls.util import idx_to_str, chunks
 
 try:
     from . import flopoco_converter
 except:
     import flopoco_converter
 
-WE = int(os.getenv("WE", "4"))
-WF = int(os.getenv("WE", "4"))
+WE = int(os.getenv("WE"))
+WF = int(os.getenv("WF"))
 
 FPNUMBER = namedtuple("FPNUMBER", "pe_idx")(None)
 
@@ -37,8 +36,8 @@ def ReduceAdd(vals):
 @dataclass(frozen=True)
 class Val:
     ieee: float
-    wE: int = WE
-    wF: int = WF
+    wE: int
+    wF: int
     fp: flopoco_converter.FPNumber = None
     name: str = None
 
@@ -111,6 +110,7 @@ class MemRef:
             self.registers = np.empty(shape, dtype=object)
         self.input = input
         self.output = output
+        assert wE is not None and wF is not None
         self.wE = wE
         self.wF = wF
 
@@ -186,6 +186,7 @@ class GlobalMemRef:
         self.global_array = global_array
         self.shape = global_array.shape
         self.vals = np.empty(self.shape, dtype=object)
+        assert wE is not None and wF is not None
         for idx, v in np.ndenumerate(global_array):
             v = Val(v, wE, wF)
             try:
@@ -220,12 +221,12 @@ class GlobalMemRef:
 
 
 class FMAC:
-    wE = WE
-    wF = WF
-
-    def __init__(self, *pe_idx):
+    def __init__(self, *pe_idx, wE=WE, wF=WF):
+        assert wE is not None and wF is not None
         assert pe_idx
         self.pe_idx = pe_idx
+        self.wE = wE
+        self.wF = wF
         self.result = Val(0, self.wE, self.wF)
 
     def Add(self, a, b):

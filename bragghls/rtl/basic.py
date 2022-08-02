@@ -3,19 +3,20 @@ from dataclasses import dataclass
 from textwrap import dedent, indent
 
 from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
+from bragghls.state import USING_FLOPOCO
 
 
 @dataclass(frozen=True)
 class Wire:
     id: str
-    bit_width: int
+    signal_width: int
 
     def __str__(self):
         return f"{self.id}"
 
     def instantiate(self):
-        if self.bit_width > 1:
-            return f"wire [{self.bit_width - 1}:0] {self};"
+        if self.signal_width > 1:
+            return f"wire [{self.signal_width - 1}:0] {self};"
         else:
             return f"wire {self};"
 
@@ -26,26 +27,30 @@ class Wire:
 @dataclass(frozen=True)
 class Reg:
     id: str
-    bit_width: int
+    signal_width: int
 
     def __str__(self):
         return f"{self.id}"
 
     def instantiate(self):
-        if self.bit_width > 1:
-            return f"reg [{self.bit_width - 1}:0] {self};"
+        if self.signal_width > 1:
+            return f"reg [{self.signal_width - 1}:0] {self};"
         else:
             return f"reg {self};"
 
 
-def make_constant(v, precision):
-    if v is None:
-        # return f"{precision}'d{random.randint(0, 2 ** precision - 1)}"
-        return f"{precision}'b01001110000"
+def make_constant(v, width_exp, width_frac):
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
     else:
-        # %val_cst_00
-        assert isinstance(v, (float, int))
-        return f"{precision}'b{convert_float_to_flopoco_binary_str(v)}"
+        raise Exception("not using flopoco thus invalid signal width")
+
+    if v is None:
+        v = 0.0
+
+    # %val_cst_00
+    assert isinstance(v, (float, int))
+    return f"{signal_width}'b{convert_float_to_flopoco_binary_str(v, width_exp, width_frac)}"
 
 
 class CombOrSeq(enum.Enum):
@@ -77,46 +82,22 @@ def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.SEQ):
     )
 
 
-def make_fmac_branches(pe, fsm_states, init_val, args):
+def make_fmac_branches(pe, fmul_states, fadd_states, init_val, args):
     return indent(
         dedent(
             "\n".join(
                 [
                     f"""\
-        if (1'b1 == {fsm_states[0]}) begin
-            {pe.fmul.x} <= {args[0]}; 
-            {pe.fmul.y} <= {args[1]}; 
-            {pe.fmul.ce} <= 1;
-        end
-        if (1'b1 == {fsm_states[1]}) begin
-            {pe.fadd.x} <= {init_val};
-            {pe.fadd.y} <= {pe.fmul.r}; 
-            {pe.fadd.ce} <= 1;
-        end
-    """
-                ]
-                + [
-                    f"""\
         if (1'b1 == {fsm_state}) begin
-            {pe.fmul.x} <= {args[2 * (i + 1)]};
-            {pe.fmul.y} <= {args[2 * (i + 1) + 1]};
-            {pe.fmul.ce} <= 1;
-            {pe.fadd.ce} <= 1;
+            {pe.fmul.x} <= {args[2 * i]};
+            {pe.fmul.y} <= {args[2 * i + 1]};
         end
-        if (1'b1 == {fsm_states[2 * i + 2 + 1]}) begin
-            {pe.fadd.x} <= {pe.fadd.r};
+        if (1'b1 == {fadd_states[i]}) begin
+            {pe.fadd.x} <= {init_val if i == 0 else pe.fadd.r};
             {pe.fadd.y} <= {pe.fmul.r};
-            {pe.fadd.ce} <= 1;
         end
         """
-                    for i, fsm_state in enumerate(fsm_states[2:-1:2])
-                ]
-                + [
-                    f"""\
-        if (1'b1 == {fsm_states[-1]}) begin
-            {pe.fadd.ce} <= 1;
-        end
-    """
+                    for i, fsm_state in enumerate(fmul_states)
                 ]
             )
         ),

@@ -1,0 +1,91 @@
+#map = affine_map<(d0, d1) -> (d0 + d1)>
+module attributes {torch.debug_module_name = "ConvPlusReLU"} {
+  memref.global "private" constant @__constant_8x2x3x3xf32 : memref<8x2x3x3xf32> = dense<"0x548C703D72F1953DBF11473E5362223E0C8EEFBD15D3513E04D063BD1490B8BD9182073E38449CBCF826C93C280F19BE62AAAB3D4EAF1EBEBE8A67BE8B092CBE107322BE688E973C1B896B3ED0171CBDF4E11ABEE4C127BD36021CBEBB86423E82C437BEBC2E2B3D5A9FFC3D60D840BDF056153C32C0F83DBEE14DBE46526CBED0B1503C2AE5F63D2C70ABBD3A7037BE760B18BE9C86DDBD355A65BE4535223EBBBB193EEA8253BE602E52BCBE32B2BD023E15BEB063F8BC01CB133E64FB70BE13EF693EC209BB3DA3F06E3E02B6C73DF4F236BDF9590F3EBA12813DF48D7E3D12DAC3BDAC7142BE3D105A3EDE13F1BD917D41BE270F463EAB135BBEDB6E2B3E386642BE29356ABECE64A83D0F1623BED2D787BD117E4F3ED408C5BD41DB2D3E8DA14E3EB9D84B3E0884F9BCAEE4B23D53914C3EC8D38DBDD84CD83C51D4143E6C4D21BEDA8A90BD66BFF0BD037C2CBE914D123E56AB05BEE09D37BC1E551DBEAF4F283EEF30323E095A61BE0002E4BBFE76C63D378728BE55375CBE170B583E0642E53D1201A03DA02487BD1C524EBE369843BE4B611D3EE5704A3E16A2943DEBEC063ED0E0113C602EA73BC099A13B4072E33B9D46143E6272863D6821ABBD55023BBE685C73BD9D2C003E1F18563E16BCBABDAA9806BEE0B9B2BD9082C9BDA4EC733DB1153B3EF5B83ABE93033C3E0506373ECEB3A43D84C550BE981F64BD4F3B293E88BDE33CFE36D13D31CC5FBECD12653EAD212B3EF400283D830A123E4010DABD3A7CF23D108928BD0834CABCFEB7ACBD406323BB1C4D6EBD6D7C1F3E">
+  memref.global "private" constant @__constant_8xf32 : memref<8xf32> = dense<[0.0519331843, -0.105881959, 0.0670902282, -0.206376091, 0.0167040974, 0.0286557823, 0.117680922, 0.0923966616]>
+  memref.global "private" constant @__constant_2x8x3x3xf32 : memref<2x8x3x3xf32> = dense<"0xD9F8E23DF917AD3D71776DBD40E6DFBCD0E1B1BB25D8DC3DB9F58A3D2319D23D9891503CD661733DC8697ABC7B36EABD7C47C8BC6BF9C23D3A8E013D1543D53D1EE3523D4DFA813D624BE4BD3F0EE53D22BE77BDEA70353D3CB372BD72EB613D18F6CBBCD8F469BDC81174BC7B0EA43DDF28EE3D80C4D7BB84A8F2BC5845613C02188CBD279564BD5169BA3DA4D19E3CAC3523BD10096DBDDEA935BDBF21A83D8DAF813D7450823C3A24753D5AA07B3D6B35F1BDC5E2853D7C9DBEBD729B1EBDC02D3F3B000C07BD2C63C43C441AB53C4682C2BDA007DABC88826BBCF8305ABD72D323BDA3C7D9BD63AECF3D8A9D393DE3E49FBDE6316EBD1F23C0BD5CA0DE3C382DB4BC4EFF553DE210AABD2EE74C3DF59FC8BD2535F1BDEE42AFBD68EE25BD38EE0C3CA77BED3DF7F4D13D3430ABBD96DA1A3D7AA87D3DE02EA2BD600B8BBBF51D953DCE7987BD7885D9BD3DC7DD3D1684063D658EC93DAA2503BD5198D13DDBB2A43D3592AA3D10E345BDCE4A05BD2F31EE3D819FCC3D4B33B7BD9F45C6BD0DBA99BD403DE7BDBE8F313D7229113D0055CCB925998DBDA46FAABD774AC03DB230503DF3C0A6BD28925F3C6EC7313DB295463D54CD43BD40195E3B730DCC3DCEF0393D2C06BBBC52C1053D67CBBB3DA468A73C12C4CBBD20B12BBCEC58FABC1416913C0EE123BD4C5A89BCA729B5BDD081DF3BF89315BD00B085BDFF1AD03D5A9B743D166AAABDFFE8E03DAACB7E3D0044DBBBB2C8623D206D7ABBBC83B53C4B35D03D2D23BB3D72D8063DECDDBC3C17D962BD48C931BC78638FBCDB98B53D">
+  memref.global "private" constant @__constant_2xf32 : memref<2xf32> = dense<[0.00422462821, 0.0159849897]>
+  func.func @forward(%arg0: memref<1x2x5x5xf32>) -> memref<f32> {
+    %c8 = arith.constant 8 : index
+    %c1 = arith.constant 1 : index
+    %c3 = arith.constant 3 : index
+    %c0 = arith.constant 0 : index
+    %c2 = arith.constant 2 : index
+    %cst = arith.constant 0.000000e+00 : f32
+    %0 = memref.get_global @__constant_2xf32 : memref<2xf32>
+    %1 = memref.get_global @__constant_2x8x3x3xf32 : memref<2x8x3x3xf32>
+    %2 = memref.get_global @__constant_8xf32 : memref<8xf32>
+    %3 = memref.get_global @__constant_8x2x3x3xf32 : memref<8x2x3x3xf32>
+    %4 = memref.alloca() : memref<1x8x3x3xf32>
+    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c8, %c3, %c3) step (%c1, %c1, %c1, %c1) {
+      %14 = memref.load %2[%arg2] : memref<8xf32>
+      memref.store %14, %4[%arg1, %arg2, %arg3, %arg4] : memref<1x8x3x3xf32>
+      scf.yield
+    }
+    %5 = memref.alloca() : memref<1x8x3x3xf32>
+    memref.copy %4, %5 : memref<1x8x3x3xf32> to memref<1x8x3x3xf32>
+    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c8, %c3, %c3) step (%c1, %c1, %c1, %c1) {
+      scf.for %arg5 = %c0 to %c2 step %c1 {
+        scf.for %arg6 = %c0 to %c3 step %c1 {
+          scf.for %arg7 = %c0 to %c3 step %c1 {
+            %14 = affine.apply #map(%arg3, %arg6)
+            %15 = affine.apply #map(%arg4, %arg7)
+            %16 = memref.load %arg0[%arg1, %arg5, %14, %15] : memref<1x2x5x5xf32>
+            %17 = memref.load %3[%arg2, %arg5, %arg6, %arg7] : memref<8x2x3x3xf32>
+            %18 = memref.load %5[%arg1, %arg2, %arg3, %arg4] : memref<1x8x3x3xf32>
+            %19 = arith.mulf %16, %17 : f32
+            %20 = arith.addf %18, %19 : f32
+            memref.store %20, %5[%arg1, %arg2, %arg3, %arg4] : memref<1x8x3x3xf32>
+          }
+        }
+      }
+      scf.yield
+    }
+    %6 = memref.alloca() : memref<1x2x1x1xf32>
+    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c2, %c1, %c1) step (%c1, %c1, %c1, %c1) {
+      %14 = memref.load %0[%arg2] : memref<2xf32>
+      memref.store %14, %6[%arg1, %arg2, %arg3, %arg4] : memref<1x2x1x1xf32>
+      scf.yield
+    }
+    %7 = memref.alloca() : memref<1x2x1x1xf32>
+    memref.copy %6, %7 : memref<1x2x1x1xf32> to memref<1x2x1x1xf32>
+    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c2, %c1, %c1) step (%c1, %c1, %c1, %c1) {
+      scf.for %arg5 = %c0 to %c8 step %c1 {
+        scf.for %arg6 = %c0 to %c3 step %c1 {
+          scf.for %arg7 = %c0 to %c3 step %c1 {
+            %14 = affine.apply #map(%arg3, %arg6)
+            %15 = affine.apply #map(%arg4, %arg7)
+            %16 = memref.load %5[%arg1, %arg5, %14, %15] : memref<1x8x3x3xf32>
+            %17 = memref.load %1[%arg2, %arg5, %arg6, %arg7] : memref<2x8x3x3xf32>
+            %18 = memref.load %7[%arg1, %arg2, %arg3, %arg4] : memref<1x2x1x1xf32>
+            %19 = arith.mulf %16, %17 : f32
+            %20 = arith.addf %18, %19 : f32
+            memref.store %20, %7[%arg1, %arg2, %arg3, %arg4] : memref<1x2x1x1xf32>
+          }
+        }
+      }
+      scf.yield
+    }
+    %8 = memref.alloca() : memref<f32>
+    memref.store %cst, %8[] : memref<f32>
+    %9 = memref.alloca() : memref<f32>
+    memref.copy %8, %9 : memref<f32> to memref<f32>
+    scf.for %arg1 = %c0 to %c1 step %c1 {
+      scf.for %arg2 = %c0 to %c2 step %c1 {
+        scf.for %arg3 = %c0 to %c1 step %c1 {
+          scf.for %arg4 = %c0 to %c1 step %c1 {
+            %14 = memref.load %7[%arg1, %arg2, %arg3, %arg4] : memref<1x2x1x1xf32>
+            %15 = memref.load %9[] : memref<f32>
+            %16 = arith.addf %14, %15 : f32
+            memref.store %16, %9[] : memref<f32>
+          }
+        }
+      }
+    }
+    %10 = memref.alloc() {alignment = 128 : i64} : memref<f32>
+    %11 = memref.load %9[] : memref<f32>
+    %12 = arith.cmpf ugt, %11, %cst : f32
+    %13 = arith.select %12, %11, %cst : f32
+    memref.store %13, %10[] : memref<f32>
+    return %10 : memref<f32>
+  }
+}

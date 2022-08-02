@@ -96,11 +96,11 @@ def generate(wE, wF, n_elements, out_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--wE", type=int, default=5)
-    parser.add_argument("--wF", type=int, default=5)
-    parser.add_argument("--mul_pipeline_depth", type=int, default=2)
-    parser.add_argument("--add_pipeline_depth", type=int, default=6)
-    parser.add_argument("--n_elements", type=int, default=4)
+    parser.add_argument("--wE", type=int, default=4)
+    parser.add_argument("--wF", type=int, default=4)
+    parser.add_argument("--mul_pipeline_depth", type=int, default=1)
+    parser.add_argument("--add_pipeline_depth", type=int, default=2)
+    parser.add_argument("--n_elements", type=int, default=8)
     parser.add_argument("--out_dir", type=Path, default=Path("."))
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()

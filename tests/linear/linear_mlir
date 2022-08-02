@@ -1,0 +1,50 @@
+module attributes {torch.debug_module_name = "Linear"} {
+  memref.global "private" constant @__constant_8x8xf32 : memref<8x8xf32> = dense<[[0.1304048, 0.346912473, 0.129703045, -0.254249215, -0.202600986, 0.143918365, 0.158696562, -0.13683261], [0.232955962, 0.177348763, 0.206332177, -0.286266506, 0.222869962, -0.199148074, -0.0898168683, -0.0829473435], [-0.00487837195, -0.210454971, 0.27113989, -0.0909238159, 0.19470951, 0.113765568, -0.0427575111, 0.104272991], [-0.338895649, -0.264517456, 0.123469025, -0.134092137, 0.29335168, 0.0598190725, 0.0420489907, 0.0374582112], [-0.26802659, -0.0168780088, -0.0650699138, -0.127377465, 0.195541769, 0.270590037, 0.196241468, -0.148936421], [0.286582559, 0.225449115, 3.293650e-01, -0.318665624, -0.0442436039, -0.0876301229, -0.0215073824, -0.249710083], [0.236608416, 0.0580010712, -0.222778797, -0.286287844, 0.18184486, 0.331587106, 0.102678537, 0.309016794], [-0.340677172, -0.302585214, 0.123279363, 0.245809406, -2.60919333E-4, -0.151715592, -0.305458933, 0.0602760613]]>
+  memref.global "private" constant @__constant_8xf32 : memref<8xf32> = dense<[0.255856365, -0.0244942605, 0.174927443, -0.286645174, -0.119659454, 0.137546629, 0.200941354, 8.172500e-02]>
+  func.func @forward(%arg0: memref<1x8xf32>) -> memref<f32> {
+    %c8 = arith.constant 8 : index
+    %c1 = arith.constant 1 : index
+    %c0 = arith.constant 0 : index
+    %cst = arith.constant 0.000000e+00 : f32
+    %0 = memref.get_global @__constant_8xf32 : memref<8xf32>
+    %1 = memref.get_global @__constant_8x8xf32 : memref<8x8xf32>
+    %2 = memref.alloca() : memref<1x8xf32>
+    scf.parallel (%arg1, %arg2) = (%c0, %c0) to (%c1, %c8) step (%c1, %c1) {
+      %7 = memref.load %0[%arg2] : memref<8xf32>
+      memref.store %7, %2[%arg1, %arg2] : memref<1x8xf32>
+      scf.yield
+    }
+    %3 = memref.alloca() : memref<8x8xf32>
+    scf.parallel (%arg1, %arg2) = (%c0, %c0) to (%c8, %c8) step (%c1, %c1) {
+      %7 = memref.load %1[%arg2, %arg1] : memref<8x8xf32>
+      memref.store %7, %3[%arg1, %arg2] : memref<8x8xf32>
+      scf.yield
+    }
+    %4 = memref.alloca() : memref<1x8xf32>
+    memref.copy %2, %4 : memref<1x8xf32> to memref<1x8xf32>
+    scf.parallel (%arg1, %arg2) = (%c0, %c0) to (%c1, %c8) step (%c1, %c1) {
+      scf.for %arg3 = %c0 to %c8 step %c1 {
+        %7 = memref.load %arg0[%arg1, %arg3] : memref<1x8xf32>
+        %8 = memref.load %3[%arg3, %arg2] : memref<8x8xf32>
+        %9 = memref.load %4[%arg1, %arg2] : memref<1x8xf32>
+        %10 = arith.mulf %7, %8 : f32
+        %11 = arith.addf %9, %10 : f32
+        memref.store %11, %4[%arg1, %arg2] : memref<1x8xf32>
+      }
+      scf.yield
+    }
+    %5 = memref.alloca() : memref<f32>
+    memref.store %cst, %5[] : memref<f32>
+    %6 = memref.alloc() {alignment = 128 : i64} : memref<f32>
+    memref.copy %5, %6 : memref<f32> to memref<f32>
+    scf.for %arg1 = %c0 to %c1 step %c1 {
+      scf.for %arg2 = %c0 to %c8 step %c1 {
+        %7 = memref.load %4[%arg1, %arg2] : memref<1x8xf32>
+        %8 = memref.load %6[] : memref<f32>
+        %9 = arith.addf %7, %8 : f32
+        memref.store %9, %6[] : memref<f32>
+      }
+    }
+    return %6 : memref<f32>
+  }
+}

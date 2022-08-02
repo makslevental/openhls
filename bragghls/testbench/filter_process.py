@@ -8,6 +8,7 @@ def main():
     fh_in = sys.stdin
     fh_out = sys.stdout
 
+    wE = wF = 4
     while True:
         # incoming values have newline
         l = fh_in.readline()
@@ -15,9 +16,10 @@ def main():
             return 0
 
         # outgoing filtered values must have a newline
-        # print(f"len l {len(l)} {list(l)}", file=sys.stderr)
+
         try:
-            s = convert_flopoco_binary_str_to_float(l.strip())
+            print(f"do you have the right wE wF {wE} {wF}", file=sys.stderr)
+            s = convert_flopoco_binary_str_to_float(l.strip(), wE, wF)
             fh_out.write("%s\n" % s)
         except Exception as e:
             print(e, file=sys.stderr)

@@ -4,15 +4,15 @@ from bragghls.rtl.basic import make_constant
 
 
 def make_top_module_decl(
-    ip_name, input_wires, output_wires, precision, include_outer_module
+    ip_name, input_wires, output_wires, signal_width, include_outer_module
 ):
     inputs = input_wires
     outputs = output_wires
-    base_inputs = ["clk", "reset", "ce"]
-    input_ports = [f"[{precision - 1}:0] {i}" for i in inputs]
+    base_inputs = ["clk", "reset"]
+    input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
 
     base_outputs = []
-    output_ports = [f"[{precision - 1}:0] {o}" for o in outputs]
+    output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
 
     input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
     output_wires = ",\n".join(
@@ -44,7 +44,7 @@ def make_top_module_decl(
             "\n".join(
                 [
                     # TODO: put real net values here
-                    f"""reg {inp} = {make_constant(None, precision)};"""
+                    f"""reg {inp} = {make_constant(None, signal_width)};"""
                     for inp in input_ports[2:]
                 ]
             )

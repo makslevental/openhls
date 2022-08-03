@@ -41,12 +41,7 @@ def set_inputs(mod, wE, wF, dut=None):
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
-        if DEBUG:
-            scale = np.random.randint(-10, 10) or 1
-            np_inputs = test_inputs[inp_name] = np.ones(inp_memref.shape) * scale
-            # np_inputs = test_inputs[inp_name] = np.random.choice(FIXED, np.prod(inp_memref.shape)).reshape(inp_memref.shape)
-        else:
-            np_inputs = test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        np_inputs = test_inputs[inp_name] = np.random.random(inp_memref.shape)
     test_inputs, outputs = run_model_with_fp_number(mod, test_inputs, wE=wE, wF=wF)
     # print(f"test_inputs {test_inputs}")
 
@@ -74,7 +69,7 @@ async def test_tb(dut):
     MODULE_FP = os.getenv("MODULE_FP")
     module = import_module_from_fp("test_module", MODULE_FP)
 
-    clock = Clock(dut.clk, 2, units="ns")  # Create a 10us period clock on port clk
+    clock = Clock(dut.clk, 2, units="ns")  # Create a 2ns period clock on port clk
     cocotb.start_soon(clock.start())  # Start the clock
     await FallingEdge(dut.clk)
     dut._discover_all()
@@ -104,7 +99,7 @@ async def test_tb(dut):
                     )
                 print(f"passed {i}")
             else:
-                print(f"overflow {i}")
+                print(f"overflow {i} with {output_wire.value.binstr}")
 
         await FallingEdge(dut.clk)
 
@@ -121,7 +116,7 @@ def testbench_runner(
     wE,
     wF,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
-    n_test_vectors=20,
+    n_test_vectors=30,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()

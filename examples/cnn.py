@@ -29,14 +29,16 @@ class DoubleCNN(nn.Module):
 
 
 class ConvPlusReLU(nn.Module):
-    def __init__(self, in_channels, out_channels, bias):
+    def __init__(self, in_channels, out_channels, bias=True):
         super().__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias)
-        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias)
+        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
+        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias)
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):
-        return self.relu(self.conv2(self.conv1(x)).sum())
+        x = self.conv1(x)
+        x = self.conv2(x).sum()
+        return x
 
 
 def make_single_small_cnn(
@@ -80,12 +82,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--out_dir",
         type=Path,
-        default=Path(__file__).parent / "small_cnn_bragghls_artifacts",
+        default=Path(__file__).parent / "double_cnn_bragghls_artifacts",
     )
-    parser.add_argument("--size", type=int, default=11)
+    parser.add_argument("--size", type=int, default=5)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
 
-    dot_str = make_single_small_cnn(img_size=args.size, simplify_weights=False)
+    dot_str = make_double_small_cnn(img_size=args.size)
     os.makedirs(f"{args.out_dir}", exist_ok=True)
-    open(f"{args.out_dir}/small_cnn.mlir", "w").write(dot_str)
+    open(f"{args.out_dir}/double_cnn.mlir", "w").write(dot_str)

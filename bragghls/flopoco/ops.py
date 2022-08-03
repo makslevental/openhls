@@ -83,12 +83,10 @@ class Val:
         if self.fp.sign() == 0:
             return self
         else:
-            return Val(
-                0, self.wE, self.wF, flopoco_converter.FPNumber(0, self.wE, self.wF)
-            )
+            return Val(0, self.wE, self.wF)
 
     def __repr__(self):
-        return str(f"<IEEE {self.ieee}> {self.fp}")
+        return str(f"<IEEE {self.ieee:.2e}> {self.fp} {self.wE} {self.wF}")
 
 
 def mul(x: Val, y: Val):
@@ -106,8 +104,7 @@ def add(x: Val, y: Val):
 def sub(x: Val, y: Val):
     assert x.wE == y.wE
     assert x.wF == y.wF
-    diff = x.ieee - y.ieee
-    return Val(diff, x.wE, x.wF, x.fp - y.fp)
+    return Val(x.ieee - y.ieee, x.wE, x.wF, x.fp - y.fp)
 
 
 class MemRef:

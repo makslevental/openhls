@@ -1,3 +1,4 @@
+import logging
 import warnings
 from collections import defaultdict
 from io import StringIO
@@ -17,6 +18,8 @@ from bragghls.rtl.basic import (
 from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
+
+logger = logging.getLogger(__name__)
 
 
 def build_ip_res_val_map(pe, op_datas: list[Op], vals):
@@ -184,7 +187,7 @@ def emit_verilog(
         pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)
-    print(f"num pes {len(pe_to_ops)}")
+    logger.info(f"Number unique processing elements in design {len(pe_to_ops)}")
     ip_res_val_map = {}
     for pe, op_datas in pe_to_ops.items():
         ip_res_val_map.update(build_ip_res_val_map(pe, op_datas, vals))

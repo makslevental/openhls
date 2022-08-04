@@ -215,7 +215,7 @@ module attributes {torch.debug_module_name = "Linear"} {
 Then running
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b
+BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b
 ```
 
 will generate `linear.sv` and run the automatically generated (no artifact) testbench, and produce the following output:

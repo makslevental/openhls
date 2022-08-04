@@ -1,8 +1,12 @@
+import logging
+
 import numpy as np
 import torch
 from torch import nn
 from torch_mlir import run_pipeline_with_repro_report
 from torch_mlir.dialects.torch.importer.jit_ir import ClassAnnotator, ModuleBuilder
+
+logger = logging.getLogger(__name__)
 
 BUFFERIZATION_PIPELINE = [
     # Bufferize.
@@ -51,6 +55,7 @@ def script_module_with_annotations(test_module, annotations):
 
 
 def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
+    logger.info("Compiling PyTorch to MLIR")
     recursivescriptmodule, class_annotator = script_module_with_annotations(
         nn_mod,
         [None] + [(in_shape, dtype, True) for in_shape, dtype in shapes_dtypes],

@@ -1,10 +1,13 @@
 import argparse
 import ast
+import logging
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
 
 from bragghls.ir.parse import parse_mlir_module, reg_idents
+
+logger = logging.getLogger(__name__)
 
 
 class RemoveMAC(ast.NodeTransformer):
@@ -143,8 +146,11 @@ def traverse_mlir_op_region_block_iterators(op, handler):
 
 
 def transform_forward(new_tree):
+    logger.info("Hoisting globals to parameters")
     new_tree = HoistGlobals().visit(new_tree)
+    logger.info("Substituting ReLUs")
     new_tree = RemoveIfExp().visit(new_tree)
+    logger.info("Discovering MACs")
     new_tree = RemoveMAC().visit(new_tree)
     return new_tree
 

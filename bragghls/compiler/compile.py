@@ -1,10 +1,12 @@
 import argparse
 import ast
 import io
+import logging
 import os
 import re
 import shutil
 import sys
+from pathlib import Path
 from subprocess import Popen, PIPE
 
 import astor
@@ -20,11 +22,13 @@ from bragghls.rtl.ip import generate_imports_tcl
 from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.util import import_module_from_fp, import_module_from_string
 
+logger = logging.getLogger(__name__)
+
 
 def translate(affine_mlir_str):
     p = Popen(
         [
-            shutil.which("bragghls_translate"),
+            Path(sys.executable).parent.resolve() / "bragghls/bragghls_translate",
             "--emit-hlspy",
             "--mlir-print-elementsattrs-with-hex-if-larger=-1",
         ],
@@ -32,7 +36,10 @@ def translate(affine_mlir_str):
         stdin=PIPE,
         stderr=PIPE,
     )
-    return p.communicate(input=affine_mlir_str.encode())[0].decode()
+    res, err = p.communicate(input=affine_mlir_str.encode())
+    if err:
+        raise Exception(f"translation failed {err.decode()}")
+    return res.decode()
 
 
 def rewrite(pythonized_mlir):
@@ -114,7 +121,11 @@ def compile(
     os.makedirs(artifacts_dir, exist_ok=True)
 
     if do_translate:
+        logger.info("Translating MLIR back to Python")
         affine_mlir_str = scf_to_affine(fp)
+        if DEBUG:
+            with open(f"{artifacts_dir}/{name}.affine.mlir", "w") as f:
+                f.write(affine_mlir_str)
         pythonized_mlir = translate(affine_mlir_str)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "w") as f:
@@ -124,6 +135,7 @@ def compile(
             pythonized_mlir = f.read()
 
     if do_rewrite:
+        logger.info("Rewriting Python")
         rewritten_py_code = rewrite(pythonized_mlir)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}_rewritten.py", "w") as f:
@@ -147,6 +159,7 @@ def compile(
         rewritten_mlir_output = f.read()
 
     if do_schedule:
+        logger.info("Scheduling")
         scheduled_mlir = run_circt(rewritten_mlir_output)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}.sched.mlir", "w") as f:
@@ -173,6 +186,7 @@ def compile(
         ) = parse_mlir_module(sched_and_rewritten_mlir)
 
     if do_verilog:
+        logger.info("Emitting RTL")
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
             wE,
@@ -194,21 +208,26 @@ def compile(
         with open(f"{artifacts_dir}/imports.tcl", "w") as f:
             f.write(imports_file)
 
-        print(f"max_fsm_stage {max_fsm_stage}")
+        logger.info(f"Final FSM time step {max_fsm_stage}")
 
+    logger.info(f"RTL top-level {name}")
+
+    for ip_core_sv in [
+        f"flopoco_fadd_{wE}_{wF}.sv",
+        f"flopoco_fmul_{wE}_{wF}.sv",
+        f"flopoco_neg.sv",
+        f"flopoco_relu.sv",
+        f"alveo-u280-xdc.xdc",
+    ]:
+        full_file_name = os.path.join(
+            os.path.dirname(ip_cores.__file__), ip_core_sv
+        )
+        if os.path.isfile(full_file_name):
+            shutil.copy(full_file_name, f"{artifacts_dir}/")
+            
     if do_testbench:
-        for ip_core_sv in [
-            f"flopoco_fadd_{wE}_{wF}.sv",
-            f"flopoco_fmul_{wE}_{wF}.sv",
-            f"flopoco_neg.sv",
-            f"flopoco_relu.sv",
-        ]:
-            full_file_name = os.path.join(
-                os.path.dirname(ip_cores.__file__), ip_core_sv
-            )
-            print("wtfbbq", full_file_name)
-            if os.path.isfile(full_file_name):
-                shutil.copy(full_file_name, f"{artifacts_dir}/")
+        logger.info("Running testbench")
+
         max_fsm_stage = return_time + 1
         testbench_runner(
             proj_path=f"{artifacts_dir}",
@@ -221,10 +240,11 @@ def compile(
             wF=wF,
             ip_cores_path=os.path.dirname(ip_cores.__file__),
         )
-        print("thank you come again")
+        logger.info("Thank you, come again")
+        os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
         sys.exit(0)
-
     os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
+
 
 
 def main():
@@ -269,7 +289,8 @@ def main():
         args.schedule,
         args.verilog,
         args.testbench,
-        WE, WF
+        WE,
+        WF,
     )
 
 

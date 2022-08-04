@@ -19,7 +19,7 @@ high-energy diffraction microscopy (HEDM).
 The "flow" is
 
 <p align="center">
-  <img height="400" src="docs/images/bragghls_flow.png" alt="">
+  <img width="1000" src="docs/images/bragghls_flow.png" alt="">
 </p>
 
 # TL;DR
@@ -100,12 +100,14 @@ This project has a lot of moving parts; the directory structure tells the tale:
 - [examples/](examples) - obviously...
 - [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
   generation
-    - [flopoco_convert_ext/](ip_cores/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
-      FloPoCo's floating point representation
+- [flopoco_convert_ext/](ip_cores/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
+  FloPoCo's floating point representation
 - [scripts/](scripts) - helper scripts for things like generating new FloPoCo IPs and building the entire project
 - [tests/](tests) - obviously...
 
 # Current status
+
+![build_and_test](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml/badge.svg)
 
 [linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling)
 but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
@@ -138,7 +140,7 @@ brew install llvm gmp mpfr mpfi icarus-verilog
 
 ## Build steps
 
-1. First make sure you have all the submodules checked out by running [clone_externals.sh](clone_externals.sh); This
+1. First make sure you have all the submodules checked out by running [scripts/clone_externals.sh](scripts/clone_externals.sh); This
    will take a while due to our dependency on LLVM.
 2. `pip install -r requirements.txt` to get PyTorch and TorchMLIR; if this fails due to unsupported platform for
    TorchMLIR it's probably because wheels are broken (cf. [releases](https://github.com/llvm/torch-mlir/releases)).
@@ -158,7 +160,7 @@ The path to this config file needs to be set as an environment variable before i
 BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler 
 ```
 
-Not the `$(pwd)` which is necessary if you're running the testbenches.
+Note the `$(pwd)` which is necessary if you're running the testbenches.
 
 Assuming everything built successfully and you have all of the correct paths and environment variables, run any of the
 scripts in [examples](examples) to generate MLIR IR. 

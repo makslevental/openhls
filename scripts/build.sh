@@ -122,9 +122,27 @@ if [ ! -f "${BRAGGHLS_DIR}"/build/bragghls/CMakeCache.txt ]; then
 fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target bragghls_translate
-#cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
-#cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/bragghls/flopoco/
+mkdir -p "${BRAGGHLS_DIR}"/build/flopoco_converter
+
+if [ ! -f "${BRAGGHLS_DIR}"/build/flopoco_converter/CMakeCache.txt ]; then
+  cmake -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_PREFIX_PATH="${BRAGGHLS_DIR}"/build/llvm \
+      -DCMAKE_C_COMPILER=$C_COMPILER \
+      -DPYBIND11_DIR="$(python -c "import pybind11; print(pybind11.get_cmake_dir())")" \
+      -DCMAKE_CXX_COMPILER=$CXX_COMPILER \
+      -DPython3_FIND_VIRTUALENV=ONLY \
+      -DMLIR_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/mlir \
+      -DLLVM_DIR="${BRAGGHLS_DIR}"/build/llvm/lib/cmake/llvm \
+      -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+      -DLLVM_TARGETS_TO_BUILD=host \
+      -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+      -S "${BRAGGHLS_DIR}"/flopoco_convert_ext \
+      -B "${BRAGGHLS_DIR}"/build/flopoco_converter
+fi
+
+cmake --build "${BRAGGHLS_DIR}"/build/flopoco_converter --target flopoco_converter
+cp "${BRAGGHLS_DIR}"/build/flopoco_converter/flopoco_converter* "${BRAGGHLS_DIR}"/bragghls/flopoco/
 
 if [ ! -f "${BRAGGHLS_DIR}"/build/ghdl/bin/ghdl ]; then
   if [[ "$(uname)" == 'Darwin' ]]; then

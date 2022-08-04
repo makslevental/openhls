@@ -248,7 +248,7 @@ class CMakeBuild(build_ext):
 
 data_files = [
     (
-        f"{sys.prefix}/bin",
+        f"bin",
         [
             "build/bragghls/bin/bragghls_translate",
             "build/circt/bin/circt-opt",

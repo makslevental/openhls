@@ -16,7 +16,11 @@ point IPs) - no systolic arrays, no matrix multipliers - i.e., models are actual
 The particular, driving, use case is low-latency [Bragg peak detection](https://arxiv.org/abs/2008.08198) for
 high-energy diffraction microscopy (HEDM).
 
-The "flow" is PyTorch -> MLIR -> python -> MLIR -> RTL.
+The "flow" is
+
+<p align="center">
+  <img height="400" src="docs/images/bragghls_flow.png" alt="">
+</p>
 
 # TL;DR
 

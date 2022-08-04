@@ -5,7 +5,8 @@ from textwrap import indent, dedent
 
 import numpy as np
 
-from bragghls import state
+from bragghls.compiler import state
+from bragghls.compiler.state import logger
 from bragghls.flopoco.ops import (
     MemRef as FPMemRef,
     GlobalMemRef as FPGlobalMemRef,
@@ -13,7 +14,6 @@ from bragghls.flopoco.ops import (
 )
 from bragghls.ir.memref import MemRef, GlobalMemRef
 from bragghls.ir.ops import OpType, LATENCIES
-from bragghls.state import logger
 from bragghls.util import extend_idx
 
 
@@ -67,7 +67,8 @@ def get_py_module_args_globals(args):
     return inputs, globals, outputs
 
 
-def MLIRForward(args, forward):
+def Forward(forward):
+    args = get_default_args(forward)
     inputs, globals, outputs = get_py_module_args_globals(args)
 
     input_names = sorted(
@@ -111,11 +112,6 @@ def parfor(ranges):
 def make_output_file(fp=None):
     if state.state is None:
         state.state = state.State(open(fp.replace(".py", ".mlir"), "w"))
-
-
-def Forward(forward):
-    args = get_default_args(forward)
-    MLIRForward(args, forward)
 
 
 def run_model_with_fp_number(mod, inputs, wE, wF):

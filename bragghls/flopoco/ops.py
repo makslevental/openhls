@@ -1,20 +1,17 @@
-import os
 from collections import namedtuple
 from dataclasses import dataclass
 from functools import reduce
 
 import numpy as np
 
-import bragghls.state
+from bragghls.compiler import state
+from bragghls.config import WE, WF
 from bragghls.util import idx_to_str, chunks
 
 try:
     from . import flopoco_converter
 except:
     import flopoco_converter
-
-WE = int(os.getenv("WE"))
-WF = int(os.getenv("WF"))
 
 FPNUMBER = namedtuple("FPNUMBER", "pe_idx")(None)
 
@@ -171,7 +168,7 @@ class MemRef:
             for idx, x in np.ndenumerate(vals):
                 v = Val(x, wE, wF)
                 try:
-                    bragghls.state.state.add_val_source(v, FPNUMBER)
+                    state.state.add_val_source(v, FPNUMBER)
                 except:
                     pass
                 registers[idx] = v

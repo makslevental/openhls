@@ -3,7 +3,7 @@ from typing import Tuple
 
 import numpy as np
 
-from bragghls import state
+from bragghls.compiler import state
 from bragghls.ir.ops import Val, make_constant, ReduceAdd
 from bragghls.util import idx_to_str
 

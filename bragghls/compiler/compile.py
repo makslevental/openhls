@@ -2,26 +2,29 @@ import argparse
 import ast
 import io
 import os
+import re
 import shutil
+import sys
 from subprocess import Popen, PIPE
 
 import astor
 
-import bragghls.state
+from bragghls import ip_cores
+from bragghls.compiler import state
+from bragghls.compiler.runner import Forward, get_default_args
+from bragghls.config import DEBUG, WE, WF
 from bragghls.ir.parse import parse_mlir_module
 from bragghls.ir.transforms import transform_forward, rewrite_schedule_vals
 from bragghls.rtl.emit_verilog import emit_verilog
 from bragghls.rtl.ip import generate_imports_tcl
-from bragghls.runner import Forward, get_default_args
 from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.util import import_module_from_fp, import_module_from_string
-from scripts.hack_affine_scf import scf_to_affine
 
 
 def translate(affine_mlir_str):
     p = Popen(
         [
-            shutil.which("bragghls_translate", path=os.getenv("BRAGGHLS_PATH")),
+            shutil.which("bragghls_translate"),
             "--emit-hlspy",
             "--mlir-print-elementsattrs-with-hex-if-larger=-1",
         ],
@@ -41,7 +44,7 @@ def rewrite(pythonized_mlir):
 
 def run_rewrite(mod):
     file = io.StringIO()
-    bragghls.state.state = bragghls.state.State(file)
+    state.state = state.State(file)
     Forward(mod.forward)
     file.seek(0)
     s = file.read()
@@ -74,14 +77,44 @@ def run_circt(mlir_output):
     return res.decode()
 
 
-def main(args):
-    dirname, filename = os.path.split(args.fp)
+def scf_to_affine(fp):
+    cst_map = {}
+    old_lines = open(fp).readlines()
+    new_lines = []
+
+    for i, line in enumerate(old_lines):
+        if "arith.constant" in line and "index" in line:
+            matches = re.findall(r"%c([\d|_]+) = arith.constant (\d+) : index", line)[0]
+            assert len(matches) == 2
+            cst_map[f"%c{matches[0]}"] = matches[1]
+        if "scf.for" in line or "scf.parallel" in line:
+            for cst_ident, cst in cst_map.items():
+                line = line.replace(cst_ident, cst)
+            line = line.replace("scf", "affine")
+        if "scf.yield" not in line:
+            new_lines.append(line)
+
+    return "\n".join(new_lines)
+
+
+def compile(
+    fp,
+    do_translate,
+    do_rewrite,
+    do_schedule,
+    do_verilog,
+    do_testbench,
+    wE,
+    wF,
+):
+    fp = os.path.abspath(fp)
+    dirname, filename = os.path.split(fp)
     name, ext = os.path.splitext(filename)
     artifacts_dir = f"{dirname}"
     os.makedirs(artifacts_dir, exist_ok=True)
 
-    if args.translate:
-        affine_mlir_str = scf_to_affine(args.fp)
+    if do_translate:
+        affine_mlir_str = scf_to_affine(fp)
         pythonized_mlir = translate(affine_mlir_str)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "w") as f:
@@ -90,7 +123,7 @@ def main(args):
         with open(f"{artifacts_dir}/{name}_pythonized_mlir.py", "r") as f:
             pythonized_mlir = f.read()
 
-    if args.rewrite:
+    if do_rewrite:
         rewritten_py_code = rewrite(pythonized_mlir)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}_rewritten.py", "w") as f:
@@ -113,7 +146,7 @@ def main(args):
     with open(f"{artifacts_dir}/{name}.rewritten.mlir", "r") as f:
         rewritten_mlir_output = f.read()
 
-    if args.schedule:
+    if do_schedule:
         scheduled_mlir = run_circt(rewritten_mlir_output)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}.sched.mlir", "w") as f:
@@ -125,7 +158,7 @@ def main(args):
         with open(f"{artifacts_dir}/{name}.rewritten.sched.mlir", "w") as f:
             f.write(sched_and_rewritten_mlir)
 
-    if args.verilog or args.testbench:
+    if do_verilog or do_testbench:
         with open(f"{artifacts_dir}/{name}.rewritten.sched.mlir", "r") as f:
             sched_and_rewritten_mlir = f.read()
 
@@ -139,11 +172,11 @@ def main(args):
             pe_idxs,
         ) = parse_mlir_module(sched_and_rewritten_mlir)
 
-    if args.verilog:
+    if do_verilog:
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
-            args.wE,
-            args.wF,
+            wE,
+            wF,
             op_id_data,
             func_args,
             returns,
@@ -151,19 +184,31 @@ def main(args):
             vals,
             csts,
             pe_idxs,
-            include_outer_module=not args.testbench,
+            include_outer_module=not do_testbench,
         )
         verilog_file = verilog_file.replace("%", "v_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
-            
-        imports_file = generate_imports_tcl(f"{name}.sv", args.wE, args.wF)
+
+        imports_file = generate_imports_tcl(f"{name}.sv", wE, wF)
         with open(f"{artifacts_dir}/imports.tcl", "w") as f:
             f.write(imports_file)
 
-        print(f"{max_fsm_stage=}")
+        print(f"max_fsm_stage {max_fsm_stage}")
 
-    if args.testbench:
+    if do_testbench:
+        for ip_core_sv in [
+            f"flopoco_fadd_{wE}_{wF}.sv",
+            f"flopoco_fmul_{wE}_{wF}.sv",
+            f"flopoco_neg.sv",
+            f"flopoco_relu.sv",
+        ]:
+            full_file_name = os.path.join(
+                os.path.dirname(ip_cores.__file__), ip_core_sv
+            )
+            print("wtfbbq", full_file_name)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, f"{artifacts_dir}/")
         max_fsm_stage = return_time + 1
         testbench_runner(
             proj_path=f"{artifacts_dir}",
@@ -172,25 +217,61 @@ def main(args):
             top_level=name,
             max_fsm_stage=max_fsm_stage,
             output_name=output_name,
-            wE=args.wE,
-            wF=args.wF,
+            wE=wE,
+            wF=wF,
+            ip_cores_path=os.path.dirname(ip_cores.__file__),
         )
+        print("thank you come again")
+        sys.exit(0)
 
     os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
 
 
-if __name__ == "__main__":
-    DEBUG = bool(int(os.getenv("DEBUG", "1")))
+def main():
     parser = argparse.ArgumentParser("BraggHLS compiler driver")
     parser.add_argument("fp", help="Filepath of top-level MLIR file")
-    parser.add_argument("-t", "--translate", default=False, action="store_true", help="Translate MLIR to python")
-    parser.add_argument("-r", "--rewrite", default=False, action="store_true", help="Transform/rewrite python")
-    parser.add_argument("-s", "--schedule", default=False, action="store_true", help="Schedule the model using CIRCT")
-    parser.add_argument("-v", "--verilog", default=False, action="store_true", help="Emit verilog")
-    parser.add_argument("-b", "--testbench", default=False, action="store_true", help="Run autogenerated testbench")
-    parser.add_argument("--wE", default=4, help="Bit width of exponent")
-    parser.add_argument("--wF", default=4, help="Bit width of fraction")
+    parser.add_argument(
+        "-t",
+        "--translate",
+        default=False,
+        action="store_true",
+        help="Translate MLIR to python",
+    )
+    parser.add_argument(
+        "-r",
+        "--rewrite",
+        default=False,
+        action="store_true",
+        help="Transform/rewrite python",
+    )
+    parser.add_argument(
+        "-s",
+        "--schedule",
+        default=False,
+        action="store_true",
+        help="Schedule the model using CIRCT",
+    )
+    parser.add_argument(
+        "-v", "--verilog", default=False, action="store_true", help="Emit verilog"
+    )
+    parser.add_argument(
+        "-b",
+        "--testbench",
+        default=False,
+        action="store_true",
+        help="Run autogenerated testbench",
+    )
     args = parser.parse_args()
-    args.wE = int(args.wE)
-    args.wF = int(args.wF)
-    main(args)
+    compile(
+        args.fp,
+        args.translate,
+        args.rewrite,
+        args.schedule,
+        args.verilog,
+        args.testbench,
+        WE, WF
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,24 +1,16 @@
 import logging
-import os
 
 import networkx as nx
+
+from bragghls.config import VAL_PREFIX, DTYPE, DEBUG, INCLUDE_AUX_DEPS
 
 logging.basicConfig(encoding="utf-8", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-INPUT = "INPUT"
+INPUT_ARG = "INPUT_ARG"
 MEMREF_ARG = "MEMREF_ARG"
 GLOBAL_MEMREF_ARG = "GLOBAL_MEMREF_ARG"
 CONSTANT = "CONSTANT"
-VAL_PREFIX = "%"
-DTYPE = "f32"
-DEBUG = bool(int(os.environ.get("DEBUG", "0")))
-INCLUDE_AUX_DEPS = True
-USING_FLOPOCO = True
-MUL_PIPELINE_DEPTH = os.environ["MUL_PIPELINE_DEPTH"]
-MUL_LATENCY = int(MUL_PIPELINE_DEPTH) + 1
-ADD_PIPELINE_DEPTH = os.environ["ADD_PIPELINE_DEPTH"]
-ADD_LATENCY = int(ADD_PIPELINE_DEPTH) + 1
 
 
 class State:
@@ -35,7 +27,9 @@ class State:
     pe_deps = set()
 
     def __init__(self, output_file):
-        self.op_graph.add_nodes_from([INPUT, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT])
+        self.op_graph.add_nodes_from(
+            [INPUT_ARG, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT]
+        )
         self.output_file = output_file
 
     def incr_var(self):
@@ -103,7 +97,7 @@ class State:
         if val is not None:
             src = self.get_arg_src(val)
             if isinstance(src, str):
-                assert src in {INPUT, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT}
+                assert src in {INPUT_ARG, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT}
                 return
             else:
                 self.pe_idx = src.pe_idx

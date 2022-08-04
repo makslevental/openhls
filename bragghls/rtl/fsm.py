@@ -1,7 +1,8 @@
-import math
 from textwrap import dedent, indent
 
-from bragghls.state import MUL_LATENCY, ADD_LATENCY
+import math
+
+from bragghls.config import MUL_LATENCY, ADD_LATENCY
 
 
 def get_fsm_idx_width(max_fsm_stage):

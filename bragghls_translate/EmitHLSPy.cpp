@@ -1605,7 +1605,7 @@ void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
 from bragghls.ir.memref import MemRef, GlobalMemRef
 from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy
-from bragghls.runner import parfor, Forward, make_output_file
+from bragghls.compiler.runner import parfor, Forward, make_output_file
 import os
 
 make_output_file(os.getenv("RUNNER_OUTPUT_FP") or __file__)

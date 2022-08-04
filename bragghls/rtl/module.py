@@ -1,7 +1,7 @@
 from textwrap import dedent, indent
 
+from bragghls.config import USING_FLOPOCO
 from bragghls.rtl.basic import make_constant
-from bragghls.state import USING_FLOPOCO
 
 
 def make_top_module_decl(

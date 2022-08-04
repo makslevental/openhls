@@ -3,6 +3,7 @@ from collections import defaultdict
 from io import StringIO
 from textwrap import dedent
 
+from bragghls.config import DEBUG, USING_FLOPOCO
 from bragghls.ir.ops import Op, OpType, LATENCIES
 from bragghls.rtl.basic import (
     Wire,
@@ -16,7 +17,6 @@ from bragghls.rtl.basic import (
 from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
-from bragghls.state import DEBUG, USING_FLOPOCO
 
 
 def build_ip_res_val_map(pe, op_datas: list[Op], vals):
@@ -148,7 +148,8 @@ def emit_verilog(
             ip_name,
             list(input_wires.values()),
             list(f"output_{v}" for v in output_wires.values()),
-            width_exp, width_frac,
+            width_exp,
+            width_frac,
             include_outer_module,
         )
     )

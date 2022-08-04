@@ -4,8 +4,8 @@ set -xeu -o pipefail
 
 # The absolute path to the directory of this script.
 BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
-C_COMPILER=clang-14
-CXX_COMPILER=clang++-14
+C_COMPILER=$(which clang)
+CXX_COMPILER=$(which clang++)
 echo $BRAGGHLS_DIR
 
 cd "${BRAGGHLS_DIR}"
@@ -122,9 +122,9 @@ if [ ! -f "${BRAGGHLS_DIR}"/build/bragghls/CMakeCache.txt ]; then
 fi
 
 cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target bragghls_translate
-cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
+#cmake --build "${BRAGGHLS_DIR}"/build/bragghls --target flopoco_converter
 
-cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/bragghls/flopoco/
+#cp "${BRAGGHLS_DIR}"/build/bragghls/lib/flopoco_converter* "${BRAGGHLS_DIR}"/bragghls/flopoco/
 
 if [ ! -f "${BRAGGHLS_DIR}"/build/ghdl/bin/ghdl ]; then
   if [[ "$(uname)" == 'Darwin' ]]; then

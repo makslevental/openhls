@@ -12,6 +12,8 @@ __pycache__/
 *_bragghls_artifacts
 *generated*
 
+.externals_st_mtime
+
 # Distribution / packaging
 .Python
 build/

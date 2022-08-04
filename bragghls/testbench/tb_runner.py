@@ -1,4 +1,5 @@
 import argparse
+
 # import pydevd
 # pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True)
 import os
@@ -13,13 +14,12 @@ from cocotb.handle import ModifiableObject
 from cocotb.triggers import FallingEdge
 from cocotb.triggers import Timer
 
-from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
-from bragghls.runner import (
+from bragghls.compiler.runner import (
     get_default_args,
     get_py_module_args_globals,
     run_model_with_fp_number,
 )
-from bragghls.state import DEBUG
+from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.cocotb_runner import get_runner
 from bragghls.util import import_module_from_fp
 
@@ -116,7 +116,7 @@ def testbench_runner(
     wE,
     wF,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
-    n_test_vectors=30,
+    n_test_vectors=10,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()

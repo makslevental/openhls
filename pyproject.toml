@@ -1,0 +1,14 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "cmake>=3.12",
+    # MLIR build depends.
+    "ninja",
+    "numpy",
+    "pybind11>=2.7.1",
+    "PyYAML",
+    "pip",
+    "requests"
+]
+build-backend = "setuptools.build_meta"

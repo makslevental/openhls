@@ -11,15 +11,15 @@ function make() {
   echo $freq
   echo "fmul"
   flopoco FPMult wE=$wE wF=$wF name=fmul outputFile=flopoco_fmul_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0 2>&1 | grep "   Pipeline depth ="
-  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/ip_cores/flopoco_fmul_${wE}_${wF}.vhdl fmul
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/ip_cores/flopoco_fmul_${wE}_${wF}.vhdl fmul 2> /dev/null
   echo "fadd"
   flopoco FPAdd wE=$wE wF=$wF name=fadd dualPath=0 outputFile=flopoco_fadd_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0 2>&1  | grep "   Pipeline depth ="
-  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/ip_cores/flopoco_fadd_${wE}_${wF}.vhdl fadd
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/ip_cores/flopoco_fadd_${wE}_${wF}.vhdl fadd 2> /dev/null
   echo "\n"
 }
 #
 #for freq in 100 150 200 250 300 350 400 450 500 550 600 650 700 750 800; do
-#  make $freq 5 5
+#  make $freq 6 6
 #done
 
-make 600 5 5
+make 400 5 5

@@ -69,6 +69,7 @@ async def test_tb(dut):
     WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION"))
     OUTPUT_NAME = os.getenv("OUTPUT_NAME")
     MODULE_FP = os.getenv("MODULE_FP")
+    THRESHOLD = float(os.getenv("THRESHOLD", "0"))
     module = import_module_from_fp("test_module", MODULE_FP)
 
     clock = Clock(dut.clk, 2, units="ns")  # Create a 2ns period clock on port clk
@@ -76,9 +77,13 @@ async def test_tb(dut):
     await FallingEdge(dut.clk)
     dut._discover_all()
 
+    # TODO: handle multiple output wires
     output_wire = next(
         mod_obj for name, mod_obj in dut._sub_handles.items() if "output" in name
     )
+
+    if THRESHOLD:
+        n_wrong = 0
 
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm.value)
@@ -92,19 +97,28 @@ async def test_tb(dut):
             if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
                 if output_wire.value.binstr != output.fp.binstr():
                     incorrect_output = output_wire.value.binstr
-                    await FallingEdge(dut.clk)
-                    await FallingEdge(dut.clk)
-                    assert False, (
-                        f"clk {i}",
+                    print(
+                        "failed", f"clk {i}",
                         f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
                         f"true {output.fp}",
                     )
-                print(f"passed {i}")
+                    if THRESHOLD:
+                        n_wrong += 1
+                    else:
+                        await FallingEdge(dut.clk)
+                        await FallingEdge(dut.clk)
+                        assert False
+                else:
+                    print(f"passed {i}")
             else:
                 print(f"overflow {i} with {output_wire.value.binstr}")
 
         await FallingEdge(dut.clk)
 
+    if THRESHOLD:
+        print("threshold", THRESHOLD, "percent failed", n_wrong / TEST_VECTORS)
+        if n_wrong / TEST_VECTORS > THRESHOLD:
+            assert False
     print("\n")
 
 
@@ -119,6 +133,7 @@ def testbench_runner(
     width_fraction,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
     n_test_vectors=10,
+    threshold=None,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()
@@ -145,6 +160,7 @@ def testbench_runner(
             "N_TEST_VECTORS": str(n_test_vectors),
             "OUTPUT_NAME": output_name,
             "MODULE_FP": module_fp,
+            "THRESHOLD": str(threshold if threshold is not None else 0),
         },
         build_dir=proj_path,
         sim_dir=proj_path,

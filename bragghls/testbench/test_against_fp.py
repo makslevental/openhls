@@ -1,21 +1,17 @@
 import numpy as np
 import torch
-from bragghls.nn import set_weights
-from cnn_bragghls_artifacts import cnn_rewritten
 
-from bragghls.runner import (
-    run_model_with_fp_number,
+from bragghls.compiler.runner import (
     get_default_args,
     get_py_module_args_globals,
+    run_model_with_fp_number,
 )
 from bragghls.testbench.tb_runner import set_inputs
 
 
-def test_against_fp(wE, wF):
-    args = get_default_args(fp_mod.forward)
+def test_against_fp(pytorch_mod, flopoco_mod, width_exponent, width_fraction):
+    args = get_default_args(flopoco_mod.forward)
     input_memrefs, *_ = get_py_module_args_globals(args)
-    pytorch_mod = Linear(imgsz=2)
-    pytorch_mod.apply(set_weights)
     for i in range(100):
         np_test_inputs = {}
         for inp_name, inp_memref in input_memrefs.items():
@@ -23,7 +19,10 @@ def test_against_fp(wE, wF):
             print(f"{scale=}", end=", ")
             np_test_inputs[inp_name] = np.ones(inp_memref.curr_shape) * scale
         test_inputs, outputs = run_model_with_fp_number(
-            fp_mod, np_test_inputs, wE=wE, wF=wF
+            flopoco_mod,
+            np_test_inputs,
+            width_exponent=width_exponent,
+            width_fraction=width_fraction,
         )
         print(str(outputs["_6"][0]).split(":")[0].split(" ")[1], end=", ")
 
@@ -33,13 +32,3 @@ def test_against_fp(wE, wF):
             .item()
         )
         print(res)
-
-
-# test_against_fp(4, 4)
-
-
-def test_with():
-    print(set_inputs(cnn_rewritten, 4, 4))
-
-
-test_with()

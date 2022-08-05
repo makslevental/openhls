@@ -2,6 +2,8 @@ import enum
 from dataclasses import dataclass
 from textwrap import dedent, indent
 
+import numpy as np
+
 from bragghls.config import USING_FLOPOCO
 from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
 
@@ -46,7 +48,7 @@ def make_constant(v, width_exp, width_frac):
         raise Exception("not using flopoco thus invalid signal width")
 
     if v is None:
-        v = 0.0
+        v = np.random.random()
 
     # %val_cst_00
     assert isinstance(v, (float, int))

@@ -232,15 +232,19 @@ class CMakeBuild(build_ext):
         # changed, _ = externals_file_changed()
         base_cmake_args = make_base_cmake_args()
 
-        build_llvm(base_cmake_args)
-        build_circt(base_cmake_args)
-        build_bragghls(base_cmake_args)
+        if bool(int(os.getenv("BUILD_LLVM", "1"))):
+            build_llvm(base_cmake_args)
+        if bool(int(os.getenv("BUILD_CIRCT", "1"))):
+                build_circt(base_cmake_args)
+        if bool(int(os.getenv("BUILD_BRAGGHLS_TRANSLATE", "1"))):
+            build_bragghls(base_cmake_args)
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = base_cmake_args + [
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
         ]
-        build_flopoco_converter(cmake_args)
+        if bool(int(os.getenv("BUILD_FLOPOCO", "1"))):
+            build_flopoco_converter(cmake_args)
 
         # _, most_recent = externals_file_changed()
         # open(os.path.join(CWD, ".externals_st_mtime"), "w").write(str(most_recent))

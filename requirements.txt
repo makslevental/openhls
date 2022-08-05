@@ -2,7 +2,7 @@
 --pre
 torch
 
-numpy
+numpy==1.23.1
 networkx
 astor
 jinja2

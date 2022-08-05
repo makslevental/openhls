@@ -1,0 +1,155 @@
+name: Build and Test and Build Docker
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build-bragghls:
+    strategy:
+      fail-fast: true
+      matrix:
+#        os: [ macos-12, ubuntu-22.04 ]
+        os: [ ubuntu-22.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Get bragghls
+        uses: actions/checkout@v3
+        with:
+          submodules: 'false'
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+
+      - name: Install linux system packages
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install libgmp3-dev libmpfr-dev libmpfi-dev iverilog ninja-build cmake clang
+          pip install numpy==1.23.1 pybind11>=2.10.0
+
+      - name: Install macos system packages
+        if: matrix.os == 'macos-12'
+        run: |
+          brew install gmp mpfr mpfi icarus-verilog
+
+
+
+
+      # build/cache LLVM
+
+
+      - name: Get LLVM Hash
+        id: get-llvm-hash
+        run: echo "::set-output name=hash::$(git -C ./externals rev-parse @:./llvm-project)"
+        
+      - name: Cache LLVM Repo
+        id: cache-llvm-repo
+        uses: actions/cache@v2
+        with:
+          path: externals/llvm-project
+          key: ${{ runner.os }}-llvm-repo-${{ steps.get-llvm-hash.outputs.hash }}
+
+      - name: Checkout LLVM
+        if: steps.cache-llvm-repo.outputs.cache-hit != 'true'
+        run: git submodule update --init --depth 1 externals/llvm-project
+        
+      - name: Cache LLVM
+        id: cache-llvm
+        uses: actions/cache@v2
+        with:
+          path: build/llvm
+          key: ${{ runner.os }}-llvm-build-${{ steps.get-llvm-hash.outputs.hash }}
+
+      - name: Rebuild LLVM
+        if: steps.cache-llvm-repo.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p build/llvm
+          cd build/llvm
+          cmake ../../externals/llvm-project/llvm \
+            -DLLVM_ENABLE_PROJECTS="mlir" \
+            -DLLVM_TARGETS_TO_BUILD="host" \
+            -DCMAKE_BUILD_TYPE=RELEASE \
+            -DCMAKE_C_COMPILER=clang \
+            -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+            -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . -j $(nproc)
+
+
+
+      # build/cache CIRCT
+
+
+      - name: Get CIRCT Hash
+        id: get-circt-hash
+        run: echo "::set-output name=hash::$(git -C ./externals rev-parse @:./circt)"
+
+      - name: Cache CIRCT Repo
+        id: cache-circt-repo
+        uses: actions/cache@v2
+        with:
+          path: externals/circt
+          key: ${{ runner.os }}-circt-repo-${{ steps.get-circt-hash.outputs.hash }}
+
+      - name: Checkout CIRCT
+        if: steps.cache-circt-repo.outputs.cache-hit != 'true'
+        run: git submodule update --init --depth 1 externals/circt
+
+      - name: Cache CIRCT
+        id: cache-circt
+        uses: actions/cache@v2
+        with:
+          path: build/circt
+          key: ${{ runner.os }}-circt-build-${{ steps.get-circt-hash.outputs.hash }}
+
+      - name: Rebuild CIRCT
+        if: steps.cache-circt-repo.outputs.cache-hit != 'true' || steps.cache-llvm-repo.outputs.cache-hit != 'true'
+        run: |
+          cd $GITHUB_WORKSPACE
+          bash externals/circt/utils/get-or-tools.sh
+          cd $GITHUB_WORKSPACE
+          mkdir -p build/circt
+          cd build/circt
+          cmake ../../externals/circt \
+            -DMLIR_DIR="$(pwd)/../llvm/lib/cmake/mlir" \
+            -DLLVM_DIR="$(pwd)/../llvm/lib/cmake/llvm" \
+            -DCMAKE_BUILD_TYPE=RELEASE \
+            -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
+            -DSCHEDULING_OR_TOOLS=ON \
+            -DCMAKE_C_COMPILER=clang \
+            -DCMAKE_CXX_COMPILER=clang++
+          cmake --build . -j $(nproc)
+
+
+      # finally build BraggHLS
+
+
+      - name: Install python packages
+        run: python -m pip install -r requirements.txt
+      
+      - name: Build and Test bragghls
+        run: |
+          ./scripts/clone_externals.sh
+          BUILD_CIRCT=0 BUILD_LLVM=0 pip install . -vvvv
+          BRAGGHLS_CONFIG_FP=bragghls_config.ini python $(pwd)/examples/linear.py
+          BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1
+          
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [build-bragghls]
+    if: |
+      always() && needs.build-bragghls.result == 'success'
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PW }}
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: mlevental/bragghls:latest

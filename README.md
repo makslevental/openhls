@@ -4,9 +4,10 @@
 - [TL;DR](#tl-dr)
 - [Repo structure](#repo-structure)
 - [Current status](#current-status)
+- [Docker](#docker)
 - [Building](#building)
-    * [Requirements](#requirements)
-    * [Build steps](#build-steps)
+  * [Requirements](#requirements)
+  * [Build steps](#build-steps)
 - [Running](#running)
 
 This a framework for lowering PyTorch models to RTL using high-level synthesis (HLS) techniques.
@@ -107,7 +108,9 @@ This project has a lot of moving parts; the directory structure tells the tale:
 
 # Current status
 
-![build_and_test](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml/badge.svg)
+[![Build and Test](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml)
+
+[//]: # ([![Build Docker]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg&#41;]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml&#41;)
 
 [linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling)
 but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
@@ -123,7 +126,7 @@ docker build . -t bragghls && docker run -it bragghls
 or just pull the latest image from dockerhub:
 
 ```shell
-docker pull mlevental/bragghls:latest && docker run -it bragghls
+docker pull mlevental/bragghls:latest && docker run -it mlevental/bragghls
 ```
 
 # Building

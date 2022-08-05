@@ -112,6 +112,20 @@ This project has a lot of moving parts; the directory structure tells the tale:
 [linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling)
 but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
 
+# Docker
+
+The easiest way to get started is to build a docker container using the [Dockerfile](Dockerfile):
+
+```shell
+docker build . -t bragghls && docker run -it bragghls
+```
+
+or just pull the latest image from dockerhub:
+
+```shell
+docker pull mlevental/bragghls:latest && docker run -it bragghls
+```
+
 # Building
 
 The build steps are many and tortuous.
@@ -150,6 +164,18 @@ brew install llvm gmp mpfr mpfi icarus-verilog
     2. Build CIRCT against LLVM
     3. Build `bragghls_translate` and `flopoco_converter`
     4. Put all of the things in the correct places (`circt-opt` and `bragghls_translate` in `venv/bin`)
+
+If you get some mysterious errors like
+
+```shell
+The C++ compiler "/usr/bin/c++" is not able to compile a simple test program
+```
+
+make sure you have either GCC or Clang in your path but also set the `C_COMPILER`, `CXX_COMPILER` environment variables like this:
+
+```shell
+C_COMPILER=clang CXX_COMPILER=clang++ pip install . -vvvv
+```
 
 # Running
 

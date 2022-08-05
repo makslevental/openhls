@@ -5,7 +5,7 @@ from functools import reduce
 import numpy as np
 
 from bragghls.compiler import state
-from bragghls.config import WE, WF
+from bragghls.config import WIDTH_EXPONENT, WIDTH_FRACTION
 from bragghls.util import idx_to_str, chunks
 
 try:
@@ -30,30 +30,34 @@ def ReduceAdd(vals):
     return pairs[0][0] + pairs[0][1]
 
 
-def check_make_val(v, wE, wF):
+def check_make_val(v, width_exponent, width_fraction):
     if not isinstance(v, Val):
         assert isinstance(v, (float, int)), v
-        v = Val(v, wE, wF)
+        v = Val(v, width_exponent, width_fraction)
     return v
 
 
 @dataclass(frozen=True)
 class Val:
     ieee: float
-    wE: int
-    wF: int
+    width_exponent: int
+    width_fraction: int
     fp: flopoco_converter.FPNumber = None
     name: str = None
 
     def __post_init__(self):
         if self.fp is None:
             object.__setattr__(
-                self, "fp", flopoco_converter.FPNumber(self.ieee, self.wE, self.wF)
+                self,
+                "fp",
+                flopoco_converter.FPNumber(
+                    self.ieee, self.width_exponent, self.width_fraction
+                ),
             )
         object.__setattr__(self, "name", str(self))
 
     def __mul__(self, other):
-        other = check_make_val(other, self.wE, self.wF)
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
         v = mul(self, other)
         return v
 
@@ -61,17 +65,17 @@ class Val:
         return self.fp == other.fp
 
     def __add__(self, other):
-        other = check_make_val(other, self.wE, self.wF)
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
         v = add(self, other)
         return v
 
     def __sub__(self, other):
-        other = check_make_val(other, self.wE, self.wF)
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
         v = sub(self, other)
         return v
 
     def __neg__(self):
-        return Val(-self.ieee, self.wE, self.wF)
+        return Val(-self.ieee, self.width_exponent, self.width_fraction)
 
     def copy(self):
         return self
@@ -80,33 +84,42 @@ class Val:
         if self.fp.sign() == 0:
             return self
         else:
-            return Val(0, self.wE, self.wF)
+            return Val(0, self.width_exponent, self.width_fraction)
 
     def __repr__(self):
-        return str(f"<IEEE {self.ieee:.2e}> {self.fp} {self.wE} {self.wF}")
+        return str(
+            f"<IEEE {self.ieee:.2e}> {self.fp} {self.width_exponent} {self.width_fraction}"
+        )
 
 
 def mul(x: Val, y: Val):
-    assert x.wE == y.wE
-    assert x.wF == y.wF
-    return Val(x.ieee * y.ieee, x.wE, x.wF, x.fp * y.fp)
+    assert x.width_exponent == y.width_exponent
+    assert x.width_fraction == y.width_fraction
+    return Val(x.ieee * y.ieee, x.width_exponent, x.width_fraction, x.fp * y.fp)
 
 
 def add(x: Val, y: Val):
-    assert x.wE == y.wE
-    assert x.wF == y.wF
-    return Val(x.ieee + y.ieee, x.wE, x.wF, x.fp + y.fp)
+    assert x.width_exponent == y.width_exponent
+    assert x.width_fraction == y.width_fraction
+    return Val(x.ieee + y.ieee, x.width_exponent, x.width_fraction, x.fp + y.fp)
 
 
 def sub(x: Val, y: Val):
-    assert x.wE == y.wE
-    assert x.wF == y.wF
-    return Val(x.ieee - y.ieee, x.wE, x.wF, x.fp - y.fp)
+    assert x.width_exponent == y.width_exponent
+    assert x.width_fraction == y.width_fraction
+    return Val(x.ieee - y.ieee, x.width_exponent, x.width_fraction, x.fp - y.fp)
 
 
 class MemRef:
     def __init__(
-        self, name, *shape, input=False, output=False, registers=None, wE=WE, wF=WF
+        self,
+        name,
+        *shape,
+        input=False,
+        output=False,
+        registers=None,
+        width_exponent=WIDTH_EXPONENT,
+        width_fraction=WIDTH_FRACTION,
     ):
         self.arr_name = name
         self.shape = shape
@@ -117,19 +130,19 @@ class MemRef:
             self.registers = np.empty(shape, dtype=object)
         self.input = input
         self.output = output
-        assert wE is not None and wF is not None
-        self.wE = wE
-        self.wF = wF
+        assert width_exponent is not None and width_fraction is not None
+        self.width_exponent = width_exponent
+        self.width_fraction = width_fraction
 
     def __setitem__(self, index, value):
         assert not self.input
         if isinstance(value, (float, int)):
-            value = Val(value, self.wE, self.wF)
+            value = Val(value, self.width_exponent, self.width_fraction)
         self.registers[index] = value
 
     def zero(self):
         for idx in np.ndindex(*self.shape):
-            self.registers[idx] = Val(0.0, self.wE, self.wF)
+            self.registers[idx] = Val(0.0, self.width_exponent, self.width_fraction)
 
     def __getitem__(self, index):
         v = self.registers[index]
@@ -160,13 +173,13 @@ class MemRef:
         self.registers = other_memref.registers
 
     @staticmethod
-    def from_memref(memref, wE, wF, vals: np.ndarray = None):
+    def from_memref(memref, width_exponent, width_fraction, vals: np.ndarray = None):
         registers = None
         if vals is not None:
             assert vals.shape == memref.shape
             registers = np.empty(memref.shape, dtype=object)
             for idx, x in np.ndenumerate(vals):
-                v = Val(x, wE, wF)
+                v = Val(x, width_exponent, width_fraction)
                 try:
                     state.state.add_val_source(v, FPNUMBER)
                 except:
@@ -188,14 +201,20 @@ class MemRef:
 
 
 class GlobalMemRef:
-    def __init__(self, global_name, global_array: np.ndarray, wE=WE, wF=WF):
+    def __init__(
+        self,
+        global_name,
+        global_array: np.ndarray,
+        width_exponent=WIDTH_EXPONENT,
+        width_fraction=WIDTH_FRACTION,
+    ):
         self.name = global_name
         self.global_array = global_array
         self.shape = global_array.shape
         self.vals = np.empty(self.shape, dtype=object)
-        assert wE is not None and wF is not None
+        assert width_exponent is not None and width_fraction is not None
         for idx, v in np.ndenumerate(global_array):
-            v = Val(v, wE, wF)
+            v = Val(v, width_exponent, width_fraction)
             try:
                 bragghls.state.state.add_val_source(v, FPNUMBER)
             except:
@@ -220,21 +239,28 @@ class GlobalMemRef:
         return np.prod(self.shape)
 
     @staticmethod
-    def from_global_memref(memref, wE, wF):
-        return GlobalMemRef(memref.name, global_array=memref.global_array, wE=wE, wF=wF)
+    def from_global_memref(memref, width_exponent, width_fraction):
+        return GlobalMemRef(
+            memref.name,
+            global_array=memref.global_array,
+            width_exponent=width_exponent,
+            width_fraction=width_fraction,
+        )
 
     def __repr__(self):
         return str(self.vals)
 
 
 class FMAC:
-    def __init__(self, *pe_idx, wE=WE, wF=WF):
-        assert wE is not None and wF is not None
+    def __init__(
+        self, *pe_idx, width_exponent=WIDTH_EXPONENT, width_fraction=WIDTH_FRACTION
+    ):
+        assert width_exponent is not None and width_fraction is not None
         assert pe_idx
         self.pe_idx = pe_idx
-        self.wE = wE
-        self.wF = wF
-        self.result = Val(0, self.wE, self.wF)
+        self.width_exponent = width_exponent
+        self.width_fraction = width_fraction
+        self.result = Val(0, self.width_exponent, self.width_fraction)
 
     def Add(self, a, b):
         self.result = a + b

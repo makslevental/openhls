@@ -16,8 +16,8 @@ MUL_PIPELINE_DEPTH = config["ip"].getint("MulPipelineDepth")
 MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
 ADD_PIPELINE_DEPTH = config["ip"].getint("AddPipelineDepth")
 ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
-WE = config["ip"].getint("WidthExponent")
-WF = config["ip"].getint("WidthFraction")
+WIDTH_EXPONENT = config["ip"].getint("WidthExponent")
+WIDTH_FRACTION = config["ip"].getint("WidthFraction")
 
 _nameToLevel = {
     "CRITICAL": logging.CRITICAL,

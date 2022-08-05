@@ -14,7 +14,7 @@ import astor
 from bragghls import ip_cores
 from bragghls.compiler import state
 from bragghls.compiler.runner import Forward, get_default_args
-from bragghls.config import DEBUG, WE, WF
+from bragghls.config import DEBUG, WIDTH_EXPONENT, WIDTH_FRACTION
 from bragghls.ir.parse import parse_mlir_module
 from bragghls.ir.transforms import transform_forward, rewrite_schedule_vals
 from bragghls.rtl.emit_verilog import emit_verilog
@@ -111,8 +111,8 @@ def compile(
     do_schedule,
     do_verilog,
     do_testbench,
-    wE,
-    wF,
+    width_exponent,
+    width_fraction,
 ):
     fp = os.path.abspath(fp)
     dirname, filename = os.path.split(fp)
@@ -189,8 +189,8 @@ def compile(
         logger.info("Emitting RTL")
         verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
-            wE,
-            wF,
+            width_exponent,
+            width_fraction,
             op_id_data,
             func_args,
             returns,
@@ -204,7 +204,9 @@ def compile(
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
 
-        imports_file = generate_imports_tcl(f"{name}.sv", wE, wF)
+        imports_file = generate_imports_tcl(
+            f"{name}.sv", width_exponent, width_fraction
+        )
         with open(f"{artifacts_dir}/imports.tcl", "w") as f:
             f.write(imports_file)
 
@@ -213,18 +215,16 @@ def compile(
     logger.info(f"RTL top-level {name}")
 
     for ip_core_sv in [
-        f"flopoco_fadd_{wE}_{wF}.sv",
-        f"flopoco_fmul_{wE}_{wF}.sv",
+        f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
+        f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
         f"flopoco_neg.sv",
         f"flopoco_relu.sv",
         f"alveo-u280-xdc.xdc",
     ]:
-        full_file_name = os.path.join(
-            os.path.dirname(ip_cores.__file__), ip_core_sv
-        )
+        full_file_name = os.path.join(os.path.dirname(ip_cores.__file__), ip_core_sv)
         if os.path.isfile(full_file_name):
             shutil.copy(full_file_name, f"{artifacts_dir}/")
-            
+
     if do_testbench:
         logger.info("Running testbench")
 
@@ -236,15 +236,14 @@ def compile(
             top_level=name,
             max_fsm_stage=max_fsm_stage,
             output_name=output_name,
-            wE=wE,
-            wF=wF,
+            width_exponent=width_exponent,
+            width_fraction=width_fraction,
             ip_cores_path=os.path.dirname(ip_cores.__file__),
         )
         logger.info("Thank you, come again")
         os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
         sys.exit(0)
     os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
-
 
 
 def main():
@@ -289,8 +288,8 @@ def main():
         args.schedule,
         args.verilog,
         args.testbench,
-        WE,
-        WF,
+        WIDTH_EXPONENT,
+        WIDTH_FRACTION,
     )
 
 

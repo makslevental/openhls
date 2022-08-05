@@ -1,5 +1,6 @@
-import math
 from textwrap import dedent, indent
+
+import math
 
 from bragghls.config import MUL_LATENCY, ADD_LATENCY
 

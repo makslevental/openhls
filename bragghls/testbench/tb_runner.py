@@ -36,13 +36,15 @@ async def reset_dut(dut, duration_ns):
 FIXED = np.linspace(0, 0.1, 11)
 
 
-def set_inputs(mod, wE, wF, dut=None):
+def set_inputs(mod, width_exponent, width_fraction, dut=None):
     args = get_default_args(mod.forward)
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
         np_inputs = test_inputs[inp_name] = np.random.random(inp_memref.shape)
-    test_inputs, outputs = run_model_with_fp_number(mod, test_inputs, wE=wE, wF=wF)
+    test_inputs, outputs = run_model_with_fp_number(
+        mod, test_inputs, width_exponent=width_exponent, width_fraction=width_fraction
+    )
     # print(f"test_inputs {test_inputs}")
 
     if dut is not None:
@@ -63,8 +65,8 @@ async def test_tb(dut):
     MAX_FSM_STAGE = int(os.getenv("MAX_FSM_STAGE"))  # 16
     LATENCY = MAX_FSM_STAGE + 1
     TEST_VECTORS = int(os.getenv("N_TEST_VECTORS"))
-    WE = int(os.getenv("WE"))
-    WF = int(os.getenv("WF"))
+    WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT"))
+    WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION"))
     OUTPUT_NAME = os.getenv("OUTPUT_NAME")
     MODULE_FP = os.getenv("MODULE_FP")
     module = import_module_from_fp("test_module", MODULE_FP)
@@ -81,7 +83,7 @@ async def test_tb(dut):
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm.value)
         if i % LATENCY == 0:
-            outputs = set_inputs(module, WE, WF, dut)
+            outputs = set_inputs(module, WIDTH_EXPONENT, WIDTH_FRACTION, dut)
             output = outputs[OUTPUT_NAME].registers[0]
             dut.rst.value = 1
         elif i % LATENCY == 1:
@@ -94,7 +96,7 @@ async def test_tb(dut):
                     await FallingEdge(dut.clk)
                     assert False, (
                         f"clk {i}",
-                        f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WE, WF)}:{incorrect_output}>",
+                        f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
                         f"true {output.fp}",
                     )
                 print(f"passed {i}")
@@ -113,8 +115,8 @@ def testbench_runner(
     top_level,
     max_fsm_stage,
     output_name,
-    wE,
-    wF,
+    width_exponent,
+    width_fraction,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
     n_test_vectors=10,
 ):
@@ -122,8 +124,8 @@ def testbench_runner(
     ip_cores_path = Path(ip_cores_path).resolve()
     verilog_sources = [
         proj_path / sv_file_name,
-        ip_cores_path / f"flopoco_fmul_{wE}_{wF}.sv",
-        ip_cores_path / f"flopoco_fadd_{wE}_{wF}.sv",
+        ip_cores_path / f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
+        ip_cores_path / f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
         ip_cores_path / "flopoco_relu.sv",
         ip_cores_path / "flopoco_neg.sv",
     ]
@@ -137,8 +139,8 @@ def testbench_runner(
         py_module="tb_runner",
         extra_env={
             "VIRTUAL_ENV": (Path(sys.executable) / "../..").resolve(),
-            "WE": str(wE),
-            "WF": str(wF),
+            "WIDTH_EXPONENT": str(width_exponent),
+            "WIDTH_FRACTION": str(width_fraction),
             "MAX_FSM_STAGE": str(max_fsm_stage),
             "N_TEST_VECTORS": str(n_test_vectors),
             "OUTPUT_NAME": output_name,
@@ -167,8 +169,8 @@ if __name__ == "__main__":
         type=Path,
         default=(Path(__file__) / "../../examples").resolve(),
     )
-    parser.add_argument("--wE", default="4")
-    parser.add_argument("--wF", default="4")
+    parser.add_argument("--width_exponent", default="4")
+    parser.add_argument("--width_fraction", default="4")
     args = parser.parse_args()
     if args.top_level is None:
         args.top_level = os.path.splitext(args.sv_file_name)[0]
@@ -184,6 +186,6 @@ if __name__ == "__main__":
         args.max_fsm_stage,
         args.ip_cores_path,
         args.python_search,
-        args.wE,
-        args.wF,
+        args.width_exponent,
+        args.width_fraction,
     )

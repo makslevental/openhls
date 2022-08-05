@@ -114,7 +114,7 @@ def make_output_file(fp=None):
         state.state = state.State(open(fp.replace(".py", ".mlir"), "w"))
 
 
-def run_model_with_fp_number(mod, inputs, wE, wF):
+def run_model_with_fp_number(mod, inputs, width_exponent, width_fraction):
     file = io.StringIO()
     state.state = state.State(file)
     args = get_default_args(mod.forward)
@@ -122,18 +122,22 @@ def run_model_with_fp_number(mod, inputs, wE, wF):
     outputs = {}
     for name, arg in args.items():
         if isinstance(arg, MemRef) and arg.input:
-            test_args[name] = FPMemRef.from_memref(arg, wE, wF, inputs[name])
+            test_args[name] = FPMemRef.from_memref(
+                arg, width_exponent, width_fraction, inputs[name]
+            )
         elif isinstance(arg, MemRef) and arg.output:
             outputs[name] = test_args[name] = FPMemRef.from_memref(
-                arg, wE, wF, np.zeros(arg.shape)
+                arg, width_exponent, width_fraction, np.zeros(arg.shape)
             )
         elif isinstance(arg, GlobalMemRef):
-            test_args[name] = FPGlobalMemRef.from_global_memref(arg, wE, wF)
+            test_args[name] = FPGlobalMemRef.from_global_memref(
+                arg, width_exponent, width_fraction
+            )
         else:
             raise Exception("neither a globalmemref nor a memref")
 
-    FPFMAC.wE = wE
-    FPFMAC.wF = wF
+    FPFMAC.width_exponent = width_exponent
+    FPFMAC.width_fraction = width_fraction
     mod.FMAC = FPFMAC
     mod.MemRef = FPMemRef
     mod.GlobalMemRef = FPGlobalMemRef

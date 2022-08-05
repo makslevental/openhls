@@ -148,7 +148,7 @@ class PE:
     idx: Tuple[int, ...]
 
 
-def generate_imports_tcl(sv_filename, wE, wF):
+def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
     return dedent(
         f"""\
     add_files -fileset constrs_1 -norecurse alveo-u280-xdc.xdc
@@ -163,11 +163,11 @@ def generate_imports_tcl(sv_filename, wE, wF):
     add_files -norecurse -scan_for_includes flopoco_neg.sv -force
     import_files -norecurse flopoco_neg.sv -force
 
-    add_files -norecurse -scan_for_includes flopoco_fadd_{wE}_{wF}.sv -force
-    import_files -norecurse flopoco_fadd_{wE}_{wF}.sv -force
+    add_files -norecurse -scan_for_includes flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
+    import_files -norecurse flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
     
-    add_files -norecurse -scan_for_includes flopoco_fmul_{wE}_{wF}.sv -force
-    import_files -norecurse flopoco_fmul_{wE}_{wF}.sv -force
+    add_files -norecurse -scan_for_includes flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
+    import_files -norecurse flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
 
     update_compile_order -fileset sources_1
     """

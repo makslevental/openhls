@@ -210,7 +210,7 @@ options:
 For example,
 
 ```shell
-BRAGGHLS_CONFIG_FP=bragghls_config.ini python examples/linear.py
+BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini python $(pwd)/examples/linear.py
 ```
 
 which runs [examples/linear.py](examples/linear.py) and produces an artifacts folder

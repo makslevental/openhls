@@ -144,7 +144,7 @@ def build_circt(base_cmake_args):
         )
 
     cmake_args = base_cmake_args + [
-        f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
+        # f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
         f'-DMLIR_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "mlir")}',
         f'-DLLVM_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "llvm")}',
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
@@ -158,7 +158,7 @@ def build_bragghls(base_cmake_args):
     bragghls_build_dir = os.path.join(ROOT_BUILD_DIR, "bragghls")
 
     cmake_args = base_cmake_args + [
-        f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
+        # f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
         f'-DMLIR_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "mlir")}',
         f'-DLLVM_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "llvm")}',
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",

@@ -67,7 +67,11 @@ def make_base_cmake_args():
 
 def run_cmake(cmake_dir, cmake_args, build_dir, target=None):
     os.makedirs(build_dir, exist_ok=True)
+
+    if os.path.exists(os.path.join(build_dir, "CMakeCache.txt")):
+        os.remove(os.path.join(build_dir, "CMakeCache.txt"))
     subprocess.check_call(["cmake", cmake_dir] + cmake_args, cwd=build_dir)
+
     build_args = ["cmake", "--build", "."]
     if target is not None:
         build_args += ["--target", target]
@@ -80,6 +84,7 @@ def run_cmake(cmake_dir, cmake_args, build_dir, target=None):
 def build_llvm(base_cmake_args):
     llvm_dir = os.path.join(EXTERNALS, "llvm-project", "llvm")
     cmake_args = base_cmake_args + [
+        "-DCMAKE_BUILD_TYPE=Release",
         "-DLLVM_ENABLE_PROJECTS=mlir",
         "-DLLVM_TARGETS_TO_BUILD=host",
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
@@ -169,7 +174,7 @@ def build_bragghls(base_cmake_args):
 
 
 def build_flopoco_converter(base_cmake_args):
-    flopoco_converter_dir = os.path.join(CWD, "flopoco_convert_ext")
+    flopoco_converter_dir = os.path.join(CWD, "extensions/flopoco_convert_ext")
     build_dir = os.path.join(ROOT_BUILD_DIR, "flopoco_convert_ext")
 
     cmake_args = base_cmake_args + [
@@ -300,7 +305,7 @@ setup(
     ext_modules=[
         CMakeExtension(
             "bragghls.flopoco.flopoco_converter",
-            sourcedir=os.path.join(CWD, "flopoco_convert_ext"),
+            sourcedir=os.path.join(CWD, "extensions/flopoco_convert_ext"),
         ),
     ],
     package_data={"bragghls": ["ip_cores/*.sv", "ip_cores/*.xdc"]},

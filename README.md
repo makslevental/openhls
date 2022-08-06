@@ -118,11 +118,12 @@ into this
   (Red represents FMUL logic, green represents FADD logic)
 </p>
 
+<!---
+
 [//]: # (![alt text]&#40;docs/images/double_cnn.png&#41;)
-
-
 [//]: # (3:#highlight_objects -color green -leaf_cells [get_cells _forward_inner/fadd*]
 [//]: # (54:#highlight_objects -color red -leaf_cells [get_cells _forward_inner/fmul*])
+--->
 
 # Repo structure
 
@@ -132,6 +133,8 @@ This project has a lot of moving parts; the directory structure tells the tale:
     - [compiler/compiler.py](bragghls/compiler.py) - python script the drives the entire flow
     - [flopoco/](bragghls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/)
       nonstandard floating point representation and IEEE754 (for purposes of RTL generation *and* simulation)
+    - [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
+      generation
     - [ir/](bragghls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of
       PyTorch models.
     - [rtl/](bragghls/rtl) - functionality related to emitting RTL (SystemVerilog)
@@ -139,9 +142,7 @@ This project has a lot of moving parts; the directory structure tells the tale:
       and [iverilog](http://iverilog.icarus.com/)
 - [bragghls_translate/](bragghls_translate) - MLIR parser/emitter translation library for translating MLIR to python
 - [examples/](examples) - obviously...
-- [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
-  generation
-- [flopoco_convert_ext/](ip_cores/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
+- [extensions/flopoco_convert_ext/](extensions/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
   FloPoCo's floating point representation
 - [scripts/](scripts) - helper scripts for things like generating new FloPoCo IPs and building the entire project
 - [tests/](tests) - obviously...

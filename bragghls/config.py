@@ -12,12 +12,16 @@ DTYPE = "f32"
 DEBUG = config["config"].getboolean("Debug")
 INCLUDE_AUX_DEPS = True
 USING_FLOPOCO = config["ip"].getboolean("UsingFlopoco")
-MUL_PIPELINE_DEPTH = config["ip"].getint("MulPipelineDepth")
+MUL_PIPELINE_DEPTH = int(
+    os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
+)
 MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
-ADD_PIPELINE_DEPTH = config["ip"].getint("AddPipelineDepth")
+ADD_PIPELINE_DEPTH = int(
+    os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
+)
 ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
-WIDTH_EXPONENT = config["ip"].getint("WidthExponent")
-WIDTH_FRACTION = config["ip"].getint("WidthFraction")
+WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT") or config["ip"].get("WidthExponent"))
+WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION") or config["ip"].get("WidthFraction"))
 
 _nameToLevel = {
     "CRITICAL": logging.CRITICAL,

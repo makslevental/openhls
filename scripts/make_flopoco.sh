@@ -22,4 +22,4 @@ function make() {
 #  make $freq 6 6
 #done
 
-make 400 5 5
+make 300 8 23

@@ -98,7 +98,8 @@ async def test_tb(dut):
                 if output_wire.value.binstr != output.fp.binstr():
                     incorrect_output = output_wire.value.binstr
                     print(
-                        "failed", f"clk {i}",
+                        "failed",
+                        f"clk {i}",
                         f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
                         f"true {output.fp}",
                     )
@@ -146,7 +147,16 @@ def testbench_runner(
     ]
     runner = get_runner("icarus")()
     runner.build(
-        verilog_sources=verilog_sources, toplevel=top_level, build_dir=proj_path
+        verilog_sources=verilog_sources,
+        toplevel=top_level,
+        build_dir=proj_path,
+        # extra_args=[
+        #     "-Wno-WIDTH",
+        #     "-Wno-TIMESCALEMOD",
+        #     "-Wno-COMBDLY",
+        #     "-Wno-STMTDLY",
+        #     "--trace",
+        # ],
     )
     runner.test(
         toplevel=top_level,

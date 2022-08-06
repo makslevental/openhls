@@ -109,6 +109,7 @@ This project has a lot of moving parts; the directory structure tells the tale:
 # Current status
 
 [![Build and Test](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml)
+[![Build Docker](https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg)](https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml)
 
 [//]: # ([![Build Docker]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg&#41;]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml&#41;)
 

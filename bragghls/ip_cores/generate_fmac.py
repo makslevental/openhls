@@ -1,13 +1,12 @@
 import argparse
-import math
 from pathlib import Path
 
+import math
 import numpy as np
 from jinja2 import Template
 
 from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
 from bragghls.flopoco.ops import Val
-from bragghls.state import DEBUG
 
 
 def get_bit_width(max_thing, base=10):

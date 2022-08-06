@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
---                     SmallMultTableP3x3r6XuYu_F400_uid9
+--                     SmallMultTableP3x3r6XuYu_F300_uid9
 -- This operator is part of the Infinite Virtual Library FloPoCoLib
 -- All rights reserved 
 -- Authors: Florent de Dinechin (2007-2012)
@@ -7,13 +7,13 @@
 library ieee; 
 use ieee.std_logic_1164.all;
 library work;
-entity SmallMultTableP3x3r6XuYu_F400_uid9 is
+entity SmallMultTableP3x3r6XuYu_F300_uid9 is
    port ( clk, rst : in std_logic;
           X : in  std_logic_vector(5 downto 0);
           Y : out  std_logic_vector(5 downto 0)   );
 end entity;
 
-architecture arch of SmallMultTableP3x3r6XuYu_F400_uid9 is
+architecture arch of SmallMultTableP3x3r6XuYu_F300_uid9 is
 signal TableOut :  std_logic_vector(5 downto 0);
 begin
    process(clk)
@@ -154,8 +154,8 @@ begin
 end architecture;
 
 --------------------------------------------------------------------------------
---                           IntAdder_9_f400_uid32
---                      (IntAdderClassical_9_F400_uid34)
+--                           IntAdder_9_f300_uid32
+--                      (IntAdderClassical_9_F300_uid34)
 -- This operator is part of the Infinite Virtual Library FloPoCoLib
 -- All rights reserved 
 -- Authors: Bogdan Pasca, Florent de Dinechin (2008-2010)
@@ -170,7 +170,7 @@ library std;
 use std.textio.all;
 library work;
 
-entity IntAdder_9_f400_uid32 is
+entity IntAdder_9_f300_uid32 is
    port ( clk, rst : in std_logic;
           X : in  std_logic_vector(8 downto 0);
           Y : in  std_logic_vector(8 downto 0);
@@ -178,7 +178,7 @@ entity IntAdder_9_f400_uid32 is
           R : out  std_logic_vector(8 downto 0)   );
 end entity;
 
-architecture arch of IntAdder_9_f400_uid32 is
+architecture arch of IntAdder_9_f300_uid32 is
 begin
    process(clk)
       begin
@@ -190,7 +190,7 @@ begin
 end architecture;
 
 --------------------------------------------------------------------------------
---              IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4
+--              IntMultiplier_UsingDSP_6_6_12_unsigned_F300_uid4
 -- This operator is part of the Infinite Virtual Library FloPoCoLib
 -- All rights reserved 
 -- Authors: Florent de Dinechin, Kinga Illyes, Bogdan Popa, Bogdan Pasca, 2012
@@ -204,15 +204,15 @@ library std;
 use std.textio.all;
 library work;
 
-entity IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4 is
+entity IntMultiplier_UsingDSP_6_6_12_unsigned_F300_uid4 is
    port ( clk, rst : in std_logic;
           X : in  std_logic_vector(5 downto 0);
           Y : in  std_logic_vector(5 downto 0);
           R : out  std_logic_vector(11 downto 0)   );
 end entity;
 
-architecture arch of IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4 is
-   component IntAdder_9_f400_uid32 is
+architecture arch of IntMultiplier_UsingDSP_6_6_12_unsigned_F300_uid4 is
+   component IntAdder_9_f300_uid32 is
       port ( clk, rst : in std_logic;
              X : in  std_logic_vector(8 downto 0);
              Y : in  std_logic_vector(8 downto 0);
@@ -220,7 +220,7 @@ architecture arch of IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4 is
              R : out  std_logic_vector(8 downto 0)   );
    end component;
 
-   component SmallMultTableP3x3r6XuYu_F400_uid9 is
+   component SmallMultTableP3x3r6XuYu_F300_uid9 is
       port ( clk, rst : in std_logic;
              X : in  std_logic_vector(5 downto 0);
              Y : out  std_logic_vector(5 downto 0)   );
@@ -299,8 +299,8 @@ signal tempR_bh6_1 :  std_logic;
 signal CompressionResult6 :  std_logic_vector(12 downto 0);
 attribute rom_extract: string;
 attribute rom_style: string;
-attribute rom_extract of SmallMultTableP3x3r6XuYu_F400_uid9: component is "yes";
-attribute rom_style of SmallMultTableP3x3r6XuYu_F400_uid9: component is "distributed";
+attribute rom_extract of SmallMultTableP3x3r6XuYu_F300_uid9: component is "yes";
+attribute rom_style of SmallMultTableP3x3r6XuYu_F300_uid9: component is "distributed";
 begin
    process(clk)
       begin
@@ -320,7 +320,7 @@ begin
    ----------------Synchro barrier, entering cycle 0----------------
    -- Partial product row number 0
    Y0X0_7_m5 <= y_m5b7_0 & x_m5b7_0;
-   PP_m5_7X0Y0_Tbl: SmallMultTableP3x3r6XuYu_F400_uid9  -- pipelineDepth=0 maxInDelay=0
+   PP_m5_7X0Y0_Tbl: SmallMultTableP3x3r6XuYu_F300_uid9  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  X => Y0X0_7_m5,
@@ -334,7 +334,7 @@ begin
    heap_bh6_w5_0 <= PP7X0Y0_m5(5); -- cycle= 0 cp= 3.7852e-10
 
    Y0X1_7_m5 <= y_m5b7_0 & x_m5b7_1;
-   PP_m5_7X1Y0_Tbl: SmallMultTableP3x3r6XuYu_F400_uid9  -- pipelineDepth=0 maxInDelay=0
+   PP_m5_7X1Y0_Tbl: SmallMultTableP3x3r6XuYu_F300_uid9  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  X => Y0X1_7_m5,
@@ -349,7 +349,7 @@ begin
 
    -- Partial product row number 1
    Y1X0_7_m5 <= y_m5b7_1 & x_m5b7_0;
-   PP_m5_7X0Y1_Tbl: SmallMultTableP3x3r6XuYu_F400_uid9  -- pipelineDepth=0 maxInDelay=0
+   PP_m5_7X0Y1_Tbl: SmallMultTableP3x3r6XuYu_F300_uid9  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  X => Y1X0_7_m5,
@@ -363,7 +363,7 @@ begin
    heap_bh6_w8_1 <= PP7X0Y1_m5(5); -- cycle= 0 cp= 3.7852e-10
 
    Y1X1_7_m5 <= y_m5b7_1 & x_m5b7_1;
-   PP_m5_7X1Y1_Tbl: SmallMultTableP3x3r6XuYu_F400_uid9  -- pipelineDepth=0 maxInDelay=0
+   PP_m5_7X1Y1_Tbl: SmallMultTableP3x3r6XuYu_F300_uid9  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  X => Y1X1_7_m5,
@@ -424,7 +424,7 @@ begin
    finalAdderIn0_bh6 <= "0" & heap_bh6_w11_0 & heap_bh6_w10_0 & heap_bh6_w9_0 & heap_bh6_w8_0 & heap_bh6_w7_4 & heap_bh6_w6_0 & heap_bh6_w5_4 & heap_bh6_w4_0;
    finalAdderIn1_bh6 <= "0" & '0' & '0' & heap_bh6_w9_1 & heap_bh6_w8_3 & heap_bh6_w7_3 & heap_bh6_w6_3 & heap_bh6_w5_3 & heap_bh6_w4_3;
    finalAdderCin_bh6 <= '0';
-      Adder_final6_0: IntAdder_9_f400_uid32  -- pipelineDepth=0 maxInDelay=0
+      Adder_final6_0: IntAdder_9_f300_uid32  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  Cin => finalAdderCin_bh6,
@@ -440,8 +440,8 @@ begin
 end architecture;
 
 --------------------------------------------------------------------------------
---                           IntAdder_12_f400_uid42
---                    (IntAdderAlternative_12_F400_uid46)
+--                           IntAdder_12_f300_uid42
+--                     (IntAdderClassical_12_F300_uid44)
 -- This operator is part of the Infinite Virtual Library FloPoCoLib
 -- All rights reserved 
 -- Authors: Bogdan Pasca, Florent de Dinechin (2008-2010)
@@ -456,7 +456,7 @@ library std;
 use std.textio.all;
 library work;
 
-entity IntAdder_12_f400_uid42 is
+entity IntAdder_12_f300_uid42 is
    port ( clk, rst : in std_logic;
           X : in  std_logic_vector(11 downto 0);
           Y : in  std_logic_vector(11 downto 0);
@@ -464,20 +464,20 @@ entity IntAdder_12_f400_uid42 is
           R : out  std_logic_vector(11 downto 0)   );
 end entity;
 
-architecture arch of IntAdder_12_f400_uid42 is
+architecture arch of IntAdder_12_f300_uid42 is
 begin
    process(clk)
       begin
          if clk'event and clk = '1' then
          end if;
       end process;
-   --Alternative
+   --Classical
     R <= X + Y + Cin;
 end architecture;
 
 --------------------------------------------------------------------------------
 --                                    fmul
---                       (FPMult_5_5_5_5_5_5_F400_uid2)
+--                       (FPMult_5_5_5_5_5_5_F300_uid2)
 -- This operator is part of the Infinite Virtual Library FloPoCoLib
 -- All rights reserved 
 -- Authors: Bogdan Pasca, Florent de Dinechin 2008-2011
@@ -500,14 +500,14 @@ entity fmul is
 end entity;
 
 architecture arch of fmul is
-   component IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4 is
+   component IntMultiplier_UsingDSP_6_6_12_unsigned_F300_uid4 is
       port ( clk, rst : in std_logic;
              X : in  std_logic_vector(5 downto 0);
              Y : in  std_logic_vector(5 downto 0);
              R : out  std_logic_vector(11 downto 0)   );
    end component;
 
-   component IntAdder_12_f400_uid42 is
+   component IntAdder_12_f300_uid42 is
       port ( clk, rst : in std_logic;
              X : in  std_logic_vector(11 downto 0);
              Y : in  std_logic_vector(11 downto 0);
@@ -520,17 +520,17 @@ signal expX :  std_logic_vector(4 downto 0);
 signal expY :  std_logic_vector(4 downto 0);
 signal expSumPreSub :  std_logic_vector(6 downto 0);
 signal bias :  std_logic_vector(6 downto 0);
-signal expSum, expSum_d1 :  std_logic_vector(6 downto 0);
+signal expSum :  std_logic_vector(6 downto 0);
 signal sigX :  std_logic_vector(5 downto 0);
 signal sigY :  std_logic_vector(5 downto 0);
 signal sigProd :  std_logic_vector(11 downto 0);
 signal excSel :  std_logic_vector(3 downto 0);
 signal exc, exc_d1 :  std_logic_vector(1 downto 0);
-signal norm, norm_d1 :  std_logic;
+signal norm :  std_logic;
 signal expPostNorm :  std_logic_vector(6 downto 0);
 signal sigProdExt, sigProdExt_d1 :  std_logic_vector(11 downto 0);
-signal expSig :  std_logic_vector(11 downto 0);
-signal sticky :  std_logic;
+signal expSig, expSig_d1 :  std_logic_vector(11 downto 0);
+signal sticky, sticky_d1 :  std_logic;
 signal guard :  std_logic;
 signal round :  std_logic;
 signal expSigPostRound :  std_logic_vector(11 downto 0);
@@ -541,10 +541,10 @@ begin
       begin
          if clk'event and clk = '1' then
             sign_d1 <=  sign;
-            expSum_d1 <=  expSum;
             exc_d1 <=  exc;
-            norm_d1 <=  norm;
             sigProdExt_d1 <=  sigProdExt;
+            expSig_d1 <=  expSig;
+            sticky_d1 <=  sticky;
          end if;
       end process;
    sign <= X(10) xor Y(10);
@@ -556,7 +556,7 @@ begin
    ----------------Synchro barrier, entering cycle 0----------------
    sigX <= "1" & X(4 downto 0);
    sigY <= "1" & Y(4 downto 0);
-   SignificandMultiplication: IntMultiplier_UsingDSP_6_6_12_unsigned_F400_uid4  -- pipelineDepth=0 maxInDelay=0
+   SignificandMultiplication: IntMultiplier_UsingDSP_6_6_12_unsigned_F300_uid4  -- pipelineDepth=0 maxInDelay=0
       port map ( clk  => clk,
                  rst  => rst,
                  R => sigProd,
@@ -570,23 +570,22 @@ begin
           "10" when "0110" | "1001" | "1010" ,
           "11" when others;
    norm <= sigProd(11);
-   ----------------Synchro barrier, entering cycle 1----------------
    -- exponent update
-   expPostNorm <= expSum_d1 + ("000000" & norm_d1);
+   expPostNorm <= expSum + ("000000" & norm);
    -- significand normalization shift
    sigProdExt <= sigProd(10 downto 0) & "0" when norm='1' else
                          sigProd(9 downto 0) & "00";
+   expSig <= expPostNorm & sigProdExt(11 downto 7);
+   sticky <= sigProdExt(6);
    ----------------Synchro barrier, entering cycle 1----------------
-   expSig <= expPostNorm & sigProdExt_d1(11 downto 7);
-   sticky <= sigProdExt_d1(6);
    guard <= '0' when sigProdExt_d1(5 downto 0)="000000" else '1';
-   round <= sticky and ( (guard and not(sigProdExt_d1(7))) or (sigProdExt_d1(7) ))  ;
-      RoundingAdder: IntAdder_12_f400_uid42  -- pipelineDepth=0 maxInDelay=9.7852e-10
+   round <= sticky_d1 and ( (guard and not(sigProdExt_d1(7))) or (sigProdExt_d1(7) ))  ;
+      RoundingAdder: IntAdder_12_f300_uid42  -- pipelineDepth=0 maxInDelay=3.7226e-10
       port map ( clk  => clk,
                  rst  => rst,
                  Cin => round,
                  R => expSigPostRound,
-                 X => expSig,
+                 X => expSig_d1,
                  Y => "000000000000");
    with expSigPostRound(11 downto 10) select
    excPostNorm <=  "01"  when  "00",

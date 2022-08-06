@@ -1,4 +1,4 @@
-module intadder_8_f400_uid32
+module intadder_8_f300_uid32
     (input clk,
         input rst,
         input[7:0] x,
@@ -251,7 +251,7 @@ module compressor_23_3
         endcase
 endmodule
 
-module smallmulttablep3x3r6xuyu_f400_uid9
+module smallmulttablep3x3r6xuyu_f300_uid9
     (input clk,
         input rst,
         input[5:0] x,
@@ -526,7 +526,7 @@ module smallmulttablep3x3r6xuyu_f400_uid9
         endcase
 endmodule
 
-module intadder_10_f400_uid42
+module intadder_10_f300_uid42
     (input clk,
         input rst,
         input[9:0] x,
@@ -545,7 +545,7 @@ module intadder_10_f400_uid42
     assign n227_o = n225_o+n226_o;
 endmodule
 
-module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
+module intmultiplier_usingdsp_5_5_10_unsigned_f300_uid4
     (input clk,
         input rst,
         input[4:0] x,
@@ -832,7 +832,7 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:376:23  */
     assign pp_m5_7x0y0_tbl_n135 = pp_m5_7x0y0_tbl_y; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:372:4  */
-    smallmulttablep3x3r6xuyu_f400_uid9 pp_m5_7x0y0_tbl(
+    smallmulttablep3x3r6xuyu_f300_uid9 pp_m5_7x0y0_tbl(
         .clk(clk),
         .rst(rst),
         .x(y0x0_7_m5),
@@ -850,7 +850,7 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:388:23  */
     assign pp_m5_7x1y0_tbl_n143 = pp_m5_7x1y0_tbl_y; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:384:4  */
-    smallmulttablep3x3r6xuyu_f400_uid9 pp_m5_7x1y0_tbl(
+    smallmulttablep3x3r6xuyu_f300_uid9 pp_m5_7x1y0_tbl(
         .clk(clk),
         .rst(rst),
         .x(y0x1_7_m5),
@@ -870,7 +870,7 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:402:23  */
     assign pp_m5_7x0y1_tbl_n152 = pp_m5_7x0y1_tbl_y; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:398:4  */
-    smallmulttablep3x3r6xuyu_f400_uid9 pp_m5_7x0y1_tbl(
+    smallmulttablep3x3r6xuyu_f300_uid9 pp_m5_7x0y1_tbl(
         .clk(clk),
         .rst(rst),
         .x(y1x0_7_m5),
@@ -890,7 +890,7 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:415:23  */
     assign pp_m5_7x1y1_tbl_n161 = pp_m5_7x1y1_tbl_y; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:411:4  */
-    smallmulttablep3x3r6xuyu_f400_uid9 pp_m5_7x1y1_tbl(
+    smallmulttablep3x3r6xuyu_f300_uid9 pp_m5_7x1y1_tbl(
         .clk(clk),
         .rst(rst),
         .x(y1x1_7_m5),
@@ -993,7 +993,7 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:476:23  */
     assign adder_final6_0_n214 = adder_final6_0_r; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:472:7  */
-    intadder_8_f400_uid32 adder_final6_0(
+    intadder_8_f300_uid32 adder_final6_0(
         .clk(clk),
         .rst(rst),
         .x(finaladderin0_bh6),
@@ -1008,14 +1008,12 @@ module intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4
     assign n219_o = compressionresult6[9:0];
 endmodule
 
-(* USE_DSP = "yes" *) module fmul
-    #(parameter
-        ID=1
-    )(input clk,
-    input rst,
-    input[10:0] X,
-    input[10:0] Y,
-    output[10:0] R);
+module fmul
+    (input clk,
+        input rst,
+        input[10:0] X,
+        input[10:0] Y,
+        output[10:0] R);
     wire sign;
     wire sign_d1;
     wire[3:0] expx;
@@ -1023,7 +1021,6 @@ endmodule
     wire[5:0] expsumpresub;
     wire[5:0] bias;
     wire[5:0] expsum;
-    wire[5:0] expsum_d1;
     wire[4:0] sigx;
     wire[4:0] sigy;
     wire[9:0] sigprod;
@@ -1031,22 +1028,23 @@ endmodule
     wire[1:0] exc;
     wire[1:0] exc_d1;
     wire norm;
-    wire norm_d1;
     wire[5:0] exppostnorm;
     wire[9:0] sigprodext;
     wire[9:0] sigprodext_d1;
     wire[9:0] expsig;
+    wire[9:0] expsig_d1;
     wire sticky;
+    wire sticky_d1;
     wire guard;
     wire round;
     wire[9:0] expsigpostround;
     wire[1:0] excpostnorm;
     wire[1:0] finalexc;
     reg n10_q;
-    reg[5:0] n11_q;
-    reg[1:0] n12_q;
-    reg n13_q;
-    reg[9:0] n14_q;
+    reg[1:0] n11_q;
+    reg[9:0] n12_q;
+    reg[9:0] n13_q;
+    reg n14_q;
     wire n15_o;
     wire n16_o;
     wire n17_o;
@@ -1133,8 +1131,6 @@ endmodule
     assign bias = 6'b000111; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:568:8  */
     assign expsum = n26_o; // (signal)
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:568:16  */
-    assign expsum_d1 = n11_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:569:8  */
     assign sigx = n29_o; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:570:8  */
@@ -1146,21 +1142,23 @@ endmodule
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:573:8  */
     assign exc = n62_o; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:573:13  */
-    assign exc_d1 = n12_q; // (signal)
+    assign exc_d1 = n11_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:574:8  */
     assign norm = n63_o; // (signal)
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:574:14  */
-    assign norm_d1 = n13_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:575:8  */
     assign exppostnorm = n66_o; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:576:8  */
     assign sigprodext = n70_o; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:576:20  */
-    assign sigprodext_d1 = n14_q; // (signal)
+    assign sigprodext_d1 = n12_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:577:8  */
     assign expsig = n75_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:577:16  */
+    assign expsig_d1 = n13_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:578:8  */
     assign sticky = n76_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:578:16  */
+    assign sticky_d1 = n14_q; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:579:8  */
     assign guard = n81_o; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:580:8  */
@@ -1176,16 +1174,16 @@ endmodule
         n10_q <= sign;
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:587:10  */
     always @(posedge clk)
-        n11_q <= expsum;
+        n11_q <= exc;
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:587:10  */
     always @(posedge clk)
-        n12_q <= exc;
+        n12_q <= sigprodext;
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:587:10  */
     always @(posedge clk)
-        n13_q <= norm;
+        n13_q <= expsig;
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:587:10  */
     always @(posedge clk)
-        n14_q <= sigprodext;
+        n14_q <= sticky;
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:595:13  */
     assign n15_o = X[8];
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:595:22  */
@@ -1215,7 +1213,7 @@ endmodule
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:607:23  */
     assign significandmultiplication_n33 = significandmultiplication_r; // (signal)
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:604:4  */
-    intmultiplier_usingdsp_5_5_10_unsigned_f400_uid4 significandmultiplication(
+    intmultiplier_usingdsp_5_5_10_unsigned_f300_uid4 significandmultiplication(
         .clk(clk),
         .rst(rst),
         .x(sigx),
@@ -1260,68 +1258,68 @@ endmodule
         endcase
     /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:617:19  */
     assign n63_o = sigprod[9];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:620:40  */
-    assign n65_o = {5'b00000, norm_d1};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:620:29  */
-    assign n66_o = expsum_d1+n65_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:622:25  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:619:37  */
+    assign n65_o = {5'b00000, norm};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:619:26  */
+    assign n66_o = expsum+n65_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:621:25  */
     assign n67_o = sigprod[8:0];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:622:38  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:621:38  */
     assign n69_o = {n67_o, 1'b0};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:622:44  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:621:44  */
     assign n70_o = norm ? n69_o : n73_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:623:33  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:622:33  */
     assign n71_o = sigprod[7:0];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:623:46  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:622:46  */
     assign n73_o = {n71_o, 2'b00};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:625:41  */
-    assign n74_o = sigprodext_d1[9:6];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:625:26  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:623:38  */
+    assign n74_o = sigprodext[9:6];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:623:26  */
     assign n75_o = {exppostnorm, n74_o};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:626:27  */
-    assign n76_o = sigprodext_d1[5];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:35  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:624:24  */
+    assign n76_o = sigprodext[5];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:626:35  */
     assign n78_o = sigprodext_d1[4:0];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:47  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:626:47  */
     assign n80_o = n78_o == 5'b00000;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:17  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:626:17  */
     assign n81_o = n80_o ? 1'b0 : 1'b1;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:54  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:57  */
     assign n83_o = sigprodext_d1[6];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:37  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:40  */
     assign n84_o = ~n83_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:33  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:36  */
     assign n85_o = guard & n84_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:77  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:80  */
     assign n86_o = sigprodext_d1[6];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:60  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:63  */
     assign n87_o = n85_o | n86_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:20  */
-    assign n88_o = sticky & n87_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:633:23  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:627:23  */
+    assign n88_o = sticky_d1 & n87_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:632:23  */
     assign roundingadder_n90 = roundingadder_r; // (signal)
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:629:7  */
-    intadder_10_f400_uid42 roundingadder(
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:628:7  */
+    intadder_10_f300_uid42 roundingadder(
         .clk(clk),
         .rst(rst),
-        .x(expsig),
+        .x(expsig_d1),
         .y(n89_o),
         .cin(round),
         .r(roundingadder_r));
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:636:24  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:635:24  */
     assign n93_o = expsigpostround[9:8];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:637:26  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:636:26  */
     assign n96_o = n93_o == 2'b00;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:638:49  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:637:49  */
     assign n99_o = n93_o == 2'b01;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:639:49  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:638:49  */
     assign n102_o = n93_o == 2'b11;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:639:58  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:638:58  */
     assign n104_o = n93_o == 2'b10;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:639:58  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:638:58  */
     assign n105_o = n102_o | n104_o;
     assign n107_o = {n105_o, n99_o, n96_o};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:636:4  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:635:4  */
     always @*
         case (n107_o)
             3'b100: n108_o <= 2'b00;
@@ -1329,27 +1327,27 @@ endmodule
             3'b001: n108_o <= 2'b01;
             default: n108_o <= 2'b11;
         endcase
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:642:23  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:23  */
     assign n110_o = exc_d1 == 2'b11;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:642:33  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:33  */
     assign n112_o = exc_d1 == 2'b10;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:642:33  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:33  */
     assign n113_o = n110_o | n112_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:642:38  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:38  */
     assign n115_o = exc_d1 == 2'b00;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:642:38  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:38  */
     assign n116_o = n113_o | n115_o;
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:641:4  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:640:4  */
     always @*
         case (n116_o)
             1'b1: n117_o <= exc_d1;
             default: n117_o <= excpostnorm;
         endcase
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:644:18  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:643:18  */
     assign n118_o = {finalexc, sign_d1};
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:644:45  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:643:45  */
     assign n119_o = expsigpostround[7:0];
-    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:644:28  */
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../ip_cores/flopoco_fmul_4_4.vhdl:643:28  */
     assign n120_o = {n118_o, n119_o};
 endmodule
 

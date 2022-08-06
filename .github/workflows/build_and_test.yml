@@ -31,9 +31,7 @@ jobs:
         run: |
           brew install gmp mpfr mpfi icarus-verilog
 
-
       # build/cache LLVM
-
 
       - name: Get LLVM Hash
         id: get-llvm-hash
@@ -71,9 +69,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++
           cmake --build . -j $(nproc)
 
-
       # build/cache CIRCT
-
 
       - name: Get CIRCT Hash
         id: get-circt-hash
@@ -115,9 +111,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=clang++
           cmake --build . -j $(nproc)
 
-
       # finally build BraggHLS
-
 
       - name: Install python packages
         run: python -m pip install -r requirements.txt
@@ -125,5 +119,7 @@ jobs:
       - name: Build and Test bragghls
         run: |
           BUILD_CIRCT=0 BUILD_LLVM=0 pip install . -vvvv
-          BRAGGHLS_CONFIG_FP=bragghls_config.ini python $(pwd)/examples/linear.py
-          BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1
+          
+          export BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini
+          python $(pwd)/examples/linear.py
+          bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10

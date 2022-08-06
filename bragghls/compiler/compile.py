@@ -114,7 +114,7 @@ def compile(
     width_exponent,
     width_fraction,
     n_test_vectors,
-    threshold
+    threshold,
 ):
     fp = os.path.abspath(fp)
     dirname, filename = os.path.split(fp)
@@ -242,7 +242,7 @@ def compile(
             width_fraction=width_fraction,
             ip_cores_path=os.path.dirname(ip_cores.__file__),
             n_test_vectors=n_test_vectors,
-            threshold=threshold
+            threshold=threshold,
         )
         logger.info("Thank you, come again")
         os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
@@ -307,7 +307,7 @@ def main():
         WIDTH_EXPONENT,
         WIDTH_FRACTION,
         args.n_test_vectors,
-        args.threshold
+        args.threshold,
     )
 
 

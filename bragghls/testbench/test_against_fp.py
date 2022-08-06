@@ -6,7 +6,6 @@ from bragghls.compiler.runner import (
     get_py_module_args_globals,
     run_model_with_fp_number,
 )
-from bragghls.testbench.tb_runner import set_inputs
 
 
 def test_against_fp(pytorch_mod, flopoco_mod, width_exponent, width_fraction):

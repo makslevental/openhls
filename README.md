@@ -115,7 +115,7 @@ into this
   <img height="1000" src="docs/images/double_cnn.png" alt="">
 </p>
 <p align="center">
-  (Red represents FMUL logic, green represents FADD logic)
+  (Red represents FMUL logic, green represents FADD logic, on Xilinx Alveo U280)
 </p>
 
 <!---
@@ -154,8 +154,9 @@ This project has a lot of moving parts; the directory structure tells the tale:
 
 [//]: # ([![Build Docker]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg&#41;]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml&#41;)
 
-[linear](examples/linear.py) and [cnn](examples/cnn.py) examples work (including tiling)
-but [braggnn](examples/braggnn.py) still needs adjustment (compiles but doesn't pass tests).
+[//]: # ([linear]&#40;examples/linear.py&#41; and [cnn]&#40;examples/cnn.py&#41; examples work &#40;including tiling&#41;)
+
+[//]: # (but [braggnn]&#40;examples/braggnn.py&#41; still needs adjustment &#40;compiles but doesn't pass tests&#41;.)
 
 # Docker
 

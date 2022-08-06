@@ -1,6 +1,7 @@
 import argparse
 import ast
 import logging
+from _ast import For, Subscript
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
@@ -8,6 +9,10 @@ import astor
 from bragghls.ir.parse import parse_mlir_module, reg_idents
 
 logger = logging.getLogger(__name__)
+
+
+def debug_print_node(node):
+    logger.debug(astor.code_gen.to_source(node))
 
 
 class RemoveMAC(ast.NodeTransformer):
@@ -137,6 +142,62 @@ class HoistGlobals(ast.NodeTransformer):
         return node
 
 
+class NestedForLoopVisitor(ast.NodeVisitor):
+    match = False
+
+    def __init__(self, body_predicate):
+        self.body_predicate = body_predicate
+
+    def visit_For(self, node):
+
+        fors = [(i, b) for i, b in enumerate(node.body) if isinstance(b, For)]
+        if fors:
+            self.generic_visit(node)
+        else:
+            self.match = self.body_predicate(node.body)
+
+
+class ReduceForLoops(ast.NodeTransformer):
+    @staticmethod
+    def body_predicate(nodes):
+        res = len(nodes) == 4 and all(isinstance(n, Assign) for n in nodes)
+        res = res and isinstance(nodes[0].value, Subscript)
+        if not res:
+            return None
+        dst = nodes[1].value
+        res = res and nodes[1].value.slice.elts[0].value == 0
+        if not res:
+            return None
+        res = (
+            res
+            and dst.value.id == nodes[3].targets[0].value.id
+            and nodes[3].targets[0].slice.elts[0].value == 0
+        )
+        if not res:
+            return None
+
+        src = nodes[0].value.value.id
+        return dst, src
+
+    def visit_FunctionDef(self, node):
+        if node.name == "forward":
+            fors = [(i, b) for i, b in enumerate(node.body) if isinstance(b, For)]
+            if fors:
+                for i, for_loop in fors:
+                    nested_for_loop_visitor = NestedForLoopVisitor(self.body_predicate)
+                    nested_for_loop_visitor.visit_For(for_loop)
+                    if nested_for_loop_visitor.match is not None:
+                        dst, src = nested_for_loop_visitor.match
+                        node.body[i] = Assign(
+                            targets=[dst],
+                            value=Call(
+                                func=Name(id=f"{src}.reduce_add"), args=[], keywords=[]
+                            ),
+                            type_comment=None,
+                        )
+        return node
+
+
 def traverse_mlir_op_region_block_iterators(op, handler):
     for i, region in enumerate(op.regions):
         for j, block in enumerate(region):
@@ -152,6 +213,8 @@ def transform_forward(new_tree):
     new_tree = RemoveIfExp().visit(new_tree)
     logger.info("Discovering MACs")
     new_tree = RemoveMAC().visit(new_tree)
+    logger.info("Reducing for loops")
+    new_tree = ReduceForLoops().visit(new_tree)
     return new_tree
 
 

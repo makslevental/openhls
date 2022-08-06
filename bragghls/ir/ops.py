@@ -238,7 +238,8 @@ def reducer(accum, val):
     if len(val) > 1:
         return accum + [val[0] + val[1]]
     else:
-        return accum + val
+        # if you have a value hanging off the end you need to register it
+        return accum + [val[0].copy()]
 
 
 def ReduceAdd(vals, initial_val=None):

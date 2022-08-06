@@ -1,8 +1,13 @@
 import configparser
 import logging
 import os
+from pathlib import Path
 
-BRAGGHLS_CONFIG_FP = os.environ["BRAGGHLS_CONFIG_FP"]
+root_config_path = Path(__file__).parent.parent.resolve() / "bragghls_config.ini"
+if os.path.exists(root_config_path):
+    BRAGGHLS_CONFIG_FP = root_config_path
+else:
+    BRAGGHLS_CONFIG_FP = os.environ["BRAGGHLS_CONFIG_FP"]
 
 config = configparser.ConfigParser()
 config.read(BRAGGHLS_CONFIG_FP)

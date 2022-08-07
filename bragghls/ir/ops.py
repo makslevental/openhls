@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass
 from enum import Enum
 from functools import reduce
@@ -8,7 +9,7 @@ import numpy as np
 from bragghls.compiler import state
 from bragghls.compiler.state import CONSTANT
 from bragghls.config import DTYPE, MUL_LATENCY, ADD_LATENCY
-from bragghls.util import extend_idx, chunks
+from bragghls.util import extend_idx, chunks, is_val
 
 
 def overload_op(type):
@@ -228,37 +229,86 @@ class FMAC:
         op_res = FMACOp(len(args), self.pe_idx)(*args)
         if copy:
             op_res = op_res.copy()
-        state.state.debug_print(f"MAC {self.pe_idx} starts")
+        state.state.debug_print(f"MAC {self.pe_idx} ends")
         return op_res
 
 
 def reducer(accum, val):
+    # hack because simulator ops come through here too
     if isinstance(val[0], Val):
         state.state.update_current_pe_idx(val=val[0])
-    if len(val) > 1:
-        return accum + [val[0] + val[1]]
-    else:
-        # if you have a value hanging off the end you need to register it
-        return accum + [val[0].copy()]
+    return accum + [val[0] + val[1]]
 
 
-def ReduceAdd(vals, initial_val=None):
-    if len(vals) == 1:
-        return vals[0]
-    if initial_val is None:
-        initial_val = []
+def reduce_perfect_tree(vals):
+    log_len = math.log2(len(vals))
+    assert log_len == int(log_len), f"len {len(vals)} of {vals} is not a power of 2"
+    initial_val = []
+
     pairs = list(chunks(list(vals), 2))
     while len(pairs) > 1:
         pairs = list(chunks(reduce(reducer, pairs, initial_val), 2))
+
     if isinstance(pairs[0][0], Val):
         state.state.update_current_pe_idx(val=pairs[0][0])
     return pairs[0][0] + pairs[0][1]
+
+
+ALREADY_COPIED = set()
+
+
+def recursive_sum(vals):
+    if len(vals) == 1:
+        return vals[0]
+
+    perfect_tree_n = 2 ** math.floor(math.log2(len(vals)))
+    perfect_tree, vals = vals[:perfect_tree_n], vals[perfect_tree_n:]
+    state.state.debug_print(f"// start perfect tree {perfect_tree}")
+    perfect_sum = reduce_perfect_tree(perfect_tree)
+    state.state.debug_print(f"// end perfect tree")
+    if len(perfect_tree) == len(vals):
+        return perfect_sum + reduce_perfect_tree(vals)
+    elif len(vals):
+        assert perfect_tree_n > len(vals)
+        smaller_sum = recursive_sum(vals)
+        if (
+            isinstance(smaller_sum, Val)
+            and smaller_sum not in ALREADY_COPIED
+            and is_val(smaller_sum)
+        ):
+            ALREADY_COPIED.add(smaller_sum)
+            smaller_sum = smaller_sum.copy()
+        if (
+            isinstance(perfect_sum, Val)
+            and perfect_sum not in ALREADY_COPIED
+            and is_val(perfect_sum)
+        ):
+            ALREADY_COPIED.add(perfect_sum)
+            perfect_sum = perfect_sum.copy()
+        return perfect_sum + smaller_sum
+    else:
+        return perfect_sum
+
+
+def ReduceAdd(vals):
+    return recursive_sum(vals)
 
 
 def Copy(dst, src):
     assert dst.registers.shape == src.registers.shape
     for idx, val in np.ndenumerate(src.registers):
         dst.registers[idx] = val.copy()
+
+
+def ReduceTiling(fmac_arr, init_arr):
+    assert (
+        fmac_arr.registers.shape[1:] == init_arr.registers.shape[1:]
+    ), f"{fmac_arr.arr_name} fmac_arr {fmac_arr.registers.shape} and {init_arr.arr_name} init_arr {init_arr.registers.shape} shape don't match"
+    fmac_arr.registers = np.vstack([fmac_arr.registers, init_arr.registers])
+    fmac_arr.registers = np.apply_along_axis(ReduceAdd, 0, fmac_arr.registers)[
+        np.newaxis
+    ]
+    SelfCopy(fmac_arr)
 
 
 def SelfCopy(memref):

@@ -1,5 +1,4 @@
 import logging
-import warnings
 from collections import defaultdict
 from io import StringIO
 from textwrap import dedent
@@ -32,12 +31,13 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
             # elif op.type == OpType.MUL:
             #     ip_res_val_map[res_val] = pe.fmul.r
             else:
-                warnings.warn(f"not mapping {res_val} to {op} in ip_res_val_map")
+                logger.warning(f"not mapping {res_val} to {op} in ip_res_val_map")
         elif op.type in {OpType.NEG, OpType.RELU}:
             ip = getattr(pe, op.type.value, None)
             ip_res_val_map[res_val] = ip.res
         elif op.type in {OpType.COPY}:
-            pass
+            # this is a hack for when a copy is the last thing just prior to a return
+            ip_res_val_map[res_val] = res_val
         elif op.type == OpType.FMAC:
             ip_res_val_map[res_val] = pe.fadd.r
         else:
@@ -67,7 +67,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
             tree_conds.append(
                 make_always_branch(
                     [ip.x, ip.y],
-                    [in_a, in_b, 1],
+                    [in_a, in_b],
                     fsm.make_fsm_conditions([start_time]),
                 )
             )

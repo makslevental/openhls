@@ -121,5 +121,15 @@ jobs:
           BUILD_CIRCT=0 BUILD_LLVM=0 pip install . -vvvv
           
           export BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini
-          python $(pwd)/examples/linear.py
+          
+          python $(pwd)/examples/linear.py --size 11
           bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10
+          
+          python $(pwd)/examples/linear.py --size 32
+          bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10
+          
+          python $(pwd)/examples/cnn.py --size 11
+          bragghls_compiler $(pwd)/examples/single_cnn_bragghls_artifacts/single_cnn.mlir -t -r -s -v -b -n 10
+          
+          python $(pwd)/examples/cnn.py --size 16
+          bragghls_compiler $(pwd)/examples/single_cnn_bragghls_artifacts/single_cnn.mlir -t -r -s -v -b -n 10

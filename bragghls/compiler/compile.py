@@ -26,12 +26,14 @@ logger = logging.getLogger(__name__)
 
 
 def translate(affine_mlir_str):
+    cmd = [
+        Path(sys.executable).parent.resolve() / "bragghls/bragghls_translate",
+        "--emit-hlspy",
+        "--mlir-print-elementsattrs-with-hex-if-larger=-1",
+    ]
+    logger.debug(" ".join(map(str, cmd)))
     p = Popen(
-        [
-            Path(sys.executable).parent.resolve() / "bragghls/bragghls_translate",
-            "--emit-hlspy",
-            "--mlir-print-elementsattrs-with-hex-if-larger=-1",
-        ],
+        cmd,
         stdout=PIPE,
         stdin=PIPE,
         stderr=PIPE,

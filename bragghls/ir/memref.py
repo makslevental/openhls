@@ -74,7 +74,7 @@ class MemRef:
         return np.prod(self.shape)
 
     def reduce_add(self):
-        return ReduceAdd(self.registers.flatten())
+        return ReduceAdd(list(self.registers.flatten()))
 
     def alias(self, other_memref):
         assert isinstance(other_memref, MemRef)

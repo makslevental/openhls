@@ -14,7 +14,7 @@ from bragghls.flopoco.ops import (
 )
 from bragghls.ir.memref import MemRef, GlobalMemRef
 from bragghls.ir.ops import OpType, LATENCIES
-from bragghls.util import extend_idx
+from bragghls.util import extend_idx, zip_with_scalar
 
 
 def make_latency_attrs():
@@ -100,11 +100,14 @@ def Forward(forward):
     state.state.emit("}")
 
 
-def parfor(ranges):
+def parfor(**kwargs):
+    kwargs = tuple(tuple(zip_with_scalar(k, range(*v))) for k, v in kwargs.items())
+
     def wrapper(body):
-        for i, idx in enumerate(itertools.product(*ranges)):
+        for args in itertools.product(*kwargs):
+            idx = tuple(i for arg, i in args)
             state.state.update_current_pe_idx(pe_idx=extend_idx(idx))
-            body(*idx)
+            body(**dict(args))
 
     return wrapper
 

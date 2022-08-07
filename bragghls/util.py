@@ -1,4 +1,6 @@
 import importlib
+import itertools
+import re
 
 
 def extend_idx(pe_idx, extend_len=5):
@@ -35,3 +37,15 @@ def import_module_from_fp(name: str, fp: str):
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
+
+def zip_with_scalar(o, l):
+    return zip(itertools.repeat(o), l)
+
+
+arg_or_cst = re.compile(r"cst|constant|arg")
+
+
+def is_val(v):
+    # TODO: make types for csts and args and vals
+    return arg_or_cst.search(str(v)) is None

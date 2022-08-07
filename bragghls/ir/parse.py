@@ -1,12 +1,14 @@
 import ast
+import logging
 import re
-import warnings
 from dataclasses import dataclass
 from typing import Tuple, Any
 
 from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
 
 from bragghls.ir.ops import OpType, OPS, Op, LATENCIES
+
+logger = logging.getLogger(__name__)
 
 
 def traverse_op_region_block_iterators(op, handler):
@@ -121,16 +123,32 @@ def parse_mlir_module(module_str):
             # patch the start time incase the scheduler messed up
             if opr == OpType.COPY and op.attrs is not None:
                 src_op = val_to_op[args[0]]
-                if (
-                    op.attrs["start_time"]
-                    != src_op.attrs["start_time"] + LATENCIES[src_op]
-                ):
-                    warnings.warn(
-                        f"overriding start time of {op} to {src_op.attrs['start_time'] + LATENCIES[src_op]}"
+                correct_start_time = src_op.attrs["start_time"] + LATENCIES[src_op]
+                if op.attrs["start_time"] != correct_start_time:
+                    logger.warning(
+                        f"overriding start time of {op} to {correct_start_time}"
                     )
-                    op.attrs["start_time"] = (
-                        src_op.attrs["start_time"] + LATENCIES[src_op]
+                    op.attrs["start_time"] = correct_start_time
+            if opr in {OpType.ADD, OpType.MUL} and op.attrs is not None:
+                if args[0] in val_to_op:
+                    src_op1 = val_to_op[args[0]]
+                    src_op1_end_time = src_op1.attrs["start_time"] + LATENCIES[src_op1]
+                else:
+                    assert "arg" in args[0] or "cst" in args[0] or "constant" in args[0]
+                    src_op1_end_time = 0
+
+                if args[1] in val_to_op:
+                    src_op2 = val_to_op[args[1]]
+                    src_op2_end_time = src_op2.attrs["start_time"] + LATENCIES[src_op2]
+                else:
+                    assert "arg" in args[1] or "cst" in args[1] or "constant" in args[1]
+                    src_op2_end_time = 0
+                correct_start_time = max(src_op1_end_time, src_op2_end_time)
+                if op.attrs["start_time"] != correct_start_time:
+                    logger.warning(
+                        f"overriding start time of {op} to {correct_start_time}"
                     )
+                    op.attrs["start_time"] = correct_start_time
         elif "func.func" in line:
             assert idents
             func_args = [idn[0] for idn in idents]

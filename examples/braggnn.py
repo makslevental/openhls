@@ -4,69 +4,9 @@ from collections import OrderedDict
 from pathlib import Path
 
 import torch
-from torch import nn
-from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
 
 from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
-
-
-class Exp(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-    # https://dl.acm.org/doi/pdf/10.1145/2851507
-    # https://hal.inria.fr/inria-00071879/document
-    def forward(self, x):
-        y = x
-        y2 = y * y * 0.5
-        y3 = y2 * 0.03333333333333328
-        y4 = y2 * y2 * 0.08333333333333333
-        # (
-        #     x
-        #     + (x * x) * 0.5
-        #     + (x * x * x) * 0.16666666666666666
-        #     + (x * x * x * x) * 0.041666666666666664
-        #     + 1
-        # )
-        return y + y2 + y3 + y4 + 1
-
-
-class Div(nn.Module):
-    def __init__(self):
-        super().__init__()
-
-    def forward(self, x):
-        return 0x5F3759DF - x
-
-
-class Softmax(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.exp = Exp()
-        self.div = Div()
-
-    @export
-    @annotate_args([None, ([-1, -1, -1, 1], torch.float32, True)])
-    def forward(self, x):
-        y = self.exp(x)
-        z = y.sum()
-        return y * self.div(z)
-
-
-class Mul(nn.Module):
-    def __init__(self):
-        super(Mul, self).__init__()
-
-    def forward(self, x, y):
-        return x * y
-
-
-class Add(nn.Module):
-    def __init__(self):
-        super(Add, self).__init__()
-
-    def forward(self, x, y):
-        return x + y
+from examples.simple_nns import Softmax, Mul, Add
 
 
 class NLB(torch.nn.Module):
@@ -121,9 +61,7 @@ class BraggNN(torch.nn.Module):
                 torch.nn.Conv2d(
                     in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
                 ),
-                # torch.nn.LeakyReLU(negative_slope=0.025),
                 torch.nn.ReLU(),
-                # Exp()
             ]
             fsz -= 2
         self.nlb = NLB(in_ch=cnn_out_chs[0])
@@ -132,7 +70,6 @@ class BraggNN(torch.nn.Module):
         for ic, oc in zip(dense_in_chs, fcsz):
             self.dense_ops += [
                 torch.nn.Linear(ic, oc),
-                # torch.nn.LeakyReLU(negative_slope=0.025),
                 torch.nn.ReLU(),
             ]
         # output layer
@@ -146,143 +83,8 @@ class BraggNN(torch.nn.Module):
     def forward(self, x):
         _out = x
         _out = self.cnn_layers_1(_out)
-        # _out = copy(_out)
         _out = self.nlb(_out)
-        # _out = copy(_out)
         _out = self.cnn_layers_2(_out)
-        _out = _out.flatten(start_dim=1)
-        _out = self.dense_layers(_out)
-
-        return _out
-
-
-class cnn_layers_1(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        self.cnn_ops = []
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        cnn_in_chs = (1,) + cnn_out_chs[:-1]
-        fsz = imgsz
-        for (ic, oc) in zip(cnn_in_chs, cnn_out_chs):
-            self.cnn_ops += [
-                torch.nn.Conv2d(
-                    in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
-                ),
-                # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
-            ]
-            fsz -= 2
-
-        self.cnn_layers_1 = self.cnn_ops[0]
-
-    def forward(self, x):
-        _out = x
-        _out = self.cnn_layers_1(_out)
-
-        return _out
-
-
-class nlb(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        self.cnn_ops = []
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        self.nlb = NLB(in_ch=cnn_out_chs[0])
-
-    def forward(self, x):
-        _out = x
-        _out = self.nlb(_out)
-
-        return _out
-
-
-class theta_phi_g(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        in_ch = cnn_out_chs[0]
-        self.inter_ch = in_ch // 2
-        self.conv = torch.nn.Conv2d(
-            in_channels=in_ch, out_channels=self.inter_ch, kernel_size=1, padding=0
-        )
-
-    def forward(self, x):
-        _out = x
-        _out = self.conv(_out)
-        return _out
-
-
-class theta_phi_g_combine(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        in_ch = cnn_out_chs[0]
-        self.inter_ch = in_ch // 2
-        self.soft = nn.Softmax(dim=-1)
-        self.out_cnn = torch.nn.Conv2d(
-            in_channels=self.inter_ch, out_channels=in_ch, kernel_size=1, padding=0
-        )
-
-    def forward(self, x, theta, phi, g):
-        _out = theta * phi
-        _out = self.soft(_out)
-        _out = _out * g
-        _out = self.out_cnn(_out)
-        _out = _out + x
-        return _out
-
-
-class cnn_layers_2(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        self.cnn_ops = []
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        cnn_in_chs = (1,) + cnn_out_chs[:-1]
-        fsz = imgsz
-        for (ic, oc) in zip(cnn_in_chs, cnn_out_chs):
-            self.cnn_ops += [
-                torch.nn.Conv2d(
-                    in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
-                ),
-                # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
-                # Exp()
-            ]
-            fsz -= 2
-
-        self.cnn_layers_2 = torch.nn.Sequential(*self.cnn_ops[1:])
-
-    def forward(self, x):
-        _out = x
-        _out = self.cnn_layers_2(_out)
-
-        return _out
-
-
-class dense_layers(torch.nn.Module):
-    def __init__(self, imgsz=11, scale=SCALE):
-        super().__init__()
-        fcsz = tuple(map(int, (16 * scale, 8 * scale, 4 * scale, 2 * scale)))
-        self.cnn_ops = []
-        cnn_out_chs = tuple(map(int, (16 * scale, 8 * scale, 2 * scale)))
-        cnn_in_chs = (1,) + cnn_out_chs[:-1]
-        fsz = imgsz
-        for (ic, oc) in zip(cnn_in_chs, cnn_out_chs):
-            fsz -= 2
-        self.dense_ops = []
-        dense_in_chs = (fsz * fsz * cnn_out_chs[-1],) + fcsz[:-1]
-        for ic, oc in zip(dense_in_chs, fcsz):
-            self.dense_ops += [
-                torch.nn.Linear(ic, oc),
-                # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
-            ]
-        # output layer
-        self.dense_ops += [torch.nn.Linear(fcsz[-1], 2)]
-        self.dense_layers = torch.nn.Sequential(*self.dense_ops)
-
-    def forward(self, x):
-        _out = x
         _out = _out.flatten(start_dim=1)
         _out = self.dense_layers(_out)
 
@@ -349,7 +151,10 @@ def map_zhengchun_weights():
     def key_transform(old_key):
         return weights_map.get(old_key, old_key)
 
-    rename_state_dict_keys("fc16_8_4_2-sz11.pth", key_transform, "my_fc16_8_4_2-sz11.pth")
+    rename_state_dict_keys(
+        "fc16_8_4_2-sz11.pth", key_transform, "my_fc16_8_4_2-sz11.pth"
+    )
+
 
 if __name__ == "__main__":
     # map_zhengchun_weights()
@@ -360,8 +165,9 @@ if __name__ == "__main__":
         default=Path(__file__).parent / "braggnn_bragghls_artifacts",
     )
     parser.add_argument("--scale", type=int, default=1)
+    parser.add_argument("--img_size", type=int, default=7)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
-    dot_str = make_braggn(args.scale, simplify_weights=False)
+    dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=False)
     os.makedirs(f"{args.out_dir}", exist_ok=True)
     open(f"{args.out_dir}/braggnn.mlir", "w").write(dot_str)

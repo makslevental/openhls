@@ -1606,7 +1606,7 @@ std::string getValIdent(Value &value) {
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
 from bragghls.ir.memref import MemRef, GlobalMemRef
-from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy, ReduceTiling
+from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy, ReduceTiling, Div
 from bragghls.compiler.runner import parfor, Forward, make_output_file
 import os
 

@@ -3,6 +3,7 @@ import argparse
 # import pydevd
 # pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True, suspend=False)
 import json
+import logging
 import os
 import os.path
 import sys
@@ -24,6 +25,8 @@ from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.cocotb_runner import get_runner
 from bragghls.util import import_module_from_fp
 
+logger = logging.getLogger(__file__)
+
 
 async def reset_dut(dut, duration_ns):
     for name, mod_obj in dut._sub_handles.items():
@@ -42,7 +45,7 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
-        np_inputs = test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        np_inputs = test_inputs[inp_name] = np.random.randn(*inp_memref.shape)
     test_inputs, outputs = run_model_with_fp_number(
         mod, test_inputs, width_exponent=width_exponent, width_fraction=width_fraction
     )
@@ -51,7 +54,7 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
     if dut is not None:
         for _, inp_memref in test_inputs.items():
             for inp_name, fpval in inp_memref.val_names_map.items():
-                inp_name = inp_name.replace("%", "v_")
+                inp_name = inp_name.replace("%", "p_")
                 if hasattr(dut, inp_name):
                     mod_obj = getattr(dut, inp_name)
                     mod_obj.value = int(fpval.fp.binstr(), 2)
@@ -166,6 +169,7 @@ def testbench_runner(
         proj_path / sv_file_name,
         ip_cores_path / f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
         ip_cores_path / f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
+        ip_cores_path / f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
         ip_cores_path / "flopoco_relu.sv",
         ip_cores_path / "flopoco_neg.sv",
     ]
@@ -195,7 +199,7 @@ def testbench_runner(
             "OUTPUT_NAME": output_name,
             "MODULE_FP": module_fp,
             "THRESHOLD": str(threshold if threshold is not None else 0),
-            "TB_RANDOM": os.getenv("TB_RANDOM", "1"),
+            "TB_RANDOM": os.getenv("TB_RANDOM", f"{np.random.randint(1, 100)}"),
             "OUTPUT_MAP": json.dumps({str(k): v for k, v in output_map.items()}),
         },
         build_dir=proj_path,

@@ -447,4 +447,27 @@ namespace flopoco {
         FPNumber fpr(wER, wFR, r);
         return fpr;
     }
+
+    FPNumber FPNumber::operator/(FPNumber fpy) {
+        auto fpx = this;
+        if (fpx->wE != fpy.wE)
+          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
+        if (fpx->wF != fpy.wF)
+          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
+
+        int wER = fpx->wE;
+        int wFR = fpx->wF;
+        mpfr_t x, y, r;
+        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(y, 1 + fpy.wF);
+        mpfr_init2(r, 1 + wFR);
+        fpx->getMPFR(x);
+        fpy.getMPFR(y);
+
+        mpfr_div(r, x, y, GMP_RNDN);
+        // Set outputs
+        FPNumber fpr(wER, wFR, r);
+        return fpr;
+    }
+
 }

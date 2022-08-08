@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from typing import Tuple, Any
 
-from torch_mlir._mlir_libs._mlir.ir import Context, Module, OpView, FunctionType
+from torch_mlir._mlir_libs._mlir.ir import Context, Module
 
 from bragghls.ir.ops import OpType, OPS, Op, LATENCIES
 
@@ -95,8 +95,12 @@ def parse_mlir_module(module_str):
             res_val = idents[0][0]
             args = tuple([inp[0] for inp in idents[1:]])
             if opr == "arith.constant":
-                args = tuple([float(args[0])])
-                csts[res_val] = float(args[0])
+                op = parse_mlir_module_using_mlir(line)
+                cst_op = op.regions[0].blocks[0].operations[0]
+                value = cst_op.attributes["value"]
+                # '5.000000e-01 : f32'
+                value_float = float(str(value).split(":")[0])
+                csts[res_val] = value_float
             else:
                 vals.update(set(args))
 
@@ -178,26 +182,27 @@ def parse_mlir_module_using_mlir(module_str):
     ctx.allow_unregistered_dialects = True
     module = Module.parse(module_str, ctx)
     op = module.operation
+    return op
 
-    def handler(mlir_op):
-        if not isinstance(mlir_op, OpView) or (
-            hasattr(mlir_op, "type") and isinstance(mlir_op.type, FunctionType)
-        ):
-            return
-
-        if list(mlir_op.results) and hasattr(mlir_op, "operands"):
-            res = _braggHLS.get_val_identifier(mlir_op.results[0]._CAPIPtr)
-            args = [
-                _braggHLS.get_val_identifier(op._CAPIPtr) for op in mlir_op.operands
-            ]
-            print(
-                res,
-                mlir_op.operation.name,
-                args,
-                parse_attrs_to_dict(mlir_op.attributes),
-            )
-
-    traverse_op_region_block_iterators(op, handler)
+    # def handler(mlir_op):
+    #     if not isinstance(mlir_op, OpView) or (
+    #         hasattr(mlir_op, "type") and isinstance(mlir_op.type, FunctionType)
+    #     ):
+    #         return
+    #
+    #     if list(mlir_op.results) and hasattr(mlir_op, "operands"):
+    #         res = _braggHLS.get_val_identifier(mlir_op.results[0]._CAPIPtr)
+    #         args = [
+    #             _braggHLS.get_val_identifier(op._CAPIPtr) for op in mlir_op.operands
+    #         ]
+    #         print(
+    #             res,
+    #             mlir_op.operation.name,
+    #             args,
+    #             parse_attrs_to_dict(mlir_op.attributes),
+    #         )
+    #
+    # traverse_op_region_block_iterators(op, handler)
 
 
 if __name__ == "__main__":

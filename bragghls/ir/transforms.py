@@ -1,7 +1,7 @@
 import argparse
 import ast
 import logging
-from _ast import For, Subscript, FunctionDef, Expr
+from _ast import For, Subscript, FunctionDef, Expr, Div
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
@@ -247,6 +247,28 @@ class CopyParFors(ast.NodeTransformer):
         return node
 
 
+class RemoveDiv(ast.NodeTransformer):
+    def visit_FunctionDef(self, node):
+        for i, b in enumerate(node.body):
+            if (
+                isinstance(b, Assign)
+                and isinstance(b.value, BinOp)
+                and isinstance(b.value.op, Div)
+            ):
+                node.body[i] = Assign(
+                    targets=b.targets,
+                    value=Call(
+                        func=Name(id=f"Div"),
+                        args=[b.value.left, b.value.right],
+                        keywords=[],
+                    ),
+                    type_comment=None,
+                )
+
+        self.generic_visit(node)
+        return node
+
+
 def traverse_mlir_op_region_block_iterators(op, handler):
     for i, region in enumerate(op.regions):
         for j, block in enumerate(region):
@@ -266,6 +288,8 @@ def transform_forward(new_tree):
     new_tree = ReduceForLoops().visit(new_tree)
     logger.info("Copying parfors")
     new_tree = CopyParFors().visit(new_tree)
+    logger.info("Removing div")
+    new_tree = RemoveDiv().visit(new_tree)
     return new_tree
 
 

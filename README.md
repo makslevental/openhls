@@ -133,7 +133,7 @@ This project has a lot of moving parts; the directory structure tells the tale:
     - [compiler/compiler.py](bragghls/compiler.py) - python script the drives the entire flow
     - [flopoco/](bragghls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/)
       nonstandard floating point representation and IEEE754 (for purposes of RTL generation *and* simulation)
-    - [ip_cores/](ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
+    - [ip_cores/](bragghls/ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
       generation
     - [ir/](bragghls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of
       PyTorch models.
@@ -260,10 +260,10 @@ options:
 For example,
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini python $(pwd)/examples/linear.py
+BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini python $(pwd)/examples/simple_nns.py linear --size 11
 ```
 
-which runs [examples/linear.py](examples/linear.py) and produces an artifacts folder
+which runs [examples/simple_nns.py](examples/simple_nns.py) and produces an artifacts folder
 at [examples/linear_bragghls_artifacts](examples/linear_bragghls_artifacts) which will contains a `linear.mlir` file
 that looks like
 

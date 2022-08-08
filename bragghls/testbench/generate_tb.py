@@ -135,8 +135,8 @@ def test_dot(fp, size=4):
         3.33333,
         11,
         40,
-        [f"v_arg{i}_wire" for i in range(len(inputs))],
-        [f"output_v_val_23_wire"],
+        [f"p_arg{i}_wire" for i in range(len(inputs))],
+        [f"output_p_val_23_wire"],
         inputs,
         [output],
     )

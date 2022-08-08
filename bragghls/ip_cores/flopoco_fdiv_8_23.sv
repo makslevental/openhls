@@ -1,0 +1,3018 @@
+module selfunctiontable_r8_f300_uid4
+    (input clk,
+        input rst,
+        input[6:0] x,
+        output[3:0] y);
+    wire[3:0] tableout;
+    wire n913_o;
+    wire n916_o;
+    wire n919_o;
+    wire n922_o;
+    wire n925_o;
+    wire n928_o;
+    wire n931_o;
+    wire n934_o;
+    wire n937_o;
+    wire n940_o;
+    wire n943_o;
+    wire n946_o;
+    wire n949_o;
+    wire n952_o;
+    wire n955_o;
+    wire n958_o;
+    wire n961_o;
+    wire n964_o;
+    wire n967_o;
+    wire n970_o;
+    wire n973_o;
+    wire n976_o;
+    wire n979_o;
+    wire n982_o;
+    wire n985_o;
+    wire n988_o;
+    wire n991_o;
+    wire n994_o;
+    wire n997_o;
+    wire n1000_o;
+    wire n1003_o;
+    wire n1006_o;
+    wire n1009_o;
+    wire n1012_o;
+    wire n1015_o;
+    wire n1018_o;
+    wire n1021_o;
+    wire n1024_o;
+    wire n1027_o;
+    wire n1030_o;
+    wire n1033_o;
+    wire n1036_o;
+    wire n1039_o;
+    wire n1042_o;
+    wire n1045_o;
+    wire n1048_o;
+    wire n1051_o;
+    wire n1054_o;
+    wire n1057_o;
+    wire n1060_o;
+    wire n1063_o;
+    wire n1066_o;
+    wire n1069_o;
+    wire n1072_o;
+    wire n1075_o;
+    wire n1078_o;
+    wire n1081_o;
+    wire n1084_o;
+    wire n1087_o;
+    wire n1090_o;
+    wire n1093_o;
+    wire n1096_o;
+    wire n1099_o;
+    wire n1102_o;
+    wire n1105_o;
+    wire n1108_o;
+    wire n1111_o;
+    wire n1114_o;
+    wire n1117_o;
+    wire n1120_o;
+    wire n1123_o;
+    wire n1126_o;
+    wire n1129_o;
+    wire n1132_o;
+    wire n1135_o;
+    wire n1138_o;
+    wire n1141_o;
+    wire n1144_o;
+    wire n1147_o;
+    wire n1150_o;
+    wire n1153_o;
+    wire n1156_o;
+    wire n1159_o;
+    wire n1162_o;
+    wire n1165_o;
+    wire n1168_o;
+    wire n1171_o;
+    wire n1174_o;
+    wire n1177_o;
+    wire n1180_o;
+    wire n1183_o;
+    wire n1186_o;
+    wire n1189_o;
+    wire n1192_o;
+    wire n1195_o;
+    wire n1198_o;
+    wire n1201_o;
+    wire n1204_o;
+    wire n1207_o;
+    wire n1210_o;
+    wire n1213_o;
+    wire n1216_o;
+    wire n1219_o;
+    wire n1222_o;
+    wire n1225_o;
+    wire n1228_o;
+    wire n1231_o;
+    wire n1234_o;
+    wire n1237_o;
+    wire n1240_o;
+    wire n1243_o;
+    wire n1246_o;
+    wire n1249_o;
+    wire n1252_o;
+    wire n1255_o;
+    wire n1258_o;
+    wire n1261_o;
+    wire n1264_o;
+    wire n1267_o;
+    wire n1270_o;
+    wire n1273_o;
+    wire n1276_o;
+    wire n1279_o;
+    wire n1282_o;
+    wire n1285_o;
+    wire n1288_o;
+    wire n1291_o;
+    wire n1294_o;
+    wire[127:0] n1296_o;
+    reg[3:0] n1297_o;
+    assign y = tableout;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:17:8  */
+    assign tableout = n1297_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:25:11  */
+    assign n913_o = x == 7'b0000000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:26:11  */
+    assign n916_o = x == 7'b0000001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:27:11  */
+    assign n919_o = x == 7'b0000010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:28:11  */
+    assign n922_o = x == 7'b0000011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:29:11  */
+    assign n925_o = x == 7'b0000100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:30:11  */
+    assign n928_o = x == 7'b0000101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:31:11  */
+    assign n931_o = x == 7'b0000110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:32:11  */
+    assign n934_o = x == 7'b0000111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:33:11  */
+    assign n937_o = x == 7'b0001000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:34:11  */
+    assign n940_o = x == 7'b0001001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:35:11  */
+    assign n943_o = x == 7'b0001010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:36:11  */
+    assign n946_o = x == 7'b0001011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:37:11  */
+    assign n949_o = x == 7'b0001100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:38:11  */
+    assign n952_o = x == 7'b0001101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:39:11  */
+    assign n955_o = x == 7'b0001110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:40:11  */
+    assign n958_o = x == 7'b0001111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:41:11  */
+    assign n961_o = x == 7'b0010000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:42:11  */
+    assign n964_o = x == 7'b0010001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:43:11  */
+    assign n967_o = x == 7'b0010010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:44:11  */
+    assign n970_o = x == 7'b0010011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:45:11  */
+    assign n973_o = x == 7'b0010100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:46:11  */
+    assign n976_o = x == 7'b0010101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:47:11  */
+    assign n979_o = x == 7'b0010110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:48:11  */
+    assign n982_o = x == 7'b0010111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:49:11  */
+    assign n985_o = x == 7'b0011000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:50:11  */
+    assign n988_o = x == 7'b0011001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:51:11  */
+    assign n991_o = x == 7'b0011010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:52:11  */
+    assign n994_o = x == 7'b0011011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:53:11  */
+    assign n997_o = x == 7'b0011100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:54:11  */
+    assign n1000_o = x == 7'b0011101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:55:11  */
+    assign n1003_o = x == 7'b0011110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:56:11  */
+    assign n1006_o = x == 7'b0011111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:57:11  */
+    assign n1009_o = x == 7'b0100000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:58:11  */
+    assign n1012_o = x == 7'b0100001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:59:11  */
+    assign n1015_o = x == 7'b0100010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:60:11  */
+    assign n1018_o = x == 7'b0100011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:61:11  */
+    assign n1021_o = x == 7'b0100100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:62:11  */
+    assign n1024_o = x == 7'b0100101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:63:11  */
+    assign n1027_o = x == 7'b0100110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:64:11  */
+    assign n1030_o = x == 7'b0100111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:65:11  */
+    assign n1033_o = x == 7'b0101000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:66:11  */
+    assign n1036_o = x == 7'b0101001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:67:11  */
+    assign n1039_o = x == 7'b0101010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:68:11  */
+    assign n1042_o = x == 7'b0101011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:69:11  */
+    assign n1045_o = x == 7'b0101100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:70:11  */
+    assign n1048_o = x == 7'b0101101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:71:11  */
+    assign n1051_o = x == 7'b0101110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:72:11  */
+    assign n1054_o = x == 7'b0101111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:73:11  */
+    assign n1057_o = x == 7'b0110000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:74:11  */
+    assign n1060_o = x == 7'b0110001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:75:11  */
+    assign n1063_o = x == 7'b0110010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:76:11  */
+    assign n1066_o = x == 7'b0110011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:77:11  */
+    assign n1069_o = x == 7'b0110100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:78:11  */
+    assign n1072_o = x == 7'b0110101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:79:11  */
+    assign n1075_o = x == 7'b0110110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:80:11  */
+    assign n1078_o = x == 7'b0110111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:81:11  */
+    assign n1081_o = x == 7'b0111000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:82:11  */
+    assign n1084_o = x == 7'b0111001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:83:11  */
+    assign n1087_o = x == 7'b0111010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:84:11  */
+    assign n1090_o = x == 7'b0111011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:85:11  */
+    assign n1093_o = x == 7'b0111100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:86:11  */
+    assign n1096_o = x == 7'b0111101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:87:11  */
+    assign n1099_o = x == 7'b0111110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:88:11  */
+    assign n1102_o = x == 7'b0111111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:89:11  */
+    assign n1105_o = x == 7'b1000000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:90:11  */
+    assign n1108_o = x == 7'b1000001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:91:11  */
+    assign n1111_o = x == 7'b1000010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:92:11  */
+    assign n1114_o = x == 7'b1000011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:93:11  */
+    assign n1117_o = x == 7'b1000100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:94:11  */
+    assign n1120_o = x == 7'b1000101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:95:11  */
+    assign n1123_o = x == 7'b1000110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:96:11  */
+    assign n1126_o = x == 7'b1000111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:97:11  */
+    assign n1129_o = x == 7'b1001000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:98:11  */
+    assign n1132_o = x == 7'b1001001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:99:11  */
+    assign n1135_o = x == 7'b1001010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:100:11  */
+    assign n1138_o = x == 7'b1001011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:101:11  */
+    assign n1141_o = x == 7'b1001100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:102:11  */
+    assign n1144_o = x == 7'b1001101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:103:11  */
+    assign n1147_o = x == 7'b1001110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:104:11  */
+    assign n1150_o = x == 7'b1001111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:105:11  */
+    assign n1153_o = x == 7'b1010000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:106:11  */
+    assign n1156_o = x == 7'b1010001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:107:11  */
+    assign n1159_o = x == 7'b1010010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:108:11  */
+    assign n1162_o = x == 7'b1010011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:109:11  */
+    assign n1165_o = x == 7'b1010100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:110:11  */
+    assign n1168_o = x == 7'b1010101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:111:11  */
+    assign n1171_o = x == 7'b1010110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:112:11  */
+    assign n1174_o = x == 7'b1010111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:113:11  */
+    assign n1177_o = x == 7'b1011000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:114:11  */
+    assign n1180_o = x == 7'b1011001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:115:11  */
+    assign n1183_o = x == 7'b1011010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:116:11  */
+    assign n1186_o = x == 7'b1011011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:117:11  */
+    assign n1189_o = x == 7'b1011100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:118:11  */
+    assign n1192_o = x == 7'b1011101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:119:11  */
+    assign n1195_o = x == 7'b1011110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:120:11  */
+    assign n1198_o = x == 7'b1011111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:121:11  */
+    assign n1201_o = x == 7'b1100000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:122:11  */
+    assign n1204_o = x == 7'b1100001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:123:11  */
+    assign n1207_o = x == 7'b1100010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:124:11  */
+    assign n1210_o = x == 7'b1100011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:125:11  */
+    assign n1213_o = x == 7'b1100100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:126:11  */
+    assign n1216_o = x == 7'b1100101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:127:11  */
+    assign n1219_o = x == 7'b1100110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:128:11  */
+    assign n1222_o = x == 7'b1100111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:129:11  */
+    assign n1225_o = x == 7'b1101000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:130:11  */
+    assign n1228_o = x == 7'b1101001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:131:11  */
+    assign n1231_o = x == 7'b1101010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:132:11  */
+    assign n1234_o = x == 7'b1101011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:133:11  */
+    assign n1237_o = x == 7'b1101100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:134:11  */
+    assign n1240_o = x == 7'b1101101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:135:11  */
+    assign n1243_o = x == 7'b1101110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:136:11  */
+    assign n1246_o = x == 7'b1101111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:137:11  */
+    assign n1249_o = x == 7'b1110000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:138:11  */
+    assign n1252_o = x == 7'b1110001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:139:11  */
+    assign n1255_o = x == 7'b1110010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:140:11  */
+    assign n1258_o = x == 7'b1110011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:141:11  */
+    assign n1261_o = x == 7'b1110100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:142:11  */
+    assign n1264_o = x == 7'b1110101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:143:11  */
+    assign n1267_o = x == 7'b1110110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:144:11  */
+    assign n1270_o = x == 7'b1110111;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:145:11  */
+    assign n1273_o = x == 7'b1111000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:146:11  */
+    assign n1276_o = x == 7'b1111001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:147:11  */
+    assign n1279_o = x == 7'b1111010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:148:11  */
+    assign n1282_o = x == 7'b1111011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:149:11  */
+    assign n1285_o = x == 7'b1111100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:150:11  */
+    assign n1288_o = x == 7'b1111101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:151:11  */
+    assign n1291_o = x == 7'b1111110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:152:11  */
+    assign n1294_o = x == 7'b1111111;
+    assign n1296_o = {n1294_o, n1291_o, n1288_o, n1285_o, n1282_o, n1279_o, n1276_o, n1273_o, n1270_o, n1267_o, n1264_o, n1261_o, n1258_o, n1255_o, n1252_o, n1249_o, n1246_o, n1243_o, n1240_o, n1237_o, n1234_o, n1231_o, n1228_o, n1225_o, n1222_o, n1219_o, n1216_o, n1213_o, n1210_o, n1207_o, n1204_o, n1201_o, n1198_o, n1195_o, n1192_o, n1189_o, n1186_o, n1183_o, n1180_o, n1177_o, n1174_o, n1171_o, n1168_o, n1165_o, n1162_o, n1159_o, n1156_o, n1153_o, n1150_o, n1147_o, n1144_o, n1141_o, n1138_o, n1135_o, n1132_o, n1129_o, n1126_o, n1123_o, n1120_o, n1117_o, n1114_o, n1111_o, n1108_o, n1105_o, n1102_o, n1099_o, n1096_o, n1093_o, n1090_o, n1087_o, n1084_o, n1081_o, n1078_o, n1075_o, n1072_o, n1069_o, n1066_o, n1063_o, n1060_o, n1057_o, n1054_o, n1051_o, n1048_o, n1045_o, n1042_o, n1039_o, n1036_o, n1033_o, n1030_o, n1027_o, n1024_o, n1021_o, n1018_o, n1015_o, n1012_o, n1009_o, n1006_o, n1003_o, n1000_o, n997_o, n994_o, n991_o, n988_o, n985_o, n982_o, n979_o, n976_o, n973_o, n970_o, n967_o, n964_o, n961_o, n958_o, n955_o, n952_o, n949_o, n946_o, n943_o, n940_o, n937_o, n934_o, n931_o, n928_o, n925_o, n922_o, n919_o, n916_o, n913_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:24:3  */
+    always @*
+        case (n1296_o)
+            128'b10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1111;
+            128'b00000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1110;
+            128'b00000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1101;
+            128'b00000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1100;
+            128'b00000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1011;
+            128'b00000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1010;
+            128'b00000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b1001;
+            128'b00000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000: n1297_o <= 4'b0111;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000: n1297_o <= 4'b0110;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000: n1297_o <= 4'b0101;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000: n1297_o <= 4'b0100;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000: n1297_o <= 4'b0011;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000: n1297_o <= 4'b0010;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000: n1297_o <= 4'b0001;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000: n1297_o <= 4'b0000;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100: n1297_o <= 4'b0000;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010: n1297_o <= 4'b0000;
+            128'b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001: n1297_o <= 4'b0000;
+            default: n1297_o <= 4'bXXXX;
+        endcase
+endmodule
+
+module fdiv
+    (input clk,
+        input rst,
+        input[33:0] X,
+        input[33:0] Y,
+        output[33:0] R);
+    wire[23:0] partialfx;
+    wire[23:0] partialfy;
+    wire[9:0] expr0;
+    wire[9:0] expr0_d1;
+    wire[9:0] expr0_d2;
+    wire[9:0] expr0_d3;
+    wire[9:0] expr0_d4;
+    wire[9:0] expr0_d5;
+    wire[9:0] expr0_d6;
+    wire sr;
+    wire sr_d1;
+    wire sr_d2;
+    wire sr_d3;
+    wire sr_d4;
+    wire sr_d5;
+    wire sr_d6;
+    wire sr_d7;
+    wire[3:0] exnxy;
+    wire[1:0] exnr0;
+    wire[1:0] exnr0_d1;
+    wire[1:0] exnr0_d2;
+    wire[1:0] exnr0_d3;
+    wire[1:0] exnr0_d4;
+    wire[1:0] exnr0_d5;
+    wire[1:0] exnr0_d6;
+    wire[1:0] exnr0_d7;
+    wire[25:0] fy;
+    wire[25:0] fy_d1;
+    wire[25:0] fy_d2;
+    wire[25:0] fy_d3;
+    wire[25:0] fy_d4;
+    wire[25:0] fy_d5;
+    wire[26:0] fx;
+    wire[28:0] w9;
+    wire[28:0] w9_d1;
+    wire[6:0] sel9;
+    wire[3:0] q9;
+    wire[3:0] q9_d1;
+    wire[3:0] q9_d2;
+    wire[3:0] q9_d3;
+    wire[3:0] q9_d4;
+    wire[29:0] w9pad;
+    wire[29:0] w8fulla;
+    wire[29:0] fydec8;
+    wire[29:0] w8full;
+    wire[28:0] w8;
+    wire[6:0] sel8;
+    wire[3:0] q8;
+    wire[3:0] q8_d1;
+    wire[3:0] q8_d2;
+    wire[3:0] q8_d3;
+    wire[3:0] q8_d4;
+    wire[29:0] w8pad;
+    wire[29:0] w7fulla;
+    wire[29:0] fydec7;
+    wire[29:0] w7full;
+    wire[28:0] w7;
+    wire[28:0] w7_d1;
+    wire[6:0] sel7;
+    wire[3:0] q7;
+    wire[3:0] q7_d1;
+    wire[3:0] q7_d2;
+    wire[3:0] q7_d3;
+    wire[29:0] w7pad;
+    wire[29:0] w6fulla;
+    wire[29:0] fydec6;
+    wire[29:0] w6full;
+    wire[28:0] w6;
+    wire[6:0] sel6;
+    wire[3:0] q6;
+    wire[3:0] q6_d1;
+    wire[3:0] q6_d2;
+    wire[3:0] q6_d3;
+    wire[29:0] w6pad;
+    wire[29:0] w5fulla;
+    wire[29:0] fydec5;
+    wire[29:0] w5full;
+    wire[28:0] w5;
+    wire[28:0] w5_d1;
+    wire[6:0] sel5;
+    wire[3:0] q5;
+    wire[3:0] q5_d1;
+    wire[3:0] q5_d2;
+    wire[29:0] w5pad;
+    wire[29:0] w4fulla;
+    wire[29:0] fydec4;
+    wire[29:0] w4full;
+    wire[28:0] w4;
+    wire[6:0] sel4;
+    wire[3:0] q4;
+    wire[3:0] q4_d1;
+    wire[3:0] q4_d2;
+    wire[29:0] w4pad;
+    wire[29:0] w3fulla;
+    wire[29:0] fydec3;
+    wire[29:0] w3full;
+    wire[28:0] w3;
+    wire[28:0] w3_d1;
+    wire[6:0] sel3;
+    wire[3:0] q3;
+    wire[3:0] q3_d1;
+    wire[29:0] w3pad;
+    wire[29:0] w2fulla;
+    wire[29:0] fydec2;
+    wire[29:0] w2full;
+    wire[28:0] w2;
+    wire[6:0] sel2;
+    wire[3:0] q2;
+    wire[3:0] q2_d1;
+    wire[29:0] w2pad;
+    wire[29:0] w1fulla;
+    wire[29:0] fydec1;
+    wire[29:0] w1full;
+    wire[28:0] w1;
+    wire[28:0] w1_d1;
+    wire[6:0] sel1;
+    wire[3:0] q1;
+    wire[29:0] w1pad;
+    wire[29:0] w0fulla;
+    wire[29:0] fydec0;
+    wire[29:0] w0full;
+    wire[28:0] w0;
+    wire[3:0] q0;
+    wire[2:0] qp9;
+    wire[2:0] qm9;
+    wire[2:0] qp8;
+    wire[2:0] qm8;
+    wire[2:0] qp7;
+    wire[2:0] qm7;
+    wire[2:0] qp6;
+    wire[2:0] qm6;
+    wire[2:0] qp5;
+    wire[2:0] qm5;
+    wire[2:0] qp4;
+    wire[2:0] qm4;
+    wire[2:0] qp3;
+    wire[2:0] qm3;
+    wire[2:0] qp2;
+    wire[2:0] qm2;
+    wire[2:0] qp1;
+    wire[2:0] qm1;
+    wire[2:0] qp0;
+    wire[2:0] qm0;
+    wire[29:0] qp;
+    wire[29:0] qm;
+    wire[29:0] fr0;
+    wire[29:0] fr0_d1;
+    wire[28:0] fr;
+    wire[26:0] frn1;
+    wire[26:0] frn1_d1;
+    wire[9:0] expr1;
+    wire[9:0] expr1_d1;
+    wire round;
+    wire round_d1;
+    wire[32:0] expfrac;
+    wire[32:0] expfracr;
+    wire[1:0] exnr;
+    wire[1:0] exnrfinal;
+    reg[9:0] n59_q;
+    reg[9:0] n60_q;
+    reg[9:0] n61_q;
+    reg[9:0] n62_q;
+    reg[9:0] n63_q;
+    reg[9:0] n64_q;
+    reg n65_q;
+    reg n66_q;
+    reg n67_q;
+    reg n68_q;
+    reg n69_q;
+    reg n70_q;
+    reg n71_q;
+    reg[1:0] n72_q;
+    reg[1:0] n73_q;
+    reg[1:0] n74_q;
+    reg[1:0] n75_q;
+    reg[1:0] n76_q;
+    reg[1:0] n77_q;
+    reg[1:0] n78_q;
+    reg[25:0] n79_q;
+    reg[25:0] n80_q;
+    reg[25:0] n81_q;
+    reg[25:0] n82_q;
+    reg[25:0] n83_q;
+    reg[28:0] n84_q;
+    reg[3:0] n85_q;
+    reg[3:0] n86_q;
+    reg[3:0] n87_q;
+    reg[3:0] n88_q;
+    reg[3:0] n89_q;
+    reg[3:0] n90_q;
+    reg[3:0] n91_q;
+    reg[3:0] n92_q;
+    reg[28:0] n93_q;
+    reg[3:0] n94_q;
+    reg[3:0] n95_q;
+    reg[3:0] n96_q;
+    reg[3:0] n97_q;
+    reg[3:0] n98_q;
+    reg[3:0] n99_q;
+    reg[28:0] n100_q;
+    reg[3:0] n101_q;
+    reg[3:0] n102_q;
+    reg[3:0] n103_q;
+    reg[3:0] n104_q;
+    reg[28:0] n105_q;
+    reg[3:0] n106_q;
+    reg[3:0] n107_q;
+    reg[28:0] n108_q;
+    reg[29:0] n109_q;
+    reg[26:0] n110_q;
+    reg[9:0] n111_q;
+    reg n112_q;
+    wire[22:0] n113_o;
+    wire[23:0] n115_o;
+    wire[22:0] n116_o;
+    wire[23:0] n118_o;
+    wire[7:0] n119_o;
+    wire[9:0] n121_o;
+    wire[7:0] n122_o;
+    wire[9:0] n124_o;
+    wire[9:0] n125_o;
+    wire n126_o;
+    wire n127_o;
+    wire n128_o;
+    wire[1:0] n129_o;
+    wire[1:0] n130_o;
+    wire[3:0] n131_o;
+    wire n134_o;
+    wire n137_o;
+    wire n139_o;
+    wire n140_o;
+    wire n142_o;
+    wire n143_o;
+    wire n146_o;
+    wire n148_o;
+    wire n149_o;
+    wire n151_o;
+    wire n152_o;
+    wire[2:0] n154_o;
+    reg[1:0] n155_o;
+    wire[1:0] n156_o;
+    wire[24:0] n158_o;
+    wire[25:0] n160_o;
+    wire[25:0] n162_o;
+    wire[25:0] n163_o;
+    wire n165_o;
+    wire[25:0] n167_o;
+    wire[25:0] n169_o;
+    wire[25:0] n170_o;
+    wire n172_o;
+    wire[25:0] n174_o;
+    wire[1:0] n175_o;
+    reg[25:0] n176_o;
+    wire[1:0] n177_o;
+    wire[25:0] n179_o;
+    wire[26:0] n181_o;
+    wire[24:0] n183_o;
+    wire[26:0] n185_o;
+    wire[26:0] n186_o;
+    wire n188_o;
+    wire[26:0] n190_o;
+    wire[24:0] n192_o;
+    wire[26:0] n194_o;
+    wire[26:0] n195_o;
+    wire n197_o;
+    wire[24:0] n199_o;
+    wire[26:0] n201_o;
+    wire[1:0] n202_o;
+    reg[26:0] n203_o;
+    wire[28:0] n205_o;
+    wire[4:0] n206_o;
+    wire[1:0] n207_o;
+    wire[6:0] n208_o;
+    wire[3:0] selfunctiontable9_n209;
+    wire[3:0] selfunctiontable9_y;
+    wire[29:0] n213_o;
+    wire[1:0] n214_o;
+    wire[29:0] n216_o;
+    wire[29:0] n217_o;
+    wire n219_o;
+    wire[29:0] n221_o;
+    wire[29:0] n222_o;
+    wire n224_o;
+    wire[28:0] n226_o;
+    wire[29:0] n228_o;
+    wire[29:0] n229_o;
+    wire n231_o;
+    wire[2:0] n232_o;
+    reg[29:0] n233_o;
+    wire[2:0] n234_o;
+    wire[27:0] n236_o;
+    wire[29:0] n238_o;
+    wire n240_o;
+    wire n242_o;
+    wire n243_o;
+    wire n245_o;
+    wire n246_o;
+    wire n248_o;
+    wire n249_o;
+    wire[26:0] n251_o;
+    wire[29:0] n253_o;
+    wire n255_o;
+    wire n257_o;
+    wire n258_o;
+    wire[1:0] n260_o;
+    reg[29:0] n261_o;
+    wire n262_o;
+    wire[29:0] n263_o;
+    wire n265_o;
+    wire[29:0] n266_o;
+    reg[29:0] n267_o;
+    wire[26:0] n268_o;
+    wire[28:0] n270_o;
+    wire[4:0] n271_o;
+    wire[1:0] n272_o;
+    wire[6:0] n273_o;
+    wire[3:0] selfunctiontable8_n274;
+    wire[3:0] selfunctiontable8_y;
+    wire[29:0] n278_o;
+    wire[1:0] n279_o;
+    wire[29:0] n281_o;
+    wire[29:0] n282_o;
+    wire n284_o;
+    wire[29:0] n286_o;
+    wire[29:0] n287_o;
+    wire n289_o;
+    wire[28:0] n291_o;
+    wire[29:0] n293_o;
+    wire[29:0] n294_o;
+    wire n296_o;
+    wire[2:0] n297_o;
+    reg[29:0] n298_o;
+    wire[2:0] n299_o;
+    wire[27:0] n301_o;
+    wire[29:0] n303_o;
+    wire n305_o;
+    wire n307_o;
+    wire n308_o;
+    wire n310_o;
+    wire n311_o;
+    wire n313_o;
+    wire n314_o;
+    wire[26:0] n316_o;
+    wire[29:0] n318_o;
+    wire n320_o;
+    wire n322_o;
+    wire n323_o;
+    wire[1:0] n325_o;
+    reg[29:0] n326_o;
+    wire n327_o;
+    wire[29:0] n328_o;
+    wire n330_o;
+    wire[29:0] n331_o;
+    reg[29:0] n332_o;
+    wire[26:0] n333_o;
+    wire[28:0] n335_o;
+    wire[4:0] n336_o;
+    wire[1:0] n337_o;
+    wire[6:0] n338_o;
+    wire[3:0] selfunctiontable7_n339;
+    wire[3:0] selfunctiontable7_y;
+    wire[29:0] n343_o;
+    wire[1:0] n344_o;
+    wire[29:0] n346_o;
+    wire[29:0] n347_o;
+    wire n349_o;
+    wire[29:0] n351_o;
+    wire[29:0] n352_o;
+    wire n354_o;
+    wire[28:0] n356_o;
+    wire[29:0] n358_o;
+    wire[29:0] n359_o;
+    wire n361_o;
+    wire[2:0] n362_o;
+    reg[29:0] n363_o;
+    wire[2:0] n364_o;
+    wire[27:0] n366_o;
+    wire[29:0] n368_o;
+    wire n370_o;
+    wire n372_o;
+    wire n373_o;
+    wire n375_o;
+    wire n376_o;
+    wire n378_o;
+    wire n379_o;
+    wire[26:0] n381_o;
+    wire[29:0] n383_o;
+    wire n385_o;
+    wire n387_o;
+    wire n388_o;
+    wire[1:0] n390_o;
+    reg[29:0] n391_o;
+    wire n392_o;
+    wire[29:0] n393_o;
+    wire n395_o;
+    wire[29:0] n396_o;
+    reg[29:0] n397_o;
+    wire[26:0] n398_o;
+    wire[28:0] n400_o;
+    wire[4:0] n401_o;
+    wire[1:0] n402_o;
+    wire[6:0] n403_o;
+    wire[3:0] selfunctiontable6_n404;
+    wire[3:0] selfunctiontable6_y;
+    wire[29:0] n408_o;
+    wire[1:0] n409_o;
+    wire[29:0] n411_o;
+    wire[29:0] n412_o;
+    wire n414_o;
+    wire[29:0] n416_o;
+    wire[29:0] n417_o;
+    wire n419_o;
+    wire[28:0] n421_o;
+    wire[29:0] n423_o;
+    wire[29:0] n424_o;
+    wire n426_o;
+    wire[2:0] n427_o;
+    reg[29:0] n428_o;
+    wire[2:0] n429_o;
+    wire[27:0] n431_o;
+    wire[29:0] n433_o;
+    wire n435_o;
+    wire n437_o;
+    wire n438_o;
+    wire n440_o;
+    wire n441_o;
+    wire n443_o;
+    wire n444_o;
+    wire[26:0] n446_o;
+    wire[29:0] n448_o;
+    wire n450_o;
+    wire n452_o;
+    wire n453_o;
+    wire[1:0] n455_o;
+    reg[29:0] n456_o;
+    wire n457_o;
+    wire[29:0] n458_o;
+    wire n460_o;
+    wire[29:0] n461_o;
+    reg[29:0] n462_o;
+    wire[26:0] n463_o;
+    wire[28:0] n465_o;
+    wire[4:0] n466_o;
+    wire[1:0] n467_o;
+    wire[6:0] n468_o;
+    wire[3:0] selfunctiontable5_n469;
+    wire[3:0] selfunctiontable5_y;
+    wire[29:0] n473_o;
+    wire[1:0] n474_o;
+    wire[29:0] n476_o;
+    wire[29:0] n477_o;
+    wire n479_o;
+    wire[29:0] n481_o;
+    wire[29:0] n482_o;
+    wire n484_o;
+    wire[28:0] n486_o;
+    wire[29:0] n488_o;
+    wire[29:0] n489_o;
+    wire n491_o;
+    wire[2:0] n492_o;
+    reg[29:0] n493_o;
+    wire[2:0] n494_o;
+    wire[27:0] n496_o;
+    wire[29:0] n498_o;
+    wire n500_o;
+    wire n502_o;
+    wire n503_o;
+    wire n505_o;
+    wire n506_o;
+    wire n508_o;
+    wire n509_o;
+    wire[26:0] n511_o;
+    wire[29:0] n513_o;
+    wire n515_o;
+    wire n517_o;
+    wire n518_o;
+    wire[1:0] n520_o;
+    reg[29:0] n521_o;
+    wire n522_o;
+    wire[29:0] n523_o;
+    wire n525_o;
+    wire[29:0] n526_o;
+    reg[29:0] n527_o;
+    wire[26:0] n528_o;
+    wire[28:0] n530_o;
+    wire[4:0] n531_o;
+    wire[1:0] n532_o;
+    wire[6:0] n533_o;
+    wire[3:0] selfunctiontable4_n534;
+    wire[3:0] selfunctiontable4_y;
+    wire[29:0] n538_o;
+    wire[1:0] n539_o;
+    wire[29:0] n541_o;
+    wire[29:0] n542_o;
+    wire n544_o;
+    wire[29:0] n546_o;
+    wire[29:0] n547_o;
+    wire n549_o;
+    wire[28:0] n551_o;
+    wire[29:0] n553_o;
+    wire[29:0] n554_o;
+    wire n556_o;
+    wire[2:0] n557_o;
+    reg[29:0] n558_o;
+    wire[2:0] n559_o;
+    wire[27:0] n561_o;
+    wire[29:0] n563_o;
+    wire n565_o;
+    wire n567_o;
+    wire n568_o;
+    wire n570_o;
+    wire n571_o;
+    wire n573_o;
+    wire n574_o;
+    wire[26:0] n576_o;
+    wire[29:0] n578_o;
+    wire n580_o;
+    wire n582_o;
+    wire n583_o;
+    wire[1:0] n585_o;
+    reg[29:0] n586_o;
+    wire n587_o;
+    wire[29:0] n588_o;
+    wire n590_o;
+    wire[29:0] n591_o;
+    reg[29:0] n592_o;
+    wire[26:0] n593_o;
+    wire[28:0] n595_o;
+    wire[4:0] n596_o;
+    wire[1:0] n597_o;
+    wire[6:0] n598_o;
+    wire[3:0] selfunctiontable3_n599;
+    wire[3:0] selfunctiontable3_y;
+    wire[29:0] n603_o;
+    wire[1:0] n604_o;
+    wire[29:0] n606_o;
+    wire[29:0] n607_o;
+    wire n609_o;
+    wire[29:0] n611_o;
+    wire[29:0] n612_o;
+    wire n614_o;
+    wire[28:0] n616_o;
+    wire[29:0] n618_o;
+    wire[29:0] n619_o;
+    wire n621_o;
+    wire[2:0] n622_o;
+    reg[29:0] n623_o;
+    wire[2:0] n624_o;
+    wire[27:0] n626_o;
+    wire[29:0] n628_o;
+    wire n630_o;
+    wire n632_o;
+    wire n633_o;
+    wire n635_o;
+    wire n636_o;
+    wire n638_o;
+    wire n639_o;
+    wire[26:0] n641_o;
+    wire[29:0] n643_o;
+    wire n645_o;
+    wire n647_o;
+    wire n648_o;
+    wire[1:0] n650_o;
+    reg[29:0] n651_o;
+    wire n652_o;
+    wire[29:0] n653_o;
+    wire n655_o;
+    wire[29:0] n656_o;
+    reg[29:0] n657_o;
+    wire[26:0] n658_o;
+    wire[28:0] n660_o;
+    wire[4:0] n661_o;
+    wire[1:0] n662_o;
+    wire[6:0] n663_o;
+    wire[3:0] selfunctiontable2_n664;
+    wire[3:0] selfunctiontable2_y;
+    wire[29:0] n668_o;
+    wire[1:0] n669_o;
+    wire[29:0] n671_o;
+    wire[29:0] n672_o;
+    wire n674_o;
+    wire[29:0] n676_o;
+    wire[29:0] n677_o;
+    wire n679_o;
+    wire[28:0] n681_o;
+    wire[29:0] n683_o;
+    wire[29:0] n684_o;
+    wire n686_o;
+    wire[2:0] n687_o;
+    reg[29:0] n688_o;
+    wire[2:0] n689_o;
+    wire[27:0] n691_o;
+    wire[29:0] n693_o;
+    wire n695_o;
+    wire n697_o;
+    wire n698_o;
+    wire n700_o;
+    wire n701_o;
+    wire n703_o;
+    wire n704_o;
+    wire[26:0] n706_o;
+    wire[29:0] n708_o;
+    wire n710_o;
+    wire n712_o;
+    wire n713_o;
+    wire[1:0] n715_o;
+    reg[29:0] n716_o;
+    wire n717_o;
+    wire[29:0] n718_o;
+    wire n720_o;
+    wire[29:0] n721_o;
+    reg[29:0] n722_o;
+    wire[26:0] n723_o;
+    wire[28:0] n725_o;
+    wire[4:0] n726_o;
+    wire[1:0] n727_o;
+    wire[6:0] n728_o;
+    wire[3:0] selfunctiontable1_n729;
+    wire[3:0] selfunctiontable1_y;
+    wire[29:0] n733_o;
+    wire[1:0] n734_o;
+    wire[29:0] n736_o;
+    wire[29:0] n737_o;
+    wire n739_o;
+    wire[29:0] n741_o;
+    wire[29:0] n742_o;
+    wire n744_o;
+    wire[28:0] n746_o;
+    wire[29:0] n748_o;
+    wire[29:0] n749_o;
+    wire n751_o;
+    wire[2:0] n752_o;
+    reg[29:0] n753_o;
+    wire[2:0] n754_o;
+    wire[27:0] n756_o;
+    wire[29:0] n758_o;
+    wire n760_o;
+    wire n762_o;
+    wire n763_o;
+    wire n765_o;
+    wire n766_o;
+    wire n768_o;
+    wire n769_o;
+    wire[26:0] n771_o;
+    wire[29:0] n773_o;
+    wire n775_o;
+    wire n777_o;
+    wire n778_o;
+    wire[1:0] n780_o;
+    reg[29:0] n781_o;
+    wire n782_o;
+    wire[29:0] n783_o;
+    wire n785_o;
+    wire[29:0] n786_o;
+    reg[29:0] n787_o;
+    wire[26:0] n788_o;
+    wire[28:0] n790_o;
+    wire n793_o;
+    wire[3:0] n794_o;
+    wire n795_o;
+    wire[3:0] n797_o;
+    wire[2:0] n798_o;
+    wire n799_o;
+    wire[2:0] n801_o;
+    wire[2:0] n802_o;
+    wire n803_o;
+    wire[2:0] n805_o;
+    wire[2:0] n806_o;
+    wire n807_o;
+    wire[2:0] n809_o;
+    wire[2:0] n810_o;
+    wire n811_o;
+    wire[2:0] n813_o;
+    wire[2:0] n814_o;
+    wire n815_o;
+    wire[2:0] n817_o;
+    wire[2:0] n818_o;
+    wire n819_o;
+    wire[2:0] n821_o;
+    wire[2:0] n822_o;
+    wire n823_o;
+    wire[2:0] n825_o;
+    wire[2:0] n826_o;
+    wire n827_o;
+    wire[2:0] n829_o;
+    wire[2:0] n830_o;
+    wire n831_o;
+    wire[2:0] n833_o;
+    wire[2:0] n834_o;
+    wire n835_o;
+    wire[2:0] n837_o;
+    wire[5:0] n838_o;
+    wire[8:0] n839_o;
+    wire[11:0] n840_o;
+    wire[14:0] n841_o;
+    wire[17:0] n842_o;
+    wire[20:0] n843_o;
+    wire[23:0] n844_o;
+    wire[26:0] n845_o;
+    wire[29:0] n846_o;
+    wire[1:0] n847_o;
+    wire[4:0] n848_o;
+    wire[7:0] n849_o;
+    wire[10:0] n850_o;
+    wire[13:0] n851_o;
+    wire[16:0] n852_o;
+    wire[19:0] n853_o;
+    wire[22:0] n854_o;
+    wire[25:0] n855_o;
+    wire[28:0] n856_o;
+    wire[29:0] n858_o;
+    wire[29:0] n859_o;
+    wire[27:0] n860_o;
+    wire n861_o;
+    wire n862_o;
+    wire n863_o;
+    wire[28:0] n864_o;
+    wire n865_o;
+    wire[25:0] n866_o;
+    wire n867_o;
+    wire n868_o;
+    wire n869_o;
+    wire[26:0] n870_o;
+    wire n872_o;
+    wire[26:0] n873_o;
+    reg[26:0] n874_o;
+    wire n875_o;
+    wire[9:0] n877_o;
+    wire[9:0] n878_o;
+    wire n879_o;
+    wire n880_o;
+    wire n881_o;
+    wire n882_o;
+    wire n883_o;
+    wire n884_o;
+    wire n885_o;
+    wire[22:0] n886_o;
+    wire[32:0] n887_o;
+    wire[32:0] n889_o;
+    wire[32:0] n890_o;
+    wire n892_o;
+    wire[1:0] n893_o;
+    wire[1:0] n895_o;
+    wire n897_o;
+    wire[1:0] n898_o;
+    wire n901_o;
+    reg[1:0] n902_o;
+    wire[2:0] n903_o;
+    wire[30:0] n904_o;
+    wire[33:0] n905_o;
+    assign R = n905_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:188:8  */
+    assign partialfx = n115_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:189:8  */
+    assign partialfy = n118_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:8  */
+    assign expr0 = n125_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:15  */
+    assign expr0_d1 = n59_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:25  */
+    assign expr0_d2 = n60_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:35  */
+    assign expr0_d3 = n61_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:45  */
+    assign expr0_d4 = n62_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:55  */
+    assign expr0_d5 = n63_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:190:65  */
+    assign expr0_d6 = n64_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:8  */
+    assign sr = n128_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:12  */
+    assign sr_d1 = n65_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:19  */
+    assign sr_d2 = n66_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:26  */
+    assign sr_d3 = n67_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:33  */
+    assign sr_d4 = n68_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:40  */
+    assign sr_d5 = n69_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:47  */
+    assign sr_d6 = n70_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:191:54  */
+    assign sr_d7 = n71_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:192:8  */
+    assign exnxy = n131_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:8  */
+    assign exnr0 = n155_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:15  */
+    assign exnr0_d1 = n72_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:25  */
+    assign exnr0_d2 = n73_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:35  */
+    assign exnr0_d3 = n74_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:45  */
+    assign exnr0_d4 = n75_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:55  */
+    assign exnr0_d5 = n76_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:65  */
+    assign exnr0_d6 = n77_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:193:75  */
+    assign exnr0_d7 = n78_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:8  */
+    assign fy = n176_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:12  */
+    assign fy_d1 = n79_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:19  */
+    assign fy_d2 = n80_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:26  */
+    assign fy_d3 = n81_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:33  */
+    assign fy_d4 = n82_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:194:40  */
+    assign fy_d5 = n83_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:195:8  */
+    assign fx = n203_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:196:8  */
+    assign w9 = n205_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:196:12  */
+    assign w9_d1 = n84_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:197:8  */
+    assign sel9 = n208_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:198:8  */
+    assign q9 = selfunctiontable9_n209; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:198:12  */
+    assign q9_d1 = n85_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:198:19  */
+    assign q9_d2 = n86_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:198:26  */
+    assign q9_d3 = n87_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:198:33  */
+    assign q9_d4 = n88_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:199:8  */
+    assign w9pad = n213_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:200:8  */
+    assign w8fulla = n233_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:201:8  */
+    assign fydec8 = n261_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:202:8  */
+    assign w8full = n267_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:203:8  */
+    assign w8 = n270_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:204:8  */
+    assign sel8 = n273_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:205:8  */
+    assign q8 = selfunctiontable8_n274; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:205:12  */
+    assign q8_d1 = n89_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:205:19  */
+    assign q8_d2 = n90_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:205:26  */
+    assign q8_d3 = n91_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:205:33  */
+    assign q8_d4 = n92_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:206:8  */
+    assign w8pad = n278_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:207:8  */
+    assign w7fulla = n298_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:208:8  */
+    assign fydec7 = n326_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:209:8  */
+    assign w7full = n332_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:210:8  */
+    assign w7 = n335_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:210:12  */
+    assign w7_d1 = n93_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:211:8  */
+    assign sel7 = n338_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:212:8  */
+    assign q7 = selfunctiontable7_n339; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:212:12  */
+    assign q7_d1 = n94_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:212:19  */
+    assign q7_d2 = n95_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:212:26  */
+    assign q7_d3 = n96_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:213:8  */
+    assign w7pad = n343_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:214:8  */
+    assign w6fulla = n363_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:215:8  */
+    assign fydec6 = n391_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:216:8  */
+    assign w6full = n397_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:217:8  */
+    assign w6 = n400_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:218:8  */
+    assign sel6 = n403_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:219:8  */
+    assign q6 = selfunctiontable6_n404; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:219:12  */
+    assign q6_d1 = n97_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:219:19  */
+    assign q6_d2 = n98_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:219:26  */
+    assign q6_d3 = n99_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:220:8  */
+    assign w6pad = n408_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:221:8  */
+    assign w5fulla = n428_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:222:8  */
+    assign fydec5 = n456_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:223:8  */
+    assign w5full = n462_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:224:8  */
+    assign w5 = n465_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:224:12  */
+    assign w5_d1 = n100_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:225:8  */
+    assign sel5 = n468_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:226:8  */
+    assign q5 = selfunctiontable5_n469; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:226:12  */
+    assign q5_d1 = n101_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:226:19  */
+    assign q5_d2 = n102_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:227:8  */
+    assign w5pad = n473_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:228:8  */
+    assign w4fulla = n493_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:229:8  */
+    assign fydec4 = n521_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:230:8  */
+    assign w4full = n527_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:231:8  */
+    assign w4 = n530_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:232:8  */
+    assign sel4 = n533_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:233:8  */
+    assign q4 = selfunctiontable4_n534; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:233:12  */
+    assign q4_d1 = n103_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:233:19  */
+    assign q4_d2 = n104_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:234:8  */
+    assign w4pad = n538_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:235:8  */
+    assign w3fulla = n558_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:236:8  */
+    assign fydec3 = n586_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:237:8  */
+    assign w3full = n592_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:238:8  */
+    assign w3 = n595_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:238:12  */
+    assign w3_d1 = n105_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:239:8  */
+    assign sel3 = n598_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:240:8  */
+    assign q3 = selfunctiontable3_n599; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:240:12  */
+    assign q3_d1 = n106_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:241:8  */
+    assign w3pad = n603_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:242:8  */
+    assign w2fulla = n623_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:243:8  */
+    assign fydec2 = n651_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:244:8  */
+    assign w2full = n657_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:245:8  */
+    assign w2 = n660_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:246:8  */
+    assign sel2 = n663_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:247:8  */
+    assign q2 = selfunctiontable2_n664; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:247:12  */
+    assign q2_d1 = n107_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:248:8  */
+    assign w2pad = n668_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:249:8  */
+    assign w1fulla = n688_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:250:8  */
+    assign fydec1 = n716_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:251:8  */
+    assign w1full = n722_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:252:8  */
+    assign w1 = n725_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:252:12  */
+    assign w1_d1 = n108_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:253:8  */
+    assign sel1 = n728_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:254:8  */
+    assign q1 = selfunctiontable1_n729; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:255:8  */
+    assign w1pad = n733_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:256:8  */
+    assign w0fulla = n753_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:257:8  */
+    assign fydec0 = n781_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:258:8  */
+    assign w0full = n787_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:259:8  */
+    assign w0 = n790_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:260:8  */
+    assign q0 = n794_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:261:8  */
+    assign qp9 = n798_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:262:8  */
+    assign qm9 = n801_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:263:8  */
+    assign qp8 = n802_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:264:8  */
+    assign qm8 = n805_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:265:8  */
+    assign qp7 = n806_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:266:8  */
+    assign qm7 = n809_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:267:8  */
+    assign qp6 = n810_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:268:8  */
+    assign qm6 = n813_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:269:8  */
+    assign qp5 = n814_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:270:8  */
+    assign qm5 = n817_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:271:8  */
+    assign qp4 = n818_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:272:8  */
+    assign qm4 = n821_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:273:8  */
+    assign qp3 = n822_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:274:8  */
+    assign qm3 = n825_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:275:8  */
+    assign qp2 = n826_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:276:8  */
+    assign qm2 = n829_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:277:8  */
+    assign qp1 = n830_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:278:8  */
+    assign qm1 = n833_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:279:8  */
+    assign qp0 = n834_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:280:8  */
+    assign qm0 = n837_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:281:8  */
+    assign qp = n846_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:282:8  */
+    assign qm = n858_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:283:8  */
+    assign fr0 = n859_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:283:13  */
+    assign fr0_d1 = n109_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:284:8  */
+    assign fr = n864_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:285:8  */
+    assign frn1 = n874_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:285:14  */
+    assign frn1_d1 = n110_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:286:8  */
+    assign expr1 = n878_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:286:15  */
+    assign expr1_d1 = n111_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:287:8  */
+    assign round = n885_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:287:15  */
+    assign round_d1 = n112_q; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:288:8  */
+    assign expfrac = n887_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:289:8  */
+    assign expfracr = n890_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:290:8  */
+    assign exnr = n893_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:291:8  */
+    assign exnrfinal = n902_o; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n59_q <= expr0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n60_q <= expr0_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n61_q <= expr0_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n62_q <= expr0_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n63_q <= expr0_d4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n64_q <= expr0_d5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n65_q <= sr;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n66_q <= sr_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n67_q <= sr_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n68_q <= sr_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n69_q <= sr_d4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n70_q <= sr_d5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n71_q <= sr_d6;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n72_q <= exnr0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n73_q <= exnr0_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n74_q <= exnr0_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n75_q <= exnr0_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n76_q <= exnr0_d4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n77_q <= exnr0_d5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n78_q <= exnr0_d6;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n79_q <= fy;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n80_q <= fy_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n81_q <= fy_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n82_q <= fy_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n83_q <= fy_d4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n84_q <= w9;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n85_q <= q9;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n86_q <= q9_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n87_q <= q9_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n88_q <= q9_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n89_q <= q8;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n90_q <= q8_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n91_q <= q8_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n92_q <= q8_d3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n93_q <= w7;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n94_q <= q7;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n95_q <= q7_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n96_q <= q7_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n97_q <= q6;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n98_q <= q6_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n99_q <= q6_d2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n100_q <= w5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n101_q <= q5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n102_q <= q5_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n103_q <= q4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n104_q <= q4_d1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n105_q <= w3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n106_q <= q3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n107_q <= q2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n108_q <= w1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n109_q <= fr0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n110_q <= frn1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n111_q <= expr1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:295:10  */
+    always @(posedge clk)
+        n112_q <= round;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:352:24  */
+    assign n113_o = X[22:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:352:21  */
+    assign n115_o = {1'b1, n113_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:353:24  */
+    assign n116_o = Y[22:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:353:21  */
+    assign n118_o = {1'b1, n116_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:355:22  */
+    assign n119_o = X[30:23];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:355:19  */
+    assign n121_o = {2'b00, n119_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:355:49  */
+    assign n122_o = Y[30:23];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:355:46  */
+    assign n124_o = {2'b00, n122_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:355:38  */
+    assign n125_o = n121_o-n124_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:356:11  */
+    assign n126_o = X[31];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:356:21  */
+    assign n127_o = Y[31];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:356:16  */
+    assign n128_o = n126_o ^ n127_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:358:14  */
+    assign n129_o = X[33:32];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:358:32  */
+    assign n130_o = Y[33:32];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:358:29  */
+    assign n131_o = {n129_o, n130_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:361:16  */
+    assign n134_o = exnxy == 4'b0101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:362:16  */
+    assign n137_o = exnxy == 4'b0001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:362:28  */
+    assign n139_o = exnxy == 4'b0010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:362:28  */
+    assign n140_o = n137_o | n139_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:362:37  */
+    assign n142_o = exnxy == 4'b0110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:362:37  */
+    assign n143_o = n140_o | n142_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:363:16  */
+    assign n146_o = exnxy == 4'b0100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:363:28  */
+    assign n148_o = exnxy == 4'b1000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:363:28  */
+    assign n149_o = n146_o | n148_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:363:37  */
+    assign n151_o = exnxy == 4'b1001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:363:37  */
+    assign n152_o = n149_o | n151_o;
+    assign n154_o = {n152_o, n143_o, n134_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:359:4  */
+    always @*
+        case (n154_o)
+            3'b100: n155_o <= 2'b10;
+            3'b010: n155_o <= 2'b00;
+            3'b001: n155_o <= 2'b01;
+            default: n155_o <= 2'b11;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:366:19  */
+    assign n156_o = partialfy[22:21];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:368:15  */
+    assign n158_o = {1'b0, partialfy};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:368:27  */
+    assign n160_o = {n158_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:368:47  */
+    assign n162_o = {partialfy, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:368:34  */
+    assign n163_o = n160_o+n162_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:368:55  */
+    assign n165_o = n156_o == 2'b00;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:369:16  */
+    assign n167_o = {2'b00, partialfy};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:369:42  */
+    assign n169_o = {partialfy, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:369:29  */
+    assign n170_o = n167_o+n169_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:369:50  */
+    assign n172_o = n156_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:370:20  */
+    assign n174_o = {partialfy, 2'b00};
+    assign n175_o = {n172_o, n165_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:366:4  */
+    always @*
+        case (n175_o)
+            2'b10: n176_o <= n170_o;
+            2'b01: n176_o <= n163_o;
+            default: n176_o <= n174_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:371:19  */
+    assign n177_o = partialfy[22:21];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:16  */
+    assign n179_o = {2'b00, partialfx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:28  */
+    assign n181_o = {n179_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:42  */
+    assign n183_o = {1'b0, partialfx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:54  */
+    assign n185_o = {n183_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:35  */
+    assign n186_o = n181_o+n185_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:373:62  */
+    assign n188_o = n177_o == 2'b00;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:374:17  */
+    assign n190_o = {3'b000, partialfx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:374:37  */
+    assign n192_o = {1'b0, partialfx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:374:49  */
+    assign n194_o = {n192_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:374:30  */
+    assign n195_o = n190_o+n194_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:374:57  */
+    assign n197_o = n177_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:375:14  */
+    assign n199_o = {1'b0, partialfx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:375:26  */
+    assign n201_o = {n199_o, 2'b00};
+    assign n202_o = {n197_o, n188_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:371:4  */
+    always @*
+        case (n202_o)
+            2'b10: n203_o <= n195_o;
+            2'b01: n203_o <= n186_o;
+            default: n203_o <= n201_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:376:16  */
+    assign n205_o = {2'b00, fx};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:378:17  */
+    assign n206_o = w9_d1[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:378:39  */
+    assign n207_o = fy_d1[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:378:32  */
+    assign n208_o = {n206_o, n207_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:383:23  */
+    assign selfunctiontable9_n209 = selfunctiontable9_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:379:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable9(
+        .clk(clk),
+        .rst(rst),
+        .x(sel9),
+        .y(selfunctiontable9_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:384:19  */
+    assign n213_o = {w9_d1, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:385:11  */
+    assign n214_o = q9[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:387:23  */
+    assign n216_o = {4'b0000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:387:13  */
+    assign n217_o = w9pad-n216_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:387:49  */
+    assign n219_o = n214_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:388:23  */
+    assign n221_o = {4'b0000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:388:13  */
+    assign n222_o = w9pad+n221_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:388:49  */
+    assign n224_o = n214_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:389:22  */
+    assign n226_o = {3'b000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:389:30  */
+    assign n228_o = {n226_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:389:13  */
+    assign n229_o = w9pad+n228_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:389:43  */
+    assign n231_o = n214_o == 2'b10;
+    assign n232_o = {n231_o, n224_o, n219_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:385:4  */
+    always @*
+        case (n232_o)
+            3'b100: n233_o <= n229_o;
+            3'b010: n233_o <= n222_o;
+            3'b001: n233_o <= n217_o;
+            default: n233_o <= w9pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:391:11  */
+    assign n234_o = q9[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:13  */
+    assign n236_o = {2'b00, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:21  */
+    assign n238_o = {n236_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:49  */
+    assign n240_o = n234_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:60  */
+    assign n242_o = n234_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:60  */
+    assign n243_o = n240_o | n242_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:68  */
+    assign n245_o = n234_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:68  */
+    assign n246_o = n243_o | n245_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:75  */
+    assign n248_o = n234_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:393:75  */
+    assign n249_o = n246_o | n248_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:394:12  */
+    assign n251_o = {1'b0, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:394:20  */
+    assign n253_o = {n251_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:394:49  */
+    assign n255_o = n234_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:394:59  */
+    assign n257_o = n234_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:394:59  */
+    assign n258_o = n255_o | n257_o;
+    assign n260_o = {n258_o, n249_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:391:4  */
+    always @*
+        case (n260_o)
+            2'b10: n261_o <= n253_o;
+            2'b01: n261_o <= n238_o;
+            default: n261_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:396:11  */
+    assign n262_o = q9[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:398:15  */
+    assign n263_o = w8fulla-fydec8;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:398:41  */
+    assign n265_o = n262_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:399:15  */
+    assign n266_o = w8fulla+fydec8;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:396:4  */
+    always @*
+        case (n265_o)
+            1'b1: n267_o <= n263_o;
+            default: n267_o <= n266_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:400:16  */
+    assign n268_o = w8full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:400:30  */
+    assign n270_o = {n268_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:401:14  */
+    assign n271_o = w8[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:401:36  */
+    assign n272_o = fy_d1[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:401:29  */
+    assign n273_o = {n271_o, n272_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:406:23  */
+    assign selfunctiontable8_n274 = selfunctiontable8_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:402:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable8(
+        .clk(clk),
+        .rst(rst),
+        .x(sel8),
+        .y(selfunctiontable8_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:407:16  */
+    assign n278_o = {w8, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:408:11  */
+    assign n279_o = q8[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:410:23  */
+    assign n281_o = {4'b0000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:410:13  */
+    assign n282_o = w8pad-n281_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:410:49  */
+    assign n284_o = n279_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:411:23  */
+    assign n286_o = {4'b0000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:411:13  */
+    assign n287_o = w8pad+n286_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:411:49  */
+    assign n289_o = n279_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:412:22  */
+    assign n291_o = {3'b000, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:412:30  */
+    assign n293_o = {n291_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:412:13  */
+    assign n294_o = w8pad+n293_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:412:43  */
+    assign n296_o = n279_o == 2'b10;
+    assign n297_o = {n296_o, n289_o, n284_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:408:4  */
+    always @*
+        case (n297_o)
+            3'b100: n298_o <= n294_o;
+            3'b010: n298_o <= n287_o;
+            3'b001: n298_o <= n282_o;
+            default: n298_o <= w8pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:414:11  */
+    assign n299_o = q8[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:13  */
+    assign n301_o = {2'b00, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:21  */
+    assign n303_o = {n301_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:49  */
+    assign n305_o = n299_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:60  */
+    assign n307_o = n299_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:60  */
+    assign n308_o = n305_o | n307_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:68  */
+    assign n310_o = n299_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:68  */
+    assign n311_o = n308_o | n310_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:75  */
+    assign n313_o = n299_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:416:75  */
+    assign n314_o = n311_o | n313_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:417:12  */
+    assign n316_o = {1'b0, fy_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:417:20  */
+    assign n318_o = {n316_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:417:49  */
+    assign n320_o = n299_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:417:59  */
+    assign n322_o = n299_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:417:59  */
+    assign n323_o = n320_o | n322_o;
+    assign n325_o = {n323_o, n314_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:414:4  */
+    always @*
+        case (n325_o)
+            2'b10: n326_o <= n318_o;
+            2'b01: n326_o <= n303_o;
+            default: n326_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:419:11  */
+    assign n327_o = q8[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:421:15  */
+    assign n328_o = w7fulla-fydec7;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:421:41  */
+    assign n330_o = n327_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:422:15  */
+    assign n331_o = w7fulla+fydec7;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:419:4  */
+    always @*
+        case (n330_o)
+            1'b1: n332_o <= n328_o;
+            default: n332_o <= n331_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:423:16  */
+    assign n333_o = w7full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:423:30  */
+    assign n335_o = {n333_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:425:17  */
+    assign n336_o = w7_d1[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:425:39  */
+    assign n337_o = fy_d2[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:425:32  */
+    assign n338_o = {n336_o, n337_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:430:23  */
+    assign selfunctiontable7_n339 = selfunctiontable7_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:426:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable7(
+        .clk(clk),
+        .rst(rst),
+        .x(sel7),
+        .y(selfunctiontable7_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:431:19  */
+    assign n343_o = {w7_d1, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:432:11  */
+    assign n344_o = q7[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:434:23  */
+    assign n346_o = {4'b0000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:434:13  */
+    assign n347_o = w7pad-n346_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:434:49  */
+    assign n349_o = n344_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:435:23  */
+    assign n351_o = {4'b0000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:435:13  */
+    assign n352_o = w7pad+n351_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:435:49  */
+    assign n354_o = n344_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:436:22  */
+    assign n356_o = {3'b000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:436:30  */
+    assign n358_o = {n356_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:436:13  */
+    assign n359_o = w7pad+n358_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:436:43  */
+    assign n361_o = n344_o == 2'b10;
+    assign n362_o = {n361_o, n354_o, n349_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:432:4  */
+    always @*
+        case (n362_o)
+            3'b100: n363_o <= n359_o;
+            3'b010: n363_o <= n352_o;
+            3'b001: n363_o <= n347_o;
+            default: n363_o <= w7pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:438:11  */
+    assign n364_o = q7[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:13  */
+    assign n366_o = {2'b00, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:21  */
+    assign n368_o = {n366_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:49  */
+    assign n370_o = n364_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:60  */
+    assign n372_o = n364_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:60  */
+    assign n373_o = n370_o | n372_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:68  */
+    assign n375_o = n364_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:68  */
+    assign n376_o = n373_o | n375_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:75  */
+    assign n378_o = n364_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:440:75  */
+    assign n379_o = n376_o | n378_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:441:12  */
+    assign n381_o = {1'b0, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:441:20  */
+    assign n383_o = {n381_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:441:49  */
+    assign n385_o = n364_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:441:59  */
+    assign n387_o = n364_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:441:59  */
+    assign n388_o = n385_o | n387_o;
+    assign n390_o = {n388_o, n379_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:438:4  */
+    always @*
+        case (n390_o)
+            2'b10: n391_o <= n383_o;
+            2'b01: n391_o <= n368_o;
+            default: n391_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:443:11  */
+    assign n392_o = q7[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:445:15  */
+    assign n393_o = w6fulla-fydec6;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:445:41  */
+    assign n395_o = n392_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:446:15  */
+    assign n396_o = w6fulla+fydec6;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:443:4  */
+    always @*
+        case (n395_o)
+            1'b1: n397_o <= n393_o;
+            default: n397_o <= n396_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:447:16  */
+    assign n398_o = w6full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:447:30  */
+    assign n400_o = {n398_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:448:14  */
+    assign n401_o = w6[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:448:36  */
+    assign n402_o = fy_d2[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:448:29  */
+    assign n403_o = {n401_o, n402_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:453:23  */
+    assign selfunctiontable6_n404 = selfunctiontable6_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:449:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable6(
+        .clk(clk),
+        .rst(rst),
+        .x(sel6),
+        .y(selfunctiontable6_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:454:16  */
+    assign n408_o = {w6, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:455:11  */
+    assign n409_o = q6[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:457:23  */
+    assign n411_o = {4'b0000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:457:13  */
+    assign n412_o = w6pad-n411_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:457:49  */
+    assign n414_o = n409_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:458:23  */
+    assign n416_o = {4'b0000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:458:13  */
+    assign n417_o = w6pad+n416_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:458:49  */
+    assign n419_o = n409_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:459:22  */
+    assign n421_o = {3'b000, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:459:30  */
+    assign n423_o = {n421_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:459:13  */
+    assign n424_o = w6pad+n423_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:459:43  */
+    assign n426_o = n409_o == 2'b10;
+    assign n427_o = {n426_o, n419_o, n414_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:455:4  */
+    always @*
+        case (n427_o)
+            3'b100: n428_o <= n424_o;
+            3'b010: n428_o <= n417_o;
+            3'b001: n428_o <= n412_o;
+            default: n428_o <= w6pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:461:11  */
+    assign n429_o = q6[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:13  */
+    assign n431_o = {2'b00, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:21  */
+    assign n433_o = {n431_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:49  */
+    assign n435_o = n429_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:60  */
+    assign n437_o = n429_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:60  */
+    assign n438_o = n435_o | n437_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:68  */
+    assign n440_o = n429_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:68  */
+    assign n441_o = n438_o | n440_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:75  */
+    assign n443_o = n429_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:463:75  */
+    assign n444_o = n441_o | n443_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:464:12  */
+    assign n446_o = {1'b0, fy_d2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:464:20  */
+    assign n448_o = {n446_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:464:49  */
+    assign n450_o = n429_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:464:59  */
+    assign n452_o = n429_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:464:59  */
+    assign n453_o = n450_o | n452_o;
+    assign n455_o = {n453_o, n444_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:461:4  */
+    always @*
+        case (n455_o)
+            2'b10: n456_o <= n448_o;
+            2'b01: n456_o <= n433_o;
+            default: n456_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:466:11  */
+    assign n457_o = q6[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:468:15  */
+    assign n458_o = w5fulla-fydec5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:468:41  */
+    assign n460_o = n457_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:469:15  */
+    assign n461_o = w5fulla+fydec5;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:466:4  */
+    always @*
+        case (n460_o)
+            1'b1: n462_o <= n458_o;
+            default: n462_o <= n461_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:470:16  */
+    assign n463_o = w5full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:470:30  */
+    assign n465_o = {n463_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:472:17  */
+    assign n466_o = w5_d1[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:472:39  */
+    assign n467_o = fy_d3[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:472:32  */
+    assign n468_o = {n466_o, n467_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:477:23  */
+    assign selfunctiontable5_n469 = selfunctiontable5_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:473:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable5(
+        .clk(clk),
+        .rst(rst),
+        .x(sel5),
+        .y(selfunctiontable5_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:478:19  */
+    assign n473_o = {w5_d1, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:479:11  */
+    assign n474_o = q5[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:481:23  */
+    assign n476_o = {4'b0000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:481:13  */
+    assign n477_o = w5pad-n476_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:481:49  */
+    assign n479_o = n474_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:482:23  */
+    assign n481_o = {4'b0000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:482:13  */
+    assign n482_o = w5pad+n481_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:482:49  */
+    assign n484_o = n474_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:483:22  */
+    assign n486_o = {3'b000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:483:30  */
+    assign n488_o = {n486_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:483:13  */
+    assign n489_o = w5pad+n488_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:483:43  */
+    assign n491_o = n474_o == 2'b10;
+    assign n492_o = {n491_o, n484_o, n479_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:479:4  */
+    always @*
+        case (n492_o)
+            3'b100: n493_o <= n489_o;
+            3'b010: n493_o <= n482_o;
+            3'b001: n493_o <= n477_o;
+            default: n493_o <= w5pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:485:11  */
+    assign n494_o = q5[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:13  */
+    assign n496_o = {2'b00, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:21  */
+    assign n498_o = {n496_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:49  */
+    assign n500_o = n494_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:60  */
+    assign n502_o = n494_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:60  */
+    assign n503_o = n500_o | n502_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:68  */
+    assign n505_o = n494_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:68  */
+    assign n506_o = n503_o | n505_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:75  */
+    assign n508_o = n494_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:487:75  */
+    assign n509_o = n506_o | n508_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:488:12  */
+    assign n511_o = {1'b0, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:488:20  */
+    assign n513_o = {n511_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:488:49  */
+    assign n515_o = n494_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:488:59  */
+    assign n517_o = n494_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:488:59  */
+    assign n518_o = n515_o | n517_o;
+    assign n520_o = {n518_o, n509_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:485:4  */
+    always @*
+        case (n520_o)
+            2'b10: n521_o <= n513_o;
+            2'b01: n521_o <= n498_o;
+            default: n521_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:490:11  */
+    assign n522_o = q5[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:492:15  */
+    assign n523_o = w4fulla-fydec4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:492:41  */
+    assign n525_o = n522_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:493:15  */
+    assign n526_o = w4fulla+fydec4;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:490:4  */
+    always @*
+        case (n525_o)
+            1'b1: n527_o <= n523_o;
+            default: n527_o <= n526_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:494:16  */
+    assign n528_o = w4full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:494:30  */
+    assign n530_o = {n528_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:495:14  */
+    assign n531_o = w4[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:495:36  */
+    assign n532_o = fy_d3[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:495:29  */
+    assign n533_o = {n531_o, n532_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:500:23  */
+    assign selfunctiontable4_n534 = selfunctiontable4_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:496:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable4(
+        .clk(clk),
+        .rst(rst),
+        .x(sel4),
+        .y(selfunctiontable4_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:501:16  */
+    assign n538_o = {w4, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:502:11  */
+    assign n539_o = q4[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:504:23  */
+    assign n541_o = {4'b0000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:504:13  */
+    assign n542_o = w4pad-n541_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:504:49  */
+    assign n544_o = n539_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:505:23  */
+    assign n546_o = {4'b0000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:505:13  */
+    assign n547_o = w4pad+n546_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:505:49  */
+    assign n549_o = n539_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:506:22  */
+    assign n551_o = {3'b000, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:506:30  */
+    assign n553_o = {n551_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:506:13  */
+    assign n554_o = w4pad+n553_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:506:43  */
+    assign n556_o = n539_o == 2'b10;
+    assign n557_o = {n556_o, n549_o, n544_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:502:4  */
+    always @*
+        case (n557_o)
+            3'b100: n558_o <= n554_o;
+            3'b010: n558_o <= n547_o;
+            3'b001: n558_o <= n542_o;
+            default: n558_o <= w4pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:508:11  */
+    assign n559_o = q4[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:13  */
+    assign n561_o = {2'b00, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:21  */
+    assign n563_o = {n561_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:49  */
+    assign n565_o = n559_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:60  */
+    assign n567_o = n559_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:60  */
+    assign n568_o = n565_o | n567_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:68  */
+    assign n570_o = n559_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:68  */
+    assign n571_o = n568_o | n570_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:75  */
+    assign n573_o = n559_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:510:75  */
+    assign n574_o = n571_o | n573_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:511:12  */
+    assign n576_o = {1'b0, fy_d3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:511:20  */
+    assign n578_o = {n576_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:511:49  */
+    assign n580_o = n559_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:511:59  */
+    assign n582_o = n559_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:511:59  */
+    assign n583_o = n580_o | n582_o;
+    assign n585_o = {n583_o, n574_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:508:4  */
+    always @*
+        case (n585_o)
+            2'b10: n586_o <= n578_o;
+            2'b01: n586_o <= n563_o;
+            default: n586_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:513:11  */
+    assign n587_o = q4[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:515:15  */
+    assign n588_o = w3fulla-fydec3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:515:41  */
+    assign n590_o = n587_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:516:15  */
+    assign n591_o = w3fulla+fydec3;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:513:4  */
+    always @*
+        case (n590_o)
+            1'b1: n592_o <= n588_o;
+            default: n592_o <= n591_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:517:16  */
+    assign n593_o = w3full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:517:30  */
+    assign n595_o = {n593_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:519:17  */
+    assign n596_o = w3_d1[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:519:39  */
+    assign n597_o = fy_d4[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:519:32  */
+    assign n598_o = {n596_o, n597_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:524:23  */
+    assign selfunctiontable3_n599 = selfunctiontable3_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:520:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable3(
+        .clk(clk),
+        .rst(rst),
+        .x(sel3),
+        .y(selfunctiontable3_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:525:19  */
+    assign n603_o = {w3_d1, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:526:11  */
+    assign n604_o = q3[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:528:23  */
+    assign n606_o = {4'b0000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:528:13  */
+    assign n607_o = w3pad-n606_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:528:49  */
+    assign n609_o = n604_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:529:23  */
+    assign n611_o = {4'b0000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:529:13  */
+    assign n612_o = w3pad+n611_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:529:49  */
+    assign n614_o = n604_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:530:22  */
+    assign n616_o = {3'b000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:530:30  */
+    assign n618_o = {n616_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:530:13  */
+    assign n619_o = w3pad+n618_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:530:43  */
+    assign n621_o = n604_o == 2'b10;
+    assign n622_o = {n621_o, n614_o, n609_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:526:4  */
+    always @*
+        case (n622_o)
+            3'b100: n623_o <= n619_o;
+            3'b010: n623_o <= n612_o;
+            3'b001: n623_o <= n607_o;
+            default: n623_o <= w3pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:532:11  */
+    assign n624_o = q3[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:13  */
+    assign n626_o = {2'b00, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:21  */
+    assign n628_o = {n626_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:49  */
+    assign n630_o = n624_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:60  */
+    assign n632_o = n624_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:60  */
+    assign n633_o = n630_o | n632_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:68  */
+    assign n635_o = n624_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:68  */
+    assign n636_o = n633_o | n635_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:75  */
+    assign n638_o = n624_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:534:75  */
+    assign n639_o = n636_o | n638_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:535:12  */
+    assign n641_o = {1'b0, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:535:20  */
+    assign n643_o = {n641_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:535:49  */
+    assign n645_o = n624_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:535:59  */
+    assign n647_o = n624_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:535:59  */
+    assign n648_o = n645_o | n647_o;
+    assign n650_o = {n648_o, n639_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:532:4  */
+    always @*
+        case (n650_o)
+            2'b10: n651_o <= n643_o;
+            2'b01: n651_o <= n628_o;
+            default: n651_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:537:11  */
+    assign n652_o = q3[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:539:15  */
+    assign n653_o = w2fulla-fydec2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:539:41  */
+    assign n655_o = n652_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:540:15  */
+    assign n656_o = w2fulla+fydec2;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:537:4  */
+    always @*
+        case (n655_o)
+            1'b1: n657_o <= n653_o;
+            default: n657_o <= n656_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:541:16  */
+    assign n658_o = w2full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:541:30  */
+    assign n660_o = {n658_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:542:14  */
+    assign n661_o = w2[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:542:36  */
+    assign n662_o = fy_d4[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:542:29  */
+    assign n663_o = {n661_o, n662_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:547:23  */
+    assign selfunctiontable2_n664 = selfunctiontable2_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:543:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable2(
+        .clk(clk),
+        .rst(rst),
+        .x(sel2),
+        .y(selfunctiontable2_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:548:16  */
+    assign n668_o = {w2, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:549:11  */
+    assign n669_o = q2[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:551:23  */
+    assign n671_o = {4'b0000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:551:13  */
+    assign n672_o = w2pad-n671_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:551:49  */
+    assign n674_o = n669_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:552:23  */
+    assign n676_o = {4'b0000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:552:13  */
+    assign n677_o = w2pad+n676_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:552:49  */
+    assign n679_o = n669_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:553:22  */
+    assign n681_o = {3'b000, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:553:30  */
+    assign n683_o = {n681_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:553:13  */
+    assign n684_o = w2pad+n683_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:553:43  */
+    assign n686_o = n669_o == 2'b10;
+    assign n687_o = {n686_o, n679_o, n674_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:549:4  */
+    always @*
+        case (n687_o)
+            3'b100: n688_o <= n684_o;
+            3'b010: n688_o <= n677_o;
+            3'b001: n688_o <= n672_o;
+            default: n688_o <= w2pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:555:11  */
+    assign n689_o = q2[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:13  */
+    assign n691_o = {2'b00, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:21  */
+    assign n693_o = {n691_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:49  */
+    assign n695_o = n689_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:60  */
+    assign n697_o = n689_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:60  */
+    assign n698_o = n695_o | n697_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:68  */
+    assign n700_o = n689_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:68  */
+    assign n701_o = n698_o | n700_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:75  */
+    assign n703_o = n689_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:557:75  */
+    assign n704_o = n701_o | n703_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:558:12  */
+    assign n706_o = {1'b0, fy_d4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:558:20  */
+    assign n708_o = {n706_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:558:49  */
+    assign n710_o = n689_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:558:59  */
+    assign n712_o = n689_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:558:59  */
+    assign n713_o = n710_o | n712_o;
+    assign n715_o = {n713_o, n704_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:555:4  */
+    always @*
+        case (n715_o)
+            2'b10: n716_o <= n708_o;
+            2'b01: n716_o <= n693_o;
+            default: n716_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:560:11  */
+    assign n717_o = q2[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:562:15  */
+    assign n718_o = w1fulla-fydec1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:562:41  */
+    assign n720_o = n717_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:563:15  */
+    assign n721_o = w1fulla+fydec1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:560:4  */
+    always @*
+        case (n720_o)
+            1'b1: n722_o <= n718_o;
+            default: n722_o <= n721_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:564:16  */
+    assign n723_o = w1full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:564:30  */
+    assign n725_o = {n723_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:566:17  */
+    assign n726_o = w1_d1[28:24];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:566:39  */
+    assign n727_o = fy_d5[23:22];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:566:32  */
+    assign n728_o = {n726_o, n727_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:571:23  */
+    assign selfunctiontable1_n729 = selfunctiontable1_y; // (signal)
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:567:4  */
+    selfunctiontable_r8_f300_uid4 selfunctiontable1(
+        .clk(clk),
+        .rst(rst),
+        .x(sel1),
+        .y(selfunctiontable1_y));
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:572:19  */
+    assign n733_o = {w1_d1, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:573:11  */
+    assign n734_o = q1[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:575:23  */
+    assign n736_o = {4'b0000, fy_d5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:575:13  */
+    assign n737_o = w1pad-n736_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:575:49  */
+    assign n739_o = n734_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:576:23  */
+    assign n741_o = {4'b0000, fy_d5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:576:13  */
+    assign n742_o = w1pad+n741_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:576:49  */
+    assign n744_o = n734_o == 2'b11;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:577:22  */
+    assign n746_o = {3'b000, fy_d5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:577:30  */
+    assign n748_o = {n746_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:577:13  */
+    assign n749_o = w1pad+n748_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:577:43  */
+    assign n751_o = n734_o == 2'b10;
+    assign n752_o = {n751_o, n744_o, n739_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:573:4  */
+    always @*
+        case (n752_o)
+            3'b100: n753_o <= n749_o;
+            3'b010: n753_o <= n742_o;
+            3'b001: n753_o <= n737_o;
+            default: n753_o <= w1pad;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:579:11  */
+    assign n754_o = q1[3:1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:13  */
+    assign n756_o = {2'b00, fy_d5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:21  */
+    assign n758_o = {n756_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:49  */
+    assign n760_o = n754_o == 3'b001;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:60  */
+    assign n762_o = n754_o == 3'b010;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:60  */
+    assign n763_o = n760_o | n762_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:68  */
+    assign n765_o = n754_o == 3'b110;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:68  */
+    assign n766_o = n763_o | n765_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:75  */
+    assign n768_o = n754_o == 3'b101;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:581:75  */
+    assign n769_o = n766_o | n768_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:582:12  */
+    assign n771_o = {1'b0, fy_d5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:582:20  */
+    assign n773_o = {n771_o, 3'b000};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:582:49  */
+    assign n775_o = n754_o == 3'b011;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:582:59  */
+    assign n777_o = n754_o == 3'b100;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:582:59  */
+    assign n778_o = n775_o | n777_o;
+    assign n780_o = {n778_o, n769_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:579:4  */
+    always @*
+        case (n780_o)
+            2'b10: n781_o <= n773_o;
+            2'b01: n781_o <= n758_o;
+            default: n781_o <= 30'b000000000000000000000000000000;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:584:11  */
+    assign n782_o = q1[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:586:15  */
+    assign n783_o = w0fulla-fydec0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:586:41  */
+    assign n785_o = n782_o == 1'b0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:587:15  */
+    assign n786_o = w0fulla+fydec0;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:584:4  */
+    always @*
+        case (n785_o)
+            1'b1: n787_o <= n783_o;
+            default: n787_o <= n786_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:588:16  */
+    assign n788_o = w0full[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:588:30  */
+    assign n790_o = {n788_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:589:38  */
+    assign n793_o = w0 == 29'b00000000000000000000000000000;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:589:29  */
+    assign n794_o = n793_o ? 4'b0000 : n797_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:590:24  */
+    assign n795_o = w0[28];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:590:29  */
+    assign n797_o = {n795_o, 3'b010};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:591:21  */
+    assign n798_o = q9_d4[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:592:21  */
+    assign n799_o = q9_d4[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:592:25  */
+    assign n801_o = {n799_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:593:21  */
+    assign n802_o = q8_d4[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:594:21  */
+    assign n803_o = q8_d4[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:594:25  */
+    assign n805_o = {n803_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:595:21  */
+    assign n806_o = q7_d3[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:596:21  */
+    assign n807_o = q7_d3[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:596:25  */
+    assign n809_o = {n807_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:597:21  */
+    assign n810_o = q6_d3[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:598:21  */
+    assign n811_o = q6_d3[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:598:25  */
+    assign n813_o = {n811_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:599:21  */
+    assign n814_o = q5_d2[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:600:21  */
+    assign n815_o = q5_d2[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:600:25  */
+    assign n817_o = {n815_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:601:21  */
+    assign n818_o = q4_d2[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:602:21  */
+    assign n819_o = q4_d2[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:602:25  */
+    assign n821_o = {n819_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:603:21  */
+    assign n822_o = q3_d1[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:604:21  */
+    assign n823_o = q3_d1[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:604:25  */
+    assign n825_o = {n823_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:605:21  */
+    assign n826_o = q2_d1[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:606:21  */
+    assign n827_o = q2_d1[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:606:25  */
+    assign n829_o = {n827_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:607:18  */
+    assign n830_o = q1[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:608:18  */
+    assign n831_o = q1[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:608:22  */
+    assign n833_o = {n831_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:609:13  */
+    assign n834_o = q0[2:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:610:13  */
+    assign n835_o = q0[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:610:18  */
+    assign n837_o = {n835_o, 2'b00};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:14  */
+    assign n838_o = {qp9, qp8};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:20  */
+    assign n839_o = {n838_o, qp7};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:26  */
+    assign n840_o = {n839_o, qp6};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:32  */
+    assign n841_o = {n840_o, qp5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:38  */
+    assign n842_o = {n841_o, qp4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:44  */
+    assign n843_o = {n842_o, qp3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:50  */
+    assign n844_o = {n843_o, qp2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:56  */
+    assign n845_o = {n844_o, qp1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:611:62  */
+    assign n846_o = {n845_o, qp0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:13  */
+    assign n847_o = qm9[1:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:26  */
+    assign n848_o = {n847_o, qm8};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:32  */
+    assign n849_o = {n848_o, qm7};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:38  */
+    assign n850_o = {n849_o, qm6};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:44  */
+    assign n851_o = {n850_o, qm5};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:50  */
+    assign n852_o = {n851_o, qm4};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:56  */
+    assign n853_o = {n852_o, qm3};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:62  */
+    assign n854_o = {n853_o, qm2};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:68  */
+    assign n855_o = {n854_o, qm1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:74  */
+    assign n856_o = {n855_o, qm0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:612:80  */
+    assign n858_o = {n856_o, 1'b0};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:613:14  */
+    assign n859_o = qp-qm;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:615:16  */
+    assign n860_o = fr0_d1[29:2];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:615:39  */
+    assign n861_o = fr0_d1[0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:615:52  */
+    assign n862_o = fr0_d1[1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:615:43  */
+    assign n863_o = n861_o | n862_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:615:30  */
+    assign n864_o = {n860_o, n863_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:617:11  */
+    assign n865_o = fr[27];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:17  */
+    assign n866_o = fr[27:2];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:36  */
+    assign n867_o = fr[0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:45  */
+    assign n868_o = fr[1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:40  */
+    assign n869_o = n867_o | n868_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:31  */
+    assign n870_o = {n866_o, n869_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:618:50  */
+    assign n872_o = n865_o == 1'b1;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:619:17  */
+    assign n873_o = fr[26:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:617:4  */
+    always @*
+        case (n872_o)
+            1'b1: n874_o <= n870_o;
+            default: n874_o <= n873_o;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:620:57  */
+    assign n875_o = fr[27];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:620:53  */
+    assign n877_o = {9'b000111111, n875_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:620:22  */
+    assign n878_o = expr0_d6+n877_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:17  */
+    assign n879_o = frn1[2];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:30  */
+    assign n880_o = frn1[0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:41  */
+    assign n881_o = frn1[1];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:34  */
+    assign n882_o = n880_o | n881_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:52  */
+    assign n883_o = frn1[3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:45  */
+    assign n884_o = n882_o | n883_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:621:21  */
+    assign n885_o = n879_o & n884_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:624:33  */
+    assign n886_o = frn1_d1[25:3];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:624:24  */
+    assign n887_o = {expr1_d1, n886_o};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:625:48  */
+    assign n889_o = {32'b00000000000000000000000000000000, round_d1};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:625:24  */
+    assign n890_o = expfrac+n889_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:626:36  */
+    assign n892_o = expfracr[32];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:626:23  */
+    assign n893_o = n892_o ? 2'b00 : n898_o;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:627:37  */
+    assign n895_o = expfracr[32:31];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:627:52  */
+    assign n897_o = n895_o == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:627:12  */
+    assign n898_o = n897_o ? 2'b10 : 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:631:17  */
+    assign n901_o = exnr0_d7 == 2'b01;
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:629:4  */
+    always @*
+        case (n901_o)
+            1'b1: n902_o <= exnr;
+            default: n902_o <= exnr0_d7;
+        endcase
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:633:19  */
+    assign n903_o = {exnrfinal, sr_d7};
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:633:37  */
+    assign n904_o = expfracr[30:0];
+    /* /Users/mlevental/dev_projects/bragghls/scripts/../bragghls/ip_cores/flopoco_fdiv_8_23.vhdl:633:27  */
+    assign n905_o = {n903_o, n904_o};
+endmodule
+

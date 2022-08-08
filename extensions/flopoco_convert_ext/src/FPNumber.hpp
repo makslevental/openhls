@@ -171,6 +171,7 @@ namespace flopoco{
 
         FPNumber operator*(FPNumber x);
         FPNumber operator+(FPNumber x);
+        FPNumber operator/(FPNumber fpy);
 
 		/** The width of the exponent */
 		int wE;

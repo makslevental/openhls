@@ -100,7 +100,7 @@ def scf_to_affine(fp):
             for cst_ident, cst in cst_map.items():
                 line = line.replace(cst_ident, cst)
             line = line.replace("scf", "affine")
-        if "scf.yield" not in line:
+        if "scf.yield" not in line and "cf.assert" not in line:
             new_lines.append(line)
 
     return "\n".join(new_lines)
@@ -205,7 +205,7 @@ def compile(
             pe_idxs,
             include_outer_module=not do_testbench,
         )
-        verilog_file = verilog_file.replace("%", "v_")
+        verilog_file = verilog_file.replace("%", "p_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
 
@@ -222,6 +222,7 @@ def compile(
     for ip_core_sv in [
         f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
         f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
+        f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
         f"flopoco_neg.sv",
         f"flopoco_relu.sv",
         f"alveo-u280-xdc.xdc",
@@ -241,7 +242,7 @@ def compile(
             top_level=name,
             max_fsm_stage=max_fsm_stage,
             output_name=output_name,
-            output_map={k.replace("%", "output_v_"): v for k, v in output_map.items()},
+            output_map={k.replace("%", "output_p_"): v for k, v in output_map.items()},
             width_exponent=width_exponent,
             width_fraction=width_fraction,
             ip_cores_path=os.path.dirname(ip_cores.__file__),

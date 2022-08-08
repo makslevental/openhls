@@ -4,6 +4,7 @@ from pathlib import Path
 
 import torch
 from torch import nn
+from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
 
 from bragghls.ir.nn import compile_nn_module_to_mlir, set_weights
 
@@ -67,6 +68,69 @@ class ConvPlusReLU(nn.Module):
         return x
 
 
+class Exp(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    # https://dl.acm.org/doi/pdf/10.1145/2851507
+    # https://hal.inria.fr/inria-00071879/document
+    def forward(self, x):
+        y1 = x
+        y2 = y1 * y1 * 0.5
+        y3 = y2 * 0.03333333333333328
+        # y4 = y2 * y2 * 0.08333333333333333
+        # TODO: wtf
+        # TODO: subtract max here somewhere to make more numerically stable
+        return (y1 + y2) + (y3) + (y3 * y3 * 75) + 1
+        # return (y1 + y2) + (y3 + y4) + 1
+        # return (
+        #     x
+        #     + (x * x) * 0.5
+        #     + (x * x * x) * 0.16666666666666666
+        #     + (x * x * x * x) * 0.041666666666666664
+        #     + 1
+        # )
+
+
+class Softmax(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.exp = Exp()
+
+    @export
+    @annotate_args([None, ([-1, -1, -1, -1], torch.float32, True)])
+    def forward(self, x):
+        y = self.exp(x)
+        z = y.sum()
+        factor = 1 / z
+        # return y * factor
+        return factor
+
+
+class Mul(nn.Module):
+    def __init__(self):
+        super(Mul, self).__init__()
+
+    def forward(self, x, y):
+        return x * y
+
+
+class Add(nn.Module):
+    def __init__(self):
+        super(Add, self).__init__()
+
+    def forward(self, x, y):
+        return x + y
+
+
+class Div(nn.Module):
+    def __init__(self):
+        super(Div, self).__init__()
+
+    def forward(self, y):
+        return 1 / y
+
+
 def make_dot_product(size=11):
     with torch.no_grad():
         mod = Dot()
@@ -112,7 +176,7 @@ def make_linear_no_sum(size=11, simplify_weights=False, bias=True):
 
 
 def make_single_small_cnn(
-    img_size=11, in_channels=2, out_channels=8, simplify_weights=False, bias=True
+        img_size=11, in_channels=2, out_channels=8, simplify_weights=False, bias=True
 ):
     with torch.no_grad():
         mod = ConvPlusReLU(in_channels, out_channels, bias)
@@ -145,13 +209,67 @@ def make_double_small_cnn(img_size=11, scale1=1, scale2=8, simplify_weights=Fals
     return str(mlir_module)
 
 
+def make_softmax(scale=8, img_size=11):
+    with torch.no_grad():
+        mod = Softmax()
+        mod.eval()
+        x = torch.randn((1, scale, img_size, img_size))
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, scale, img_size, img_size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_exp(scale=1, img_size=11):
+    with torch.no_grad():
+        mod = Exp()
+        mod.eval()
+        x = torch.randn((1, scale, img_size, img_size))
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, scale, img_size, img_size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_div(img_size=11):
+    with torch.no_grad():
+        mod = Div()
+        mod.eval()
+        y = torch.randn(img_size)
+        z = mod(y)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([img_size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate MLIR for NN")
     parser.add_argument("--size", type=int, default=11)
     parser.add_argument("--out_dir", type=Path, default=Path(__file__).parent)
     parser.add_argument(
         "net",
-        choices=["dot_product", "linear", "linear_no_sum", "small_cnn", "double_cnn"],
+        choices=[
+            "dot_product",
+            "linear",
+            "linear_no_sum",
+            "small_cnn",
+            "double_cnn",
+            "softmax",
+            "exp",
+            "div",
+        ],
         default="linear",
     )
     args = parser.parse_args()
@@ -168,6 +286,12 @@ if __name__ == "__main__":
         mlir_str = make_single_small_cnn(img_size=args.size)
     elif args.net == "double_cnn":
         mlir_str = make_double_small_cnn(img_size=args.size)
+    elif args.net == "softmax":
+        mlir_str = make_softmax(img_size=args.size)
+    elif args.net == "exp":
+        mlir_str = make_exp(img_size=args.size)
+    elif args.net == "div":
+        mlir_str = make_div(img_size=args.size)
     else:
         raise Exception(f"unknown net {args.net}")
 

@@ -15,7 +15,7 @@ from bragghls.rtl.basic import (
     CombOrSeq,
 )
 from bragghls.rtl.fsm import FSM
-from bragghls.rtl.ip import FAdd, FMul, ReLU, Neg, PE
+from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE
 from bragghls.rtl.module import make_top_module_decl
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,8 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
                 ip_res_val_map[res_val] = pe.fadd.r
             elif op.type == OpType.MUL:
                 ip_res_val_map[res_val] = pe.fmul.r
+            elif op.type == OpType.DIV:
+                ip_res_val_map[res_val] = pe.fdiv.r
             else:
                 logger.warning(f"not mapping {res_val} to {op} in ip_res_val_map")
         elif op.type in {OpType.NEG, OpType.RELU}:
@@ -159,10 +161,11 @@ def emit_verilog(
 
     for name, val_reg in sorted(vals.items()):
         if name in csts:
+            cst = csts[name]
             emit(
                 val_reg.instantiate()[:-1],
                 "=",
-                f"{make_constant(csts[name], width_exp, width_frac)};",
+                f"{make_constant(cst, width_exp, width_frac)}; // {cst}",
             )
         else:
             emit(val_reg.instantiate())
@@ -176,15 +179,18 @@ def emit_verilog(
         if pe_idx[0] < 0:
             continue
 
+        # TODO: don't emit ip for pes that don't use (like eg div, of which there's only one)
         fadd = FAdd(pe_idx, signal_width)
         emit(fadd.instantiate())
         fmul = FMul(pe_idx, signal_width)
         emit(fmul.instantiate())
+        fdiv = FDiv(pe_idx, signal_width)
+        emit(fdiv.instantiate())
         frelu = ReLU(pe_idx, signal_width)
         emit(frelu.instantiate())
         fneg = Neg(pe_idx, signal_width)
         emit(fneg.instantiate())
-        pes[pe_idx] = PE(fadd, fmul, frelu, fneg, pe_idx)
+        pes[pe_idx] = PE(fadd, fmul, fdiv, frelu, fneg, pe_idx)
 
     pe_to_ops = cluster_pes(pes, op_id_data)
     logger.info(f"Number unique processing elements in design {len(pe_to_ops)}")

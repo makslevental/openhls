@@ -5,7 +5,7 @@ from textwrap import dedent, indent
 import numpy as np
 
 from bragghls.config import USING_FLOPOCO
-from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
+from bragghls.flopoco.ops import check_make_val
 
 
 @dataclass(frozen=True)
@@ -52,7 +52,7 @@ def make_constant(v, width_exp, width_frac):
 
     # %val_cst_00
     assert isinstance(v, (float, int))
-    return f"{signal_width}'b{convert_float_to_flopoco_binary_str(v, width_exp, width_frac)}"
+    return f"{signal_width}'b{check_make_val(v, width_exp, width_frac).fp.binstr()}"
 
 
 class CombOrSeq(enum.Enum):

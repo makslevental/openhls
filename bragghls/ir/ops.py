@@ -8,7 +8,7 @@ import numpy as np
 
 from bragghls.compiler import state
 from bragghls.compiler.state import CONSTANT
-from bragghls.config import DTYPE, MUL_LATENCY, ADD_LATENCY
+from bragghls.config import DTYPE, MUL_LATENCY, ADD_LATENCY, DIV_LATENCY
 from bragghls.util import extend_idx, chunks, is_val
 
 
@@ -48,7 +48,6 @@ class Val:
     __add__ = overload_op(OpType.ADD)
     __sub__ = overload_op(OpType.SUB)
     __mul__ = overload_op(OpType.MUL)
-    __truediv__ = overload_op(OpType.DIV)
     __gt__ = overload_op(OpType.GT)
     __neg__ = overload_op(OpType.NEG)
     copy = overload_op(OpType.COPY)
@@ -107,7 +106,7 @@ class Latencies:
         OpType.ADD: ADD_LATENCY,
         OpType.SUB: ADD_LATENCY,
         OpType.MUL: MUL_LATENCY,
-        OpType.DIV: 3,
+        OpType.DIV: DIV_LATENCY,
         OpType.GT: 1,
         OpType.NEG: 1,
         OpType.RELU: 1,
@@ -331,3 +330,11 @@ def FMACOp(n_args, pe_idx):
         )
 
     return f
+
+
+def Div(cst, val):
+    return create_new_op(
+        OpType.DIV,
+        (cst, val),
+        pe_idx=state.state.get_val_pe(val) if is_val(val) else None,
+    )

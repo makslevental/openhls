@@ -21,6 +21,11 @@ MUL_PIPELINE_DEPTH = int(
     os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
 )
 MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
+DIV_PIPELINE_DEPTH = int(
+    os.getenv("DIV_PIPELINE_DEPTH") or config["ip"].get("DivPipelineDepth")
+)
+DIV_LATENCY = DIV_PIPELINE_DEPTH + 1
+DIV_RADIX = int(os.getenv("DIV_RADIX") or config["ip"].get("DivRadix"))
 ADD_PIPELINE_DEPTH = int(
     os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
 )

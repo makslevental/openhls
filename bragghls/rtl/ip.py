@@ -52,7 +52,7 @@ class IP:
         self.instance_name = f"{self.op_type}_{self.pe_idx_str}"
 
 
-class FAddOrMulIP(IP):
+class BinOpIp(IP):
     def __init__(
         self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
     ):
@@ -81,14 +81,19 @@ class FAddOrMulIP(IP):
         return wires_regs + instance
 
 
-class FAdd(FAddOrMulIP):
+class FAdd(BinOpIp):
     def __init__(self, pe_idx, signal_width):
         super().__init__(OpType.ADD, pe_idx, signal_width)
 
 
-class FMul(FAddOrMulIP):
+class FMul(BinOpIp):
     def __init__(self, pe_idx, signal_width):
         super().__init__(OpType.MUL, pe_idx, signal_width)
+
+
+class FDiv(BinOpIp):
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.DIV, pe_idx, signal_width)
 
 
 def generate_relu_or_neg(op_type, id, signal_width, instance_name, a, res):
@@ -143,6 +148,7 @@ class Neg(ReLUOrNegIP):
 class PE:
     fadd: FAdd
     fmul: FMul
+    fdiv: FDiv
     frelu: ReLU
     fneg: Neg
     idx: Tuple[int, ...]

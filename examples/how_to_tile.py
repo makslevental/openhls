@@ -1,6 +1,7 @@
 #############################
 # linear
 ###########################
+
 _4 = MemRef("_4", 8, 8)
 _4.zero()
 
@@ -11,8 +12,8 @@ def body(_arg3, _arg1, _arg2):
     _7 = _arg0[_arg1, _arg3]
     _8 = _3[_arg3, _arg2]
     _9 = _4[_arg3, _arg2]
-    _10 = fma.Mul(_7, _8)
-    _11 = fma.Add(_9, _10)
+    _10 = examples.simple_nns.Mul(_7, _8)
+    _11 = examples.simple_nns.Add(_9, _10)
     _4[_arg3, _arg2] = _11
     _4[_arg3, _arg2] = fma.Result(copy=False)
 

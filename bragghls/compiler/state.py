@@ -127,6 +127,9 @@ class State:
     def map_val_to_pe(self, v, pe_idx):
         self.val_to_pe_idx[v] = pe_idx
 
+    def get_val_pe(self, v):
+        return self.val_to_pe_idx[v]
+
     def swap_output_file(self, new_file):
         old_file = self.output_file
         self.output_file = new_file

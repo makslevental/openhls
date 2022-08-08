@@ -11,6 +11,7 @@ from bragghls.flopoco.ops import (
     MemRef as FPMemRef,
     GlobalMemRef as FPGlobalMemRef,
     FMAC as FPFMAC,
+    Div as FPDiv,
 )
 from bragghls.ir.memref import MemRef, GlobalMemRef
 from bragghls.ir.ops import OpType, LATENCIES
@@ -147,6 +148,7 @@ def run_model_with_fp_number(mod, inputs, width_exponent, width_fraction):
     FPFMAC.width_exponent = width_exponent
     FPFMAC.width_fraction = width_fraction
     mod.FMAC = FPFMAC
+    mod.Div = FPDiv
     mod.MemRef = FPMemRef
     mod.GlobalMemRef = FPGlobalMemRef
     mod.forward(**test_args)

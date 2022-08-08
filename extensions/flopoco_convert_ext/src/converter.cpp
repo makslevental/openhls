@@ -24,6 +24,8 @@ PYBIND11_MODULE(flopoco_converter, m) {
            [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x + -y; })
       .def("__mul__",
            [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x * y; })
+      .def("__truediv__",
+           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x / y; })
       .def("__eq__",
            [](flopoco::FPNumber &x, flopoco::FPNumber &y) {
              auto z = (x + (-y));

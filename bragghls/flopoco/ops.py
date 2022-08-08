@@ -61,7 +61,13 @@ class Val:
         v = mul(self, other)
         return v
 
+    def __truediv__(self, other):
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
+        v = div(self, other)
+        return v
+
     def __eq__(self, other):
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
         return self.fp == other.fp
 
     def __add__(self, other):
@@ -96,6 +102,12 @@ def mul(x: Val, y: Val):
     assert x.width_exponent == y.width_exponent
     assert x.width_fraction == y.width_fraction
     return Val(x.ieee * y.ieee, x.width_exponent, x.width_fraction, x.fp * y.fp)
+
+
+def div(x: Val, y: Val):
+    assert x.width_exponent == y.width_exponent
+    assert x.width_fraction == y.width_fraction
+    return Val(x.ieee / y.ieee, x.width_exponent, x.width_fraction, x.fp / y.fp)
 
 
 def add(x: Val, y: Val):
@@ -277,6 +289,18 @@ class FMAC:
         return str(self.result)
 
 
+def Div(cst, val):
+    if not isinstance(cst, Val):
+        assert isinstance(val, Val)
+        cst = check_make_val(cst, val.width_exponent, val.width_fraction)
+    return cst / val
+
+
+def main():
+    five = Val(4.0, 4, 4)
+    print(Div(1.0, five))
+
+
 if __name__ == "__main__":
     # for i in range(100):
     #     fp2bin = flopoco_converter.fp2binstr(4, 4, str(i))
@@ -288,8 +312,4 @@ if __name__ == "__main__":
     #             flopoco_converter.bin2fp(4, 4, fpnumber),
     #         )
 
-    five = Val(-5.0, 4, 4)
-    print(five.fp.sign())
-    four = Val(4.0, 4, 4)
-    print(four.fp.sign())
-    print((four - five).relu())
+    main()

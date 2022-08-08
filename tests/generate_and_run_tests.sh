@@ -16,7 +16,7 @@ sizes=(
 nets=(
 dot_product
 linear
-linear_no_sum
+#linear_no_sum
 small_cnn
 double_cnn
 softmax

@@ -32,14 +32,43 @@ LOWERING_PIPELINE = [
     "cse",
 ]
 
-PIPELINE = (
-    [
-        "torchscript-module-to-torch-backend-pipeline",
-        "torch-backend-to-linalg-on-tensors-backend-pipeline",
-    ]
-    + BUFFERIZATION_PIPELINE
-    + LOWERING_PIPELINE
-)
+LLVM_LOWERING = [
+    "func.func(refback-generalize-tensor-pad)",
+    # Bufferize.
+    "func.func(scf-bufferize)",
+    "func.func(tm-tensor-bufferize)",
+    "func.func(linalg-init-tensor-to-alloc-tensor)",
+    "func.func(linalg-bufferize)",
+    "func-bufferize",
+    "arith-bufferize",
+    "func.func(tensor-bufferize)",
+    "func.func(finalizing-bufferize)",
+    "refback-munge-calling-conventions",
+    "refback-insert-rng-globals",
+    # Lower to LLVM
+    "func.func(tm-tensor-to-loops)",
+    "func.func(refback-munge-memref-copy)",
+    "func.func(convert-linalg-to-loops)",
+    "func.func(lower-affine)",
+    "convert-scf-to-cf",
+    "func.func(refback-expand-ops-for-llvm)",
+    "func.func(arith-expand)",
+    "func.func(convert-math-to-llvm)",
+    "convert-linalg-to-llvm",
+    "convert-memref-to-llvm",
+    "func.func(convert-arith-to-llvm)",
+    "convert-func-to-llvm",
+    "convert-cf-to-llvm",
+    "reconcile-unrealized-casts",
+]
+
+TORCH_MLIR_PIPELINE = [
+    "torchscript-module-to-torch-backend-pipeline",
+    "torch-backend-to-linalg-on-tensors-backend-pipeline",
+]
+
+STANDARD_PIPELINE = TORCH_MLIR_PIPELINE + BUFFERIZATION_PIPELINE + LOWERING_PIPELINE
+LLVM_PIPELINE = TORCH_MLIR_PIPELINE + LLVM_LOWERING
 
 
 def script_module_with_annotations(test_module, annotations):
@@ -54,7 +83,7 @@ def script_module_with_annotations(test_module, annotations):
     return recursivescriptmodule, class_annotator
 
 
-def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
+def compile_nn_module_to_mlir(nn_mod, shapes_dtypes, pipeline=STANDARD_PIPELINE):
     logger.info("Compiling PyTorch to MLIR")
     recursivescriptmodule, class_annotator = script_module_with_annotations(
         nn_mod,
@@ -63,7 +92,7 @@ def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
 
     mb = ModuleBuilder()
     mb.import_module(recursivescriptmodule._c, class_annotator)
-    run_pipeline_with_repro_report(mb.module, ",".join(PIPELINE), "")
+    run_pipeline_with_repro_report(mb.module, ",".join(pipeline), "")
 
     return mb.module
 

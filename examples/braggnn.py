@@ -7,7 +7,8 @@ import torch
 from torch import nn
 from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
 
-from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
+from bragghls.compiler.compile import translate_llvm, unroll_with_llvm
+from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir, LLVM_PIPELINE
 
 
 class Exp(nn.Module):
@@ -36,7 +37,7 @@ class Div(nn.Module):
         super().__init__()
 
     def forward(self, x):
-        return 0x5F3759DF - x
+        return 0x5F3759DF + x
 
 
 class Softmax(nn.Module):
@@ -122,7 +123,7 @@ class BraggNN(torch.nn.Module):
                     in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
                 ),
                 # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
                 # Exp()
             ]
             fsz -= 2
@@ -133,7 +134,7 @@ class BraggNN(torch.nn.Module):
             self.dense_ops += [
                 torch.nn.Linear(ic, oc),
                 # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
             ]
         # output layer
         if fcsz[-1] != 2:
@@ -169,7 +170,7 @@ class cnn_layers_1(torch.nn.Module):
                     in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
                 ),
                 # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
             ]
             fsz -= 2
 
@@ -245,7 +246,7 @@ class cnn_layers_2(torch.nn.Module):
                     in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
                 ),
                 # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
                 # Exp()
             ]
             fsz -= 2
@@ -275,7 +276,7 @@ class dense_layers(torch.nn.Module):
             self.dense_ops += [
                 torch.nn.Linear(ic, oc),
                 # torch.nn.LeakyReLU(negative_slope=0.025),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
             ]
         # output layer
         self.dense_ops += [torch.nn.Linear(fcsz[-1], 2)]
@@ -308,6 +309,28 @@ def make_braggn(scale, img_size=11, simplify_weights=True):
         ],
     )
     return str(mlir_module)
+
+
+def make_braggn_llvm(scale, img_size=11, simplify_weights=True):
+    with torch.no_grad():
+        mod = BraggNN(scale=scale, imgsz=img_size)
+        # weights = torch.load(
+        #     "my_fc16_8_4_2-sz11.pth", map_location=torch.device("cpu")
+        # )
+        # mod.load_state_dict(weights)
+        mod.eval()
+        if simplify_weights:
+            mod.apply(set_weights)
+        x = torch.randn((1, 1, img_size, img_size))
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, 1, img_size, img_size], torch.float32),
+        ],
+        pipeline=LLVM_PIPELINE,
+    )
+    return translate_llvm(str(mlir_module))
 
 
 def rename_state_dict_keys(source, key_transformation, target=None):
@@ -349,7 +372,10 @@ def map_zhengchun_weights():
     def key_transform(old_key):
         return weights_map.get(old_key, old_key)
 
-    rename_state_dict_keys("fc16_8_4_2-sz11.pth", key_transform, "my_fc16_8_4_2-sz11.pth")
+    rename_state_dict_keys(
+        "fc16_8_4_2-sz11.pth", key_transform, "my_fc16_8_4_2-sz11.pth"
+    )
+
 
 if __name__ == "__main__":
     # map_zhengchun_weights()
@@ -365,3 +391,6 @@ if __name__ == "__main__":
     dot_str = make_braggn(args.scale, simplify_weights=False)
     os.makedirs(f"{args.out_dir}", exist_ok=True)
     open(f"{args.out_dir}/braggnn.mlir", "w").write(dot_str)
+    dot_str = make_braggn_llvm(args.scale, simplify_weights=False)
+    unrolled_str = unroll_with_llvm(dot_str)
+    open(f"{args.out_dir}/braggnn.unrolled.llvm", "w").write(unrolled_str)

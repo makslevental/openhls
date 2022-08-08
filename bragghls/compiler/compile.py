@@ -25,6 +25,29 @@ from bragghls.util import import_module_from_fp, import_module_from_string
 logger = logging.getLogger(__name__)
 
 
+def unroll_with_llvm(mlir_str):
+    cmd = [
+        # shutil.which("opt"),
+        "/Users/mlevental/dev_projects/bragghls/build/llvm/bin/opt",
+        "-S",
+        "--indvars",
+        "--loop-unroll",
+        "--unroll-count=1000000000",
+    ]
+
+    logger.debug(" ".join(map(str, cmd)))
+    p = Popen(
+        cmd,
+        stdout=PIPE,
+        stdin=PIPE,
+        stderr=PIPE,
+    )
+    res, err = p.communicate(input=mlir_str.encode())
+    if err:
+        raise Exception(f"translation failed {err.decode()}")
+    return res.decode()
+
+
 def translate(affine_mlir_str):
     cmd = [
         Path(sys.executable).parent.resolve() / "bragghls/bragghls_translate",
@@ -39,6 +62,25 @@ def translate(affine_mlir_str):
         stderr=PIPE,
     )
     res, err = p.communicate(input=affine_mlir_str.encode())
+    if err:
+        raise Exception(f"translation failed {err.decode()}")
+    return res.decode()
+
+
+def translate_llvm(mlir_str):
+    cmd = [
+        # shutil.which("mlir-translate"),
+        "/Users/mlevental/dev_projects/bragghls/build/llvm/bin/mlir-translate",
+        "--mlir-to-llvmir",
+    ]
+    logger.debug(" ".join(map(str, cmd)))
+    p = Popen(
+        cmd,
+        stdout=PIPE,
+        stdin=PIPE,
+        stderr=PIPE,
+    )
+    res, err = p.communicate(input=mlir_str.encode())
     if err:
         raise Exception(f"translation failed {err.decode()}")
     return res.decode()
@@ -71,7 +113,7 @@ def run_rewrite(mod):
 def run_circt(mlir_output):
     p = Popen(
         [
-            shutil.which("circt-opt", path=os.getenv("BRAGGHLS_PATH")),
+            shutil.which("circt-opt"),
             "-test-lp-scheduler=with=Problem",
             "-allow-unregistered-dialect",
         ],

@@ -398,7 +398,7 @@ module intadder_53_f300_uid4
     assign n389_o = n387_o+n388_o;
 endmodule
 
-module fadd
+module fadd #(parameter ID = 1)
     (input clk,
         input rst,
         input[52:0] X,

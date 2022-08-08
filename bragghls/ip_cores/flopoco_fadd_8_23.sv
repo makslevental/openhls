@@ -320,7 +320,7 @@ module rightshifter_24_by_max_26_f300_uid4
     assign n358_o = level5[54:5];
 endmodule
 
-module fadd
+module fadd #(parameter ID = 1)
     (input clk,
         input rst,
         input[33:0] X,

@@ -950,7 +950,7 @@ module intmultiplier_usingdsp_6_6_12_unsigned_f300_uid4
     assign n223_o = compressionresult6[11:0];
 endmodule
 
-module fmul
+module fmul #(parameter ID = 1)
     (input clk,
         input rst,
         input[12:0] X,

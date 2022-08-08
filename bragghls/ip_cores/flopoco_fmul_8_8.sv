@@ -2038,7 +2038,7 @@ module intmultiplier_usingdsp_9_9_18_unsigned_f300_uid4
     assign n387_o = compressionresult6[17:0];
 endmodule
 
-module fmul
+module fmul #(parameter ID = 1)
     (input clk,
         input rst,
         input[18:0] X,

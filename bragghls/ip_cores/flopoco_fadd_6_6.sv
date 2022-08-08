@@ -275,7 +275,7 @@ module rightshifter_7_by_max_9_f300_uid4
     assign n346_o = level4[21:6];
 endmodule
 
-module fadd
+module fadd #(parameter ID = 1)
     (input clk,
         input rst,
         input[14:0] X,

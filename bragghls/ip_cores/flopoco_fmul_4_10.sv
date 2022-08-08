@@ -3515,7 +3515,7 @@ module intmultiplier_usingdsp_11_11_22_unsigned_f300_uid4
     assign n655_o = compressionresult6[21:0];
 endmodule
 
-module fmul
+module fmul #(parameter ID = 1)
     (input clk,
         input rst,
         input[16:0] X,

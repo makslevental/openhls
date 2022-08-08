@@ -5710,7 +5710,7 @@ module intmultiplier_usingdsp_41_41_82_unsigned_f300_uid4
     assign n1229_o = compressionresult6[81:0];
 endmodule
 
-module fmul
+module fmul #(parameter ID = 1)
     (input clk,
         input rst,
         input[52:0] X,

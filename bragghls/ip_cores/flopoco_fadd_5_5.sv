@@ -275,7 +275,7 @@ module rightshifter_6_by_max_8_f300_uid4
     assign n345_o = level4[20:7];
 endmodule
 
-module fadd
+module fadd #(parameter ID = 1)
     (input clk,
         input rst,
         input[12:0] X,

@@ -529,7 +529,7 @@ module selfunctiontable_r8_f300_uid4
         endcase
 endmodule
 
-module fdiv
+module fdiv #(parameter ID = 1)
     (input clk,
         input rst,
         input[12:0] X,

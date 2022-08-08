@@ -1227,7 +1227,7 @@ module intmultiplier_usingdsp_24_24_48_unsigned_f300_uid4
     assign n421_o = compressionresult6[47:0];
 endmodule
 
-module fmul
+module fmul #(parameter ID = 1)
     (input clk,
         input rst,
         input[33:0] X,

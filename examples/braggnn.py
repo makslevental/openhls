@@ -292,10 +292,10 @@ class dense_layers(torch.nn.Module):
 def make_braggn(scale, img_size=11, simplify_weights=True):
     with torch.no_grad():
         mod = BraggNN(scale=scale, imgsz=img_size)
-        weights = torch.load(
-            "my_fc16_8_4_2-sz11.pth", map_location=torch.device("cpu")
-        )
-        mod.load_state_dict(weights)
+        # weights = torch.load(
+        #     "my_fc16_8_4_2-sz11.pth", map_location=torch.device("cpu")
+        # )
+        # mod.load_state_dict(weights)
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
@@ -352,7 +352,7 @@ def map_zhengchun_weights():
     rename_state_dict_keys("fc16_8_4_2-sz11.pth", key_transform, "my_fc16_8_4_2-sz11.pth")
 
 if __name__ == "__main__":
-    map_zhengchun_weights()
+    # map_zhengchun_weights()
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument(
         "--out_dir",

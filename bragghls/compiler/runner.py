@@ -95,8 +95,13 @@ def Forward(forward):
     OLD_FILE.write(state.state.read_output_file())
     state.state.swap_output_file(OLD_FILE)
 
-    output_names = sorted([str(val) for val in output_arg.val_names_map.values()])
-    state.state.emit(f"return {', '.join(output_names)}: {output_dtypes}")
+    # sort by lexico order in the index for determinism
+    output_names = sorted(output_arg.val_names_map.items())
+    for idx, val in output_names:
+        state.state.debug_print(f"output_map;{idx}:{val}")
+    state.state.emit(
+        f"return {', '.join([str(v) for _idx, v in output_names])}: {output_dtypes}"
+    )
     state.state.emit("}")
 
 

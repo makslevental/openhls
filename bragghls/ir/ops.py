@@ -297,6 +297,8 @@ def ReduceAdd(vals):
 def Copy(dst, src):
     assert dst.registers.shape == src.registers.shape
     for idx, val in np.ndenumerate(src.registers):
+        if isinstance(val, Val):
+            state.state.update_current_pe_idx(val=val)
         dst.registers[idx] = val.copy()
 
 

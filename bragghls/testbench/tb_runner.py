@@ -1,7 +1,8 @@
 import argparse
 
 # import pydevd
-# pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True)
+# pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True, suspend=False)
+import json
 import os
 import os.path
 import sys
@@ -70,6 +71,13 @@ async def test_tb(dut):
     OUTPUT_NAME = os.getenv("OUTPUT_NAME")
     MODULE_FP = os.getenv("MODULE_FP")
     THRESHOLD = float(os.getenv("THRESHOLD", "0"))
+    TB_RANDOM = int(os.getenv("TB_RANDOM", "1"))
+    OUTPUT_MAP = {
+        k: tuple(v) for k, v in json.loads(os.getenv("OUTPUT_MAP", "{}")).items()
+    }
+
+    np.random.seed(TB_RANDOM)
+
     module = import_module_from_fp("test_module", MODULE_FP)
 
     clock = Clock(dut.clk, 2, units="ns")  # Create a 2ns period clock on port clk
@@ -77,10 +85,9 @@ async def test_tb(dut):
     await FallingEdge(dut.clk)
     dut._discover_all()
 
-    # TODO: handle multiple output wires
-    output_wire = next(
-        mod_obj for name, mod_obj in dut._sub_handles.items() if "output" in name
-    )
+    output_wires = {
+        name: mod_obj for name, mod_obj in dut._sub_handles.items() if "output" in name
+    }
 
     if THRESHOLD:
         n_wrong = 0
@@ -88,37 +95,53 @@ async def test_tb(dut):
     for i in range(LATENCY * TEST_VECTORS):
         # print(dut.current_fsm.value)
         if i % LATENCY == 0:
-            outputs = set_inputs(module, WIDTH_EXPONENT, WIDTH_FRACTION, dut)
-            output = outputs[OUTPUT_NAME].registers[0]
+            outputs = set_inputs(module, WIDTH_EXPONENT, WIDTH_FRACTION, dut)[
+                OUTPUT_NAME
+            ].registers
             dut.rst.value = 1
         elif i % LATENCY == 1:
             dut.rst.value = 0
         elif i % LATENCY == LATENCY - 1:
-            if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
-                if output_wire.value.binstr != output.fp.binstr():
-                    incorrect_output = output_wire.value.binstr
-                    print(
-                        "failed",
-                        f"clk {i}",
-                        f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
-                        f"true {output.fp}",
-                    )
-                    if THRESHOLD:
-                        n_wrong += 1
-                    else:
-                        await FallingEdge(dut.clk)
-                        await FallingEdge(dut.clk)
-                        assert False
+            passed = True
+            for output_wire, output in [
+                (wire, outputs[OUTPUT_MAP[wire_name]])
+                for wire_name, wire in output_wires.items()
+            ]:
+                if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
+                    if output_wire.value.binstr != output.fp.binstr():
+                        incorrect_output = output_wire.value.binstr
+                        print(
+                            "failed",
+                            f"clk {i}",
+                            f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
+                            f"true {output.fp}",
+                        )
+                        passed = False
+                        if THRESHOLD:
+                            n_wrong += 1
                 else:
-                    print(f"passed {i}")
-            else:
-                print(f"overflow {i} with {output_wire.value.binstr}")
+                    print(f"overflow {i} with {output_wire.value.binstr}")
+
+            if passed:
+                print(f"passed {i}")
+            elif not THRESHOLD:
+                await FallingEdge(dut.clk)
+                await FallingEdge(dut.clk)
+                assert False
 
         await FallingEdge(dut.clk)
 
     if THRESHOLD:
-        print("threshold", THRESHOLD, "percent failed", n_wrong / TEST_VECTORS)
-        if n_wrong / TEST_VECTORS > THRESHOLD:
+        num_all_vals = n_wrong / (TEST_VECTORS * len(output_wires))
+        print(
+            "threshold",
+            THRESHOLD,
+            "total n_wrong",
+            n_wrong,
+            "percent failed",
+            num_all_vals,
+        )
+        if num_all_vals > THRESHOLD:
             assert False
     print("\n")
 
@@ -130,6 +153,7 @@ def testbench_runner(
     top_level,
     max_fsm_stage,
     output_name,
+    output_map,
     width_exponent,
     width_fraction,
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
@@ -171,6 +195,8 @@ def testbench_runner(
             "OUTPUT_NAME": output_name,
             "MODULE_FP": module_fp,
             "THRESHOLD": str(threshold if threshold is not None else 0),
+            "TB_RANDOM": os.getenv("TB_RANDOM", "1"),
+            "OUTPUT_MAP": json.dumps({str(k): v for k, v in output_map.items()}),
         },
         build_dir=proj_path,
         sim_dir=proj_path,

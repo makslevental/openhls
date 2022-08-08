@@ -94,7 +94,7 @@ class Val:
 
     def __repr__(self):
         return str(
-            f"<IEEE {self.ieee:.5e}> {self.fp} {self.width_exponent} {self.width_fraction}"
+            f"<IEEE {self.ieee:.10e}> {self.fp} {self.width_exponent} {self.width_fraction}"
         )
 
 

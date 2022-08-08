@@ -7,12 +7,6 @@ import numpy as np
 
 from bragghls.compiler import state
 from bragghls.compiler.state import logger
-from bragghls.flopoco.ops import (
-    MemRef as FPMemRef,
-    GlobalMemRef as FPGlobalMemRef,
-    FMAC as FPFMAC,
-    Div as FPDiv,
-)
 from bragghls.ir.memref import MemRef, GlobalMemRef
 from bragghls.ir.ops import OpType, LATENCIES
 from bragghls.util import extend_idx, zip_with_scalar
@@ -123,33 +117,3 @@ def make_output_file(fp=None):
         state.state = state.State(open(fp.replace(".py", ".mlir"), "w"))
 
 
-def run_model_with_fp_number(mod, inputs, width_exponent, width_fraction):
-    file = io.StringIO()
-    state.state = state.State(file)
-    args = get_default_args(mod.forward)
-    test_args = {}
-    outputs = {}
-    for name, arg in args.items():
-        if isinstance(arg, MemRef) and arg.input:
-            test_args[name] = FPMemRef.from_memref(
-                arg, width_exponent, width_fraction, inputs[name]
-            )
-        elif isinstance(arg, MemRef) and arg.output:
-            outputs[name] = test_args[name] = FPMemRef.from_memref(
-                arg, width_exponent, width_fraction, np.zeros(arg.shape)
-            )
-        elif isinstance(arg, GlobalMemRef):
-            test_args[name] = FPGlobalMemRef.from_global_memref(
-                arg, width_exponent, width_fraction
-            )
-        else:
-            raise Exception("neither a globalmemref nor a memref")
-
-    FPFMAC.width_exponent = width_exponent
-    FPFMAC.width_fraction = width_fraction
-    mod.FMAC = FPFMAC
-    mod.Div = FPDiv
-    mod.MemRef = FPMemRef
-    mod.GlobalMemRef = FPGlobalMemRef
-    mod.forward(**test_args)
-    return test_args, outputs

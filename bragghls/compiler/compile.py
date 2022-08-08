@@ -117,6 +117,7 @@ def compile(
     width_fraction,
     n_test_vectors,
     threshold,
+    tolerance
 ):
     fp = os.path.abspath(fp)
     dirname, filename = os.path.split(fp)
@@ -248,6 +249,7 @@ def compile(
             ip_cores_path=os.path.dirname(ip_cores.__file__),
             n_test_vectors=n_test_vectors,
             threshold=threshold,
+            tolerance=tolerance
         )
         logger.info("Thank you, come again")
         os.remove(f"{artifacts_dir}/{name}_rewritten.mlir")
@@ -301,6 +303,12 @@ def main():
         type=float,
         help="Test for average number of testbench failures instead of absolute",
     )
+    parser.add_argument(
+        "--tolerance",
+        type=float,
+        help="Number of (binary) decimal places of agreement for testbench",
+        default=5
+    )
     args = parser.parse_args()
     compile(
         args.fp,
@@ -313,6 +321,7 @@ def main():
         WIDTH_FRACTION,
         args.n_test_vectors,
         args.threshold,
+        args.tolerance
     )
 
 

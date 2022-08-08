@@ -19,10 +19,10 @@ from cocotb.triggers import Timer
 from bragghls.compiler.runner import (
     get_default_args,
     get_py_module_args_globals,
-    run_model_with_fp_number,
 )
 from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.cocotb_runner import get_runner
+from bragghls.testbench.simulate import run_model_with_fp_number
 from bragghls.util import import_module_from_fp
 
 logger = logging.getLogger(__file__)
@@ -75,6 +75,7 @@ async def test_tb(dut):
     MODULE_FP = os.getenv("MODULE_FP")
     THRESHOLD = float(os.getenv("THRESHOLD", "0"))
     TB_RANDOM = int(os.getenv("TB_RANDOM", "1"))
+    TOLERANCE = int(float(os.getenv("TOLERANCE", "5")))
     OUTPUT_MAP = {
         k: tuple(v) for k, v in json.loads(os.getenv("OUTPUT_MAP", "{}")).items()
     }
@@ -111,7 +112,10 @@ async def test_tb(dut):
                 for wire_name, wire in output_wires.items()
             ]:
                 if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
-                    if output_wire.value.binstr != output.fp.binstr():
+                    if (
+                        output_wire.value.binstr[: 3 + WIDTH_EXPONENT + TOLERANCE]
+                        != output.fp.binstr()[: 3 + WIDTH_EXPONENT + TOLERANCE]
+                    ):
                         incorrect_output = output_wire.value.binstr
                         print(
                             "failed",
@@ -162,6 +166,7 @@ def testbench_runner(
     ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
     n_test_vectors=10,
     threshold=None,
+    tolerance=5,
 ):
     proj_path = Path(proj_path).resolve()
     ip_cores_path = Path(ip_cores_path).resolve()
@@ -199,7 +204,8 @@ def testbench_runner(
             "OUTPUT_NAME": output_name,
             "MODULE_FP": module_fp,
             "THRESHOLD": str(threshold if threshold is not None else 0),
-            "TB_RANDOM": os.getenv("TB_RANDOM", f"{np.random.randint(1, 100)}"),
+            "TB_RANDOM": os.getenv("TB_RANDOM", f"{np.random.randint(1, 1000)}"),
+            "TOLERANCE": str(tolerance),
             "OUTPUT_MAP": json.dumps({str(k): v for k, v in output_map.items()}),
         },
         build_dir=proj_path,

@@ -27,20 +27,18 @@ class NLB(torch.nn.Module):
             in_channels=self.inter_ch, out_channels=in_ch, kernel_size=1, padding=0
         )
         self.soft = Softmax()
-        self.mul = Mul()
-        self.add = Add()
 
     def forward(self, x):
         theta = self.theta_layer(x)
         phi = self.phi_layer(x)
         g = self.g_layer(x)
 
-        theta_phi = self.mul(theta, phi)
+        theta_phi = theta * phi
         theta_phi = self.soft(theta_phi)
-        theta_phi_g = self.mul(theta_phi, g)
+        theta_phi_g = theta_phi * g
 
         _out_tmp = self.out_cnn(theta_phi_g)
-        _out_tmp = self.add(_out_tmp, x)
+        _out_tmp = _out_tmp + x
 
         return _out_tmp
 
@@ -61,7 +59,7 @@ class BraggNN(torch.nn.Module):
                 torch.nn.Conv2d(
                     in_channels=ic, out_channels=oc, kernel_size=3, stride=1, padding=0
                 ),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
             ]
             fsz -= 2
         self.nlb = NLB(in_ch=cnn_out_chs[0])
@@ -70,7 +68,7 @@ class BraggNN(torch.nn.Module):
         for ic, oc in zip(dense_in_chs, fcsz):
             self.dense_ops += [
                 torch.nn.Linear(ic, oc),
-                torch.nn.ReLU(),
+                # torch.nn.ReLU(),
             ]
         # output layer
         if fcsz[-1] != 2:
@@ -97,7 +95,9 @@ def make_braggn(scale, img_size=11, simplify_weights=True):
         # weights = torch.load(
         #     "my_fc16_8_4_2-sz11.pth", map_location=torch.device("cpu")
         # )
-        # mod.load_state_dict(weights)
+        torch.save(mod.state_dict(), "braggnn.pth")
+        if os.path.exists("braggnn.pth"):
+            mod.load_state_dict(torch.load("braggnn.pth"))
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
@@ -157,7 +157,6 @@ def map_zhengchun_weights():
 
 
 if __name__ == "__main__":
-    # map_zhengchun_weights()
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument(
         "--out_dir",
@@ -165,7 +164,7 @@ if __name__ == "__main__":
         default=Path(__file__).parent / "braggnn_bragghls_artifacts",
     )
     parser.add_argument("--scale", type=int, default=1)
-    parser.add_argument("--img_size", type=int, default=7)
+    parser.add_argument("--img_size", type=int, default=11)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
     dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=False)

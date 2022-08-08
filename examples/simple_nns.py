@@ -103,8 +103,7 @@ class Softmax(nn.Module):
         y = self.exp(x)
         z = y.sum()
         factor = 1 / z
-        # return y * factor
-        return factor
+        return y * factor
 
 
 class Mul(nn.Module):

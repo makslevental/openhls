@@ -47,6 +47,7 @@ PYBIND11_MODULE(flopoco_converter, m) {
         mpfr_t mpx;
         mpfr_init2(mpx, 1 + x.wF);
         x.getMPFR(mpx);
+        // TODO: revisit this
         auto binstr = fp2binstr(mpx, x.wE, x.wF);
         auto fpstr = bin2fpstr(x.wE, x.wF, binstr.data());
         return "<FPNumber " + fpstr + ":" + binstr + ">";

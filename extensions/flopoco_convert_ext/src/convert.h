@@ -120,7 +120,7 @@ void bin2fp(int wE, int wF, char *x, mpfr_t sig) {
 
     mpfr_out_str(stream, // please allocate this memory
                  10, // base
-                 0, // enough digits so that number may be read back
+                 10, // enough digits so that number may be read back
                  sig,
                  MPFR_RNDN);
 }
@@ -135,7 +135,7 @@ std::string bin2fpstr(int wE, int wF, char *x) {
 
     mpfr_out_str(fp, // please allocate this memory
                  10, // base
-                 0, // enough digits so that number may be read back
+                 10, // enough digits so that number may be read back
                  sig,
                  MPFR_RNDN);
     fclose(fp);

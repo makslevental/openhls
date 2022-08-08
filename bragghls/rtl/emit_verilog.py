@@ -28,8 +28,8 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
         if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
             if op.type == OpType.ADD:
                 ip_res_val_map[res_val] = pe.fadd.r
-            # elif op.type == OpType.MUL:
-            #     ip_res_val_map[res_val] = pe.fmul.r
+            elif op.type == OpType.MUL:
+                ip_res_val_map[res_val] = pe.fmul.r
             else:
                 logger.warning(f"not mapping {res_val} to {op} in ip_res_val_map")
         elif op.type in {OpType.NEG, OpType.RELU}:

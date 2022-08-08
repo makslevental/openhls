@@ -81,6 +81,7 @@ def parse_mlir_module(module_str):
     pe_idxs = set()
     op_id_data = {}
     val_to_op = {}
+    output_map = {}
     func_args = None
     returns = None
     for line in module_str.splitlines():
@@ -126,7 +127,7 @@ def parse_mlir_module(module_str):
                 correct_start_time = src_op.attrs["start_time"] + LATENCIES[src_op]
                 if op.attrs["start_time"] != correct_start_time:
                     logger.warning(
-                        f"overriding start time of {op} to {correct_start_time}"
+                        f"overriding start time of {op} from {op.attrs['start_time']} to {correct_start_time}"
                     )
                     op.attrs["start_time"] = correct_start_time
             if opr in {OpType.ADD, OpType.MUL} and op.attrs is not None:
@@ -135,23 +136,27 @@ def parse_mlir_module(module_str):
                     src_op1_end_time = src_op1.attrs["start_time"] + LATENCIES[src_op1]
                 else:
                     assert "arg" in args[0] or "cst" in args[0] or "constant" in args[0]
-                    src_op1_end_time = 0
+                    src_op1_end_time = 1
 
                 if args[1] in val_to_op:
                     src_op2 = val_to_op[args[1]]
                     src_op2_end_time = src_op2.attrs["start_time"] + LATENCIES[src_op2]
                 else:
                     assert "arg" in args[1] or "cst" in args[1] or "constant" in args[1]
-                    src_op2_end_time = 0
+                    src_op2_end_time = 1
                 correct_start_time = max(src_op1_end_time, src_op2_end_time)
                 if op.attrs["start_time"] != correct_start_time:
                     logger.warning(
-                        f"overriding start time of {op} to {correct_start_time}"
+                        f"overriding start time of {op} from {op.attrs['start_time']} to {correct_start_time}"
                     )
                     op.attrs["start_time"] = correct_start_time
         elif "func.func" in line:
             assert idents
             func_args = [idn[0] for idn in idents]
+        elif "output_map" in line:
+            idx, val = line.split(";")[1].split(":")
+            idx = ast.literal_eval(idx)
+            output_map[val] = idx
         elif "return" in line:
             start_time = reg_start_time.findall(line)
             if start_time:
@@ -165,7 +170,7 @@ def parse_mlir_module(module_str):
             continue
     assert func_args and returns
     vals -= set(func_args)
-    return op_id_data, func_args, returns, return_time, vals, csts, pe_idxs
+    return op_id_data, func_args, returns, output_map, return_time, vals, csts, pe_idxs
 
 
 def parse_mlir_module_using_mlir(module_str):

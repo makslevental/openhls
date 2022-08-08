@@ -1,7 +1,7 @@
 import argparse
 import ast
 import logging
-from _ast import For, Subscript
+from _ast import For, Subscript, FunctionDef, Expr
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
@@ -198,6 +198,55 @@ class ReduceForLoops(ast.NodeTransformer):
         return node
 
 
+pat = f"""\
+_24 = _13[0, _arg2, _arg3, _arg4]
+_25 = _15[0, _arg2, _arg3, _arg4]
+_26 = _24 + _25
+_18[_arg1, _arg2, _arg3, _arg4] = _26
+"""
+
+
+class CopyParFors(ast.NodeTransformer):
+    @staticmethod
+    def body_predicate(nodes):
+        res = all(isinstance(n, Assign) for n in nodes)
+        if not res:
+            return None
+
+        res = res and any(
+            isinstance(n.value, BinOp)
+            or (isinstance(n.value, Call) and "relu" in n.value.func.id)
+            for n in nodes
+        )
+        if not res:
+            return None
+
+        return nodes[-1].targets[0].value
+
+    def visit_FunctionDef(self, node):
+        if node.name == "forward":
+            parfors = [
+                (i, b)
+                for i, b in enumerate(node.body)
+                if isinstance(b, FunctionDef) and b.name == "body"
+            ]
+
+            insertion_points = []
+            for i, parfor in parfors:
+                copy_target = self.body_predicate(parfor.body)
+                if copy_target is not None:
+                    call = Expr(
+                        Call(func=Name(id="SelfCopy"), args=[copy_target], keywords=[])
+                    )
+                    insertion_points.append((i + 1, call))
+
+            for i, call in reversed(insertion_points):
+                node.body.insert(i, call)
+
+        self.generic_visit(node)
+        return node
+
+
 def traverse_mlir_op_region_block_iterators(op, handler):
     for i, region in enumerate(op.regions):
         for j, block in enumerate(region):
@@ -215,6 +264,8 @@ def transform_forward(new_tree):
     new_tree = RemoveMAC().visit(new_tree)
     logger.info("Reducing for loops")
     new_tree = ReduceForLoops().visit(new_tree)
+    logger.info("Copying parfors")
+    new_tree = CopyParFors().visit(new_tree)
     return new_tree
 
 
@@ -228,7 +279,9 @@ def transform_forward_py(fp):
 
 
 def rewrite_schedule_vals(sched_str, macs_str):
-    macs_op_id_data, mac_func_args, *_ = parse_mlir_module(macs_str)
+    macs_op_id_data, mac_func_args, _returns, output_map, *_ = parse_mlir_module(
+        macs_str
+    )
     sched_op_id_data, sched_func_args, *_ = parse_mlir_module(sched_str)
     assert len(sched_op_id_data) == len(macs_op_id_data) and set(
         macs_op_id_data
@@ -251,6 +304,9 @@ def rewrite_schedule_vals(sched_str, macs_str):
     lines = []
     for line in sched_str.splitlines():
         line = reg_idents.sub(repl, line)
+        if "return" in line:
+            for idx, val in output_map.items():
+                lines.append(f"// output_map;{val}:{idx}")
         lines.append(line)
 
     return "\n".join(lines)

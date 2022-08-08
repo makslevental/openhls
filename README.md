@@ -115,7 +115,10 @@ into this
   <img height="1000" src="docs/images/double_cnn.png" alt="">
 </p>
 <p align="center">
-  (Red represents FMUL logic, green represents FADD logic, on Xilinx Alveo U280)
+   245 intervals at ~100 MHz on Xilinx Alveo U280
+</p>
+<p align="center">
+  (Red represents FMUL logic, green represents FADD logic)
 </p>
 
 <!---

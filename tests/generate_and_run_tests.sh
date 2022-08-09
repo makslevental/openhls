@@ -10,17 +10,17 @@ sizes=(
 5
 8
 11
-14
-16
+#14
+#16
 )
 nets=(
 dot_product
 linear
 #linear_no_sum
 small_cnn
-double_cnn
+#double_cnn
+#exp
 softmax
-exp
 )
 width_pairs=(
 #"4 4"

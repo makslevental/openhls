@@ -113,12 +113,21 @@ async def test_tb(dut):
                 if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
                     if output_wire.value.binstr != output.fp.binstr():
                         incorrect_output = output_wire.value.binstr
-                        print(
-                            "failed",
-                            f"clk {i}",
-                            f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
-                            f"true {output.fp}",
-                        )
+                        try:
+                            print(
+                                "failed",
+                                f"clk {i}",
+                                f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
+                                f"true {output.fp}",
+                            )
+                        except Exception as e:
+                            print(f"Exception {e}")
+                            print(
+                                "failed",
+                                f"clk {i}",
+                                f"output <FPNumber UNICODE_ERROR:{incorrect_output}>",
+                                f"true {output.fp}",
+                            )
                         passed = False
                         if THRESHOLD:
                             n_wrong += 1

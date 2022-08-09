@@ -221,6 +221,11 @@ class FMAC:
         self.mul_vals.extend((a, b))
         return Val(f"FMAC_MUL_{self.pe_idx}({a}, {b})")
 
+    def __call__(self, a, b, c):
+        mul = self.Mul(a, b)
+        add = self.Add(mul, c)
+        return add
+
     def Result(self, copy=True):
         init_val = [v for v in self.add_vals if "FMAC" not in v.name]
         assert len(init_val) == 1

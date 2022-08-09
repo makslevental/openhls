@@ -9,9 +9,9 @@ TB_RANDOM=$((1 + $RANDOM % 1000))
 sizes=(
 5
 8
-#11
-#14
-#16
+11
+14
+16
 )
 nets=(
 dot_product
@@ -52,8 +52,10 @@ for size in "${sizes[@]}"; do
         div_depth=4
       fi
 
-      echo TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s -v -b -n 10 --threshold 0.1
-      TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s -v -b -n 10 --threshold 0.1
+      echo DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
+      DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
+      echo TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
+      TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
     done
   done
 done

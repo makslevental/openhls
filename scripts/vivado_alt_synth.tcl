@@ -49,8 +49,8 @@ report_methodology  -file ${reports_dir}/post_synth/methodology.rpt
 puts "\n================================( Place Design )================================="
 
 #set_property ALLOW_COMBINATORIAL_LOOPS TRUE [get_nets -regexp .*]
-#eval place_design -directive SSI_SpreadLogic_high -ultrathreads -fanout_opt -no_timing_driven
-eval place_design -ultrathreads -fanout_opt -no_timing_driven
+#eval place_design -directive SSI_SpreadLogic_high -ultrathreads -fanout_opt
+eval place_design -ultrathreads -fanout_opt
 
 puts "\n==============================( Post-place optimization )================================"
 
@@ -72,8 +72,8 @@ report_utilization -hierarchical -force -file ${reports_dir}/post_place/hierarch
 
 puts "\n================================( Route Design )================================="
 
-#eval route_design -directive AlternateCLBRouting -no_timing_driven
-eval route_design -no_timing_driven
+#eval route_design -directive AlternateCLBRouting
+eval route_design
 
 puts "\n=========================( Post-Route Physical Optimization )=========================="
 

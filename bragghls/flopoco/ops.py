@@ -282,6 +282,11 @@ class FMAC:
         self.result = a * b
         return self.result
 
+    def __call__(self, a, b, c):
+        mul = self.Mul(a, b)
+        add = self.Add(mul, c)
+        return add
+
     def Result(self, copy=None):
         return self.result
 

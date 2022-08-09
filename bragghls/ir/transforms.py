@@ -1,7 +1,7 @@
 import argparse
 import ast
 import logging
-from _ast import For, Subscript, FunctionDef, Expr, Div
+from _ast import For, Subscript, FunctionDef, Expr, Div, Yield, Return
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
 
 import astor
@@ -34,23 +34,16 @@ class RemoveMAC(ast.NodeTransformer):
                     self.has_fma = True
                     self.final_assign = assigns[-1].targets[0]
                     node.body[i] = Assign(
-                        targets=assign1.targets,
+                        targets=[self.final_assign],
                         value=Call(
-                            func=Name(id="fma.Mul"),
-                            args=[assign1.value.left, assign1.value.right],
+                            func=Name(id="fma"),
+                            args=[assign1.value.left, assign1.value.right, assign2.value.left],
                             keywords=[],
                         ),
                         type_comment=None,
                     )
-                    node.body[i + 1] = Assign(
-                        targets=assign2.targets,
-                        value=Call(
-                            func=Name(id="fma.Add"),
-                            args=[assign2.value.left, assign2.value.right],
-                            keywords=[],
-                        ),
-                        type_comment=None,
-                    )
+                    del node.body[i + 2]
+                    del node.body[i + 1]
 
         self.generic_visit(node)
         return node
@@ -62,23 +55,8 @@ class RemoveMAC(ast.NodeTransformer):
             self.generic_visit(node)
             if self.has_fma and node.name == "body":
                 fma = Name(id="fma")
-                node.body.insert(
-                    0,
-                    Assign(
-                        targets=[fma],
-                        value=Call(
-                            func=Name(id="FMAC"), args=self.body_args, keywords=[]
-                        ),
-                        type_comment=None,
-                    ),
-                )
-                node.body.append(
-                    Assign(
-                        targets=[self.final_assign],
-                        value=Call(func=Name(id="fma.Result"), args=[], keywords=[]),
-                        type_comment=None,
-                    )
-                )
+                node.args.args.append(fma)
+                node.body.append(Expr(Return(self.final_assign.value)))
                 self.has_fma = False
 
         self.generic_visit(node)

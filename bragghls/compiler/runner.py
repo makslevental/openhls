@@ -1,6 +1,7 @@
 import inspect
 import io
 import itertools
+import os
 from textwrap import indent, dedent
 
 import numpy as np
@@ -14,7 +15,7 @@ from bragghls.flopoco.ops import (
     Div as FPDiv,
 )
 from bragghls.ir.memref import MemRef, GlobalMemRef
-from bragghls.ir.ops import OpType, LATENCIES
+from bragghls.ir.ops import OpType, LATENCIES, FMAC
 from bragghls.util import extend_idx, zip_with_scalar
 
 
@@ -112,8 +113,19 @@ def parfor(**kwargs):
     def wrapper(body):
         for args in itertools.product(*kwargs):
             idx = tuple(i for arg, i in args)
-            state.state.update_current_pe_idx(pe_idx=extend_idx(idx))
-            body(**dict(args))
+            pe_idx = extend_idx(idx)
+            state.state.update_current_pe_idx(pe_idx=pe_idx)
+            signature = inspect.signature(body)
+            if "fma" in signature.parameters:
+                # TODO: this is hacky but this code runs both during tb and regular code gen
+                if os.getenv("TB_RANDOM") is not None:
+                    fma = FPFMAC(*pe_idx)
+                else:
+                    fma = FMAC(*pe_idx)
+                res_arr = body(**dict(args + (("fma", fma),)))
+                res_arr[idx] = fma.Result()
+            else:
+                body(**dict(args))
 
     return wrapper
 

@@ -25,6 +25,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
     ip_res_val_map = {}
     for op in op_datas:
         res_val = vals.get(op.res, op.res)
+        assert res_val not in ip_res_val_map
         if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
             if op.type == OpType.ADD:
                 ip_res_val_map[res_val] = pe.fadd.r

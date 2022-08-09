@@ -8,7 +8,7 @@ def main():
     fh_in = sys.stdin
     fh_out = sys.stdout
 
-    width_exponent = width_fraction = 4
+    width_exponent = width_fraction = 8
     while True:
         # incoming values have newline
         l = fh_in.readline()

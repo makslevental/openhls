@@ -1,18 +1,28 @@
 import argparse
 import ast
 import logging
-from _ast import For, Subscript, FunctionDef, Expr, Div, Yield, Return
-from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare
+from _ast import (
+    For,
+    Subscript,
+    FunctionDef,
+    Expr,
+    Div,
+    Return,
+    keyword,
+    Constant,
+)
+from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare, Num
 
 import astor
 
+from bragghls.config import LOOP_TILING_FACTOR
 from bragghls.ir.parse import parse_mlir_module, reg_idents
 
 logger = logging.getLogger(__name__)
 
 
-def debug_print_node(node):
-    logger.debug(astor.code_gen.to_source(node))
+def stringify_node(node):
+    return str(astor.code_gen.to_source(node))
 
 
 class RemoveMAC(ast.NodeTransformer):
@@ -37,7 +47,11 @@ class RemoveMAC(ast.NodeTransformer):
                         targets=[self.final_assign],
                         value=Call(
                             func=Name(id="fma"),
-                            args=[assign1.value.left, assign1.value.right, assign2.value.left],
+                            args=[
+                                assign1.value.left,
+                                assign1.value.right,
+                                assign2.value.left,
+                            ],
                             keywords=[],
                         ),
                         type_comment=None,
@@ -247,6 +261,140 @@ class RemoveDiv(ast.NodeTransformer):
         return node
 
 
+class TileLoops(ast.NodeTransformer):
+    loops_to_tile = []
+
+    def __init__(self, tile_factor=2):
+        self.tile_factor = tile_factor
+
+    def tile_loop(self, parfor, memrefs, top_level):
+        first_for_loop = parfor.body[0]
+        indvar = first_for_loop.target.id
+        tiling_indvar = indvar + "_tiled"
+
+        start, stop, step = first_for_loop.iter.args
+        if stop.value < self.tile_factor:
+            self.tile_factor = stop.value
+        return_stmt = parfor.body[1]
+
+        assert isinstance(return_stmt.value, Return), return_stmt.value
+        target_name = return_stmt.value.value.id
+
+        memref_i, memref = memrefs[target_name]
+        assert target_name == memref.value.args[0].value
+        assert memref.value.args[1].value == 1
+
+        parfor.args.args.insert(0, tiling_indvar)
+        memref.value.args.insert(1, Num(self.tile_factor))
+
+        parfor.decorator_list[0].keywords.insert(
+            0,
+            keyword(
+                tiling_indvar,
+                ast.Tuple(
+                    [
+                        start,
+                        Constant(self.tile_factor),
+                        Constant(1),
+                    ]
+                ),
+            ),
+        )
+
+        inner_loop = first_for_loop
+        while not isinstance(inner_loop.body[0], Assign):
+            inner_loop = inner_loop.body[0]
+
+        for stmt in inner_loop.body:
+            if (
+                isinstance(stmt, Assign)
+                and isinstance(stmt.targets[0], Subscript)
+                and stmt.targets[0].value.id == target_name
+            ):
+                stmt.targets[0].slice.elts.insert(0, Name(tiling_indvar))
+            if (
+                isinstance(stmt, Assign)
+                and isinstance(stmt.value, Subscript)
+                and stmt.value.value.id == target_name
+            ):
+                stmt.value.slice.elts.insert(0, Name(tiling_indvar))
+
+        if (
+            isinstance(top_level.body[memref_i + 1], Expr)
+            and top_level.body[memref_i + 1].value.func.value.id == target_name
+            and top_level.body[memref_i + 1].value.func.attr == "alias"
+        ):
+            alias = top_level.body[memref_i + 1].value.args[0].id
+            del top_level.body[memref_i + 1].value.args[0]
+            top_level.body[memref_i + 1].value.func.attr = "zero"
+            parfor_idx = top_level.body.index(parfor)
+            top_level.body.insert(
+                parfor_idx + 1,
+                Expr(
+                    Call(
+                        func=Name(id="ReduceTiling"),
+                        args=[Name(target_name), Name(alias)],
+                        keywords=[],
+                    )
+                ),
+            )
+        else:
+            print("wtfbbq")
+
+        first_for_loop.iter.args = [
+            BinOp(
+                BinOp(
+                    Constant(stop.value // self.tile_factor),
+                    Mult(),
+                    Name(tiling_indvar),
+                ),
+                Add(),
+                start,
+            ),
+            BinOp(
+                Constant(stop.value // self.tile_factor),
+                Mult(),
+                BinOp(Name(tiling_indvar), Add(), Constant(1)),
+            ),
+            Constant(1),
+        ]
+
+    def visit_FunctionDef(self, node):
+        self.generic_visit(node)
+        if node.name == "forward":
+            memrefs = dict(
+                [
+                    (b.targets[0].id, (i, b))
+                    for i, b in enumerate(node.body)
+                    if isinstance(b, Assign)
+                    and isinstance(b.value, Call)
+                    and isinstance(b.value.func, Name)
+                    and b.value.func.id == "MemRef"
+                ]
+            )
+            for parfor in reversed(self.loops_to_tile):
+                try:
+                    # TODO: this breaks for braggnn because it tries to tile against the output
+                    # which doesn't have memref in `memref`
+                    self.tile_loop(parfor, memrefs, top_level=node)
+                except Exception as e:
+                    logger.warning(f"{e}")
+                    logger.warning(f"couldn't tile loop {stringify_node(parfor)}")
+
+        else:
+            b = node.body[0]
+            if (
+                isinstance(node.args.args[-1], Name)
+                and node.args.args[-1].id == "fma"
+                and isinstance(b, For)
+                and b.iter.func.id == "range"
+                and b.iter.args[1].n > 1
+            ):
+                self.loops_to_tile.append(node)
+
+        return node
+
+
 def traverse_mlir_op_region_block_iterators(op, handler):
     for i, region in enumerate(op.regions):
         for j, block in enumerate(region):
@@ -268,6 +416,8 @@ def transform_forward(new_tree):
     new_tree = CopyParFors().visit(new_tree)
     logger.info("Removing div")
     new_tree = RemoveDiv().visit(new_tree)
+    logger.info("Tiling loops")
+    new_tree = TileLoops(tile_factor=LOOP_TILING_FACTOR).visit(new_tree)
     return new_tree
 
 
@@ -307,8 +457,8 @@ def rewrite_schedule_vals(sched_str, macs_str):
     for line in sched_str.splitlines():
         line = reg_idents.sub(repl, line)
         if "return" in line:
-            for idx, val in output_map.items():
-                lines.append(f"// output_map;{val}:{idx}")
+            for val, (name, idx) in output_map.items():
+                lines.append(f"// output_map;{val}:{name}:{idx}")
         lines.append(line)
 
     return "\n".join(lines)

@@ -6,7 +6,7 @@ from pathlib import Path
 import torch
 
 from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
-from examples.simple_nns import Softmax, Mul, Add
+from examples.simple_nns import Softmax
 
 
 class NLB(torch.nn.Module):
@@ -27,20 +27,18 @@ class NLB(torch.nn.Module):
             in_channels=self.inter_ch, out_channels=in_ch, kernel_size=1, padding=0
         )
         self.soft = Softmax()
-        self.mul = Mul()
-        self.add = Add()
 
     def forward(self, x):
         theta = self.theta_layer(x)
         phi = self.phi_layer(x)
         g = self.g_layer(x)
 
-        theta_phi = self.mul(theta, phi)
+        theta_phi = theta * phi
         theta_phi = self.soft(theta_phi)
-        theta_phi_g = self.mul(theta_phi, g)
+        theta_phi_g = theta_phi * g
 
         _out_tmp = self.out_cnn(theta_phi_g)
-        _out_tmp = self.add(_out_tmp, x)
+        _out_tmp = _out_tmp * x
 
         return _out_tmp
 
@@ -109,6 +107,9 @@ def make_braggn(scale, img_size=11, simplify_weights=True):
             ([1, 1, img_size, img_size], torch.float32),
         ],
     )
+    # def get_asm(self, binary: bool = False, large_elements_limit: Optional[int] = None, enable_debug_info: bool = False, pretty_debug_info: bool = False, print_generic_op_form: bool = False, use_local_scope: bool = False, assume_verified: bool = False) -> object: ...
+    # asm = mlir_module.operation.get_asm(
+    #     large_elements_limit=10, enable_debug_info=True, pretty_debug_info=True, use_local_scope=True)
     return str(mlir_module)
 
 
@@ -159,15 +160,12 @@ def map_zhengchun_weights():
 if __name__ == "__main__":
     # map_zhengchun_weights()
     parser = argparse.ArgumentParser(description="make stuff")
-    parser.add_argument(
-        "--out_dir",
-        type=Path,
-        default=Path(__file__).parent / "braggnn_bragghls_artifacts",
-    )
-    parser.add_argument("--scale", type=int, default=1)
-    parser.add_argument("--img_size", type=int, default=7)
+    parser.add_argument("--out_dir", type=Path, default=Path(__file__).parent)
+    parser.add_argument("--scale", type=int, default=4)
+    parser.add_argument("--img_size", type=int, default=11)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
+    out_dir = (args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts").resolve()
     dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=False)
-    os.makedirs(f"{args.out_dir}", exist_ok=True)
-    open(f"{args.out_dir}/braggnn.mlir", "w").write(dot_str)
+    os.makedirs(f"{out_dir}", exist_ok=True)
+    open(f"{out_dir}/braggnn.mlir", "w").write(dot_str)

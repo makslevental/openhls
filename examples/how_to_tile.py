@@ -58,3 +58,30 @@ ReduceTiling(_5, _4)
 #############################
 # conv
 ###########################
+
+
+#############################
+# braggnn
+###########################
+
+_25 = MemRef('_25', 16, 8, 9, 9)
+_25.zero()
+
+
+@parfor(_arg5=(0, 16, 1), _arg1=(0, 1, 1), _arg2=(0, 8, 1), _arg3=(0, 9, 1), _arg4=(0, 9, 1))
+def body(_arg5, _arg1, _arg2, _arg3, _arg4):
+    fma = FMAC(_arg5, _arg1, _arg2, _arg3, _arg4)
+    for _arg6 in range(0, 1, 1):
+        for _arg7 in range(0, 1, 1):
+            _74 = _arg3 + _arg6
+            _75 = _arg4 + _arg7
+            _76 = _23[_arg5, _arg5, _74, _75]
+            _77 = _19[_arg2, _arg5, _arg6, _arg7]
+            _78 = _25[_arg5, _arg2, _arg3, _arg4]
+            _79 = fma.Mul(_76, _77)
+            _80 = fma.Add(_78, _79)
+            _25[_arg5, _arg2, _arg3, _arg4] = _80
+    _25[_arg5, _arg2, _arg3, _arg4] = fma.Result()
+
+
+ReduceTiling(_25, _24)

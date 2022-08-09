@@ -1,7 +1,4 @@
 import argparse
-
-# import pydevd
-# pydevd.settrace("localhost", port=9090, stdoutToServer=True, stderrToServer=True, suspend=False)
 import json
 import logging
 import os
@@ -9,153 +6,11 @@ import os.path
 import sys
 from pathlib import Path
 
-import cocotb
 import numpy as np
-from cocotb.clock import Clock
-from cocotb.handle import ModifiableObject
-from cocotb.triggers import FallingEdge
-from cocotb.triggers import Timer
 
-from bragghls.compiler.runner import (
-    get_default_args,
-    get_py_module_args_globals,
-    run_model_with_fp_number,
-)
-from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
 from bragghls.testbench.cocotb_runner import get_runner
-from bragghls.util import import_module_from_fp
 
 logger = logging.getLogger(__file__)
-
-
-async def reset_dut(dut, duration_ns):
-    for name, mod_obj in dut._sub_handles.items():
-        if not isinstance(mod_obj, ModifiableObject):
-            continue
-        mod_obj.value = 0
-    await Timer(duration_ns, units="ns")
-    dut._log.debug("Reset complete")
-
-
-FIXED = np.linspace(0, 0.1, 11)
-
-
-def set_inputs(mod, width_exponent, width_fraction, dut=None):
-    args = get_default_args(mod.forward)
-    input_memrefs, *_ = get_py_module_args_globals(args)
-    test_inputs = {}
-    for inp_name, inp_memref in input_memrefs.items():
-        np_inputs = test_inputs[inp_name] = np.random.randn(*inp_memref.shape)
-    test_inputs, outputs = run_model_with_fp_number(
-        mod, test_inputs, width_exponent=width_exponent, width_fraction=width_fraction
-    )
-    # print(f"test_inputs {test_inputs}")
-
-    if dut is not None:
-        for _, inp_memref in test_inputs.items():
-            for inp_name, fpval in inp_memref.val_names_map.items():
-                inp_name = inp_name.replace("%", "p_")
-                if hasattr(dut, inp_name):
-                    mod_obj = getattr(dut, inp_name)
-                    mod_obj.value = int(fpval.fp.binstr(), 2)
-
-    # print(f"inputs {np_inputs}")
-    print(f"outputs {outputs}")
-    return outputs
-
-
-@cocotb.test()
-async def test_tb(dut):
-    MAX_FSM_STAGE = int(os.getenv("MAX_FSM_STAGE"))  # 16
-    LATENCY = MAX_FSM_STAGE + 1
-    TEST_VECTORS = int(os.getenv("N_TEST_VECTORS"))
-    WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT"))
-    WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION"))
-    OUTPUT_NAME = os.getenv("OUTPUT_NAME")
-    MODULE_FP = os.getenv("MODULE_FP")
-    THRESHOLD = float(os.getenv("THRESHOLD", "0"))
-    TB_RANDOM = int(os.getenv("TB_RANDOM", "1"))
-    OUTPUT_MAP = {
-        k: tuple(v) for k, v in json.loads(os.getenv("OUTPUT_MAP", "{}")).items()
-    }
-
-    np.random.seed(TB_RANDOM)
-
-    module = import_module_from_fp("test_module", MODULE_FP)
-
-    clock = Clock(dut.clk, 2, units="ns")  # Create a 2ns period clock on port clk
-    cocotb.start_soon(clock.start())  # Start the clock
-    await FallingEdge(dut.clk)
-    dut._discover_all()
-
-    output_wires = {
-        name: mod_obj for name, mod_obj in dut._sub_handles.items() if "output" in name
-    }
-
-    if THRESHOLD:
-        n_wrong = 0
-
-    for i in range(LATENCY * TEST_VECTORS):
-        # print(dut.current_fsm.value)
-        if i % LATENCY == 0:
-            outputs = set_inputs(module, WIDTH_EXPONENT, WIDTH_FRACTION, dut)[
-                OUTPUT_NAME
-            ].registers
-            dut.rst.value = 1
-        elif i % LATENCY == 1:
-            dut.rst.value = 0
-        elif i % LATENCY == LATENCY - 1:
-            passed = True
-            for output_wire, output in [
-                (wire, outputs[OUTPUT_MAP[wire_name]])
-                for wire_name, wire in output_wires.items()
-            ]:
-                if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
-                    if output_wire.value.binstr != output.fp.binstr():
-                        incorrect_output = output_wire.value.binstr
-                        try:
-                            print(
-                                "failed",
-                                f"clk {i}",
-                                f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
-                                f"true {output.fp}",
-                            )
-                        except Exception as e:
-                            print(f"Exception {e}")
-                            print(
-                                "failed",
-                                f"clk {i}",
-                                f"output <FPNumber UNICODE_ERROR:{incorrect_output}>",
-                                f"true {output.fp}",
-                            )
-                        passed = False
-                        if THRESHOLD:
-                            n_wrong += 1
-                else:
-                    print(f"overflow {i} with {output_wire.value.binstr}")
-
-            if passed:
-                print(f"passed {i}")
-            elif not THRESHOLD:
-                await FallingEdge(dut.clk)
-                await FallingEdge(dut.clk)
-                assert False
-
-        await FallingEdge(dut.clk)
-
-    if THRESHOLD:
-        num_all_vals = n_wrong / (TEST_VECTORS * len(output_wires))
-        print(
-            "threshold",
-            THRESHOLD,
-            "total n_wrong",
-            n_wrong,
-            "percent failed",
-            num_all_vals,
-        )
-        if num_all_vals > THRESHOLD:
-            assert False
-    print("\n")
 
 
 def testbench_runner(
@@ -164,7 +19,6 @@ def testbench_runner(
     sv_file_name,
     top_level,
     max_fsm_stage,
-    output_name,
     output_map,
     width_exponent,
     width_fraction,
@@ -198,14 +52,13 @@ def testbench_runner(
     runner.test(
         toplevel=top_level,
         python_search=[Path(__file__).parent.resolve()],
-        py_module="tb_runner",
+        py_module="tb",
         extra_env={
             "VIRTUAL_ENV": (Path(sys.executable) / "../..").resolve(),
             "WIDTH_EXPONENT": str(width_exponent),
             "WIDTH_FRACTION": str(width_fraction),
             "MAX_FSM_STAGE": str(max_fsm_stage),
             "N_TEST_VECTORS": str(n_test_vectors),
-            "OUTPUT_NAME": output_name,
             "MODULE_FP": module_fp,
             "THRESHOLD": str(threshold if threshold is not None else 0),
             "TB_RANDOM": os.getenv("TB_RANDOM", f"{np.random.randint(1, 100)}"),

@@ -8,30 +8,36 @@ TB_RANDOM=$((1 + $RANDOM % 1000))
 
 sizes=(
 5
+6
 8
-11
+#11
 #14
 #16
 )
 nets=(
+softmax
+#double_cnn
+simple_sum
+exp
 dot_product
 linear
 #linear_no_sum
 small_cnn
-#double_cnn
-#exp
-softmax
 )
 width_pairs=(
 #"4 4"
-"5 5"
+#"5 5"
 "6 6"
 "7 7"
 "8 8"
-"4 10"
-"8 23"
+#"4 10"
+#"8 23"
 )
 
+function is_power_of_two () {
+    declare -i n=$1
+    (( n > 0 && (n & (n - 1)) == 0 ))
+}
 
 for size in "${sizes[@]}"; do
   for net in "${nets[@]}"; do
@@ -42,6 +48,7 @@ for size in "${sizes[@]}"; do
     bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -t -r
     for widths in "${width_pairs[@]}"; do
       set -- $widths
+
       we=$1
       wf=$2
       if [ $we == "4" ] && [ $wf == "10" ] && [ $net == "softmax" ]; then
@@ -52,10 +59,18 @@ for size in "${sizes[@]}"; do
         div_depth=4
       fi
 
+      if ! is_power_of_two "$size" && [ $net == "softmax" ]; then
+        continue
+      fi
+
       echo DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
       DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
       echo TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
       TB_RANDOM=$TB_RANDOM DIV_PIPELINE_DEPTH=$div_depth WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
+      # clean up duh
+      rm -rf "*/*.vcd"
+      rm -rf "*/*.vvp"
     done
+    rm -rf "${net}_${size}_bragghls_artifacts"
   done
 done

@@ -134,33 +134,13 @@ def parse_mlir_module(module_str):
                         f"overriding start time of {op} from {op.attrs['start_time']} to {correct_start_time}"
                     )
                     op.attrs["start_time"] = correct_start_time
-            if opr in {OpType.ADD, OpType.MUL} and op.attrs is not None:
-                if args[0] in val_to_op:
-                    src_op1 = val_to_op[args[0]]
-                    src_op1_end_time = src_op1.attrs["start_time"] + LATENCIES[src_op1]
-                else:
-                    assert "arg" in args[0] or "cst" in args[0] or "constant" in args[0]
-                    src_op1_end_time = 1
-
-                if args[1] in val_to_op:
-                    src_op2 = val_to_op[args[1]]
-                    src_op2_end_time = src_op2.attrs["start_time"] + LATENCIES[src_op2]
-                else:
-                    assert "arg" in args[1] or "cst" in args[1] or "constant" in args[1]
-                    src_op2_end_time = 1
-                correct_start_time = max(src_op1_end_time, src_op2_end_time)
-                if op.attrs["start_time"] != correct_start_time:
-                    logger.warning(
-                        f"overriding start time of {op} from {op.attrs['start_time']} to {correct_start_time}"
-                    )
-                    op.attrs["start_time"] = correct_start_time
         elif "func.func" in line:
             assert idents
             func_args = [idn[0] for idn in idents]
         elif "output_map" in line:
-            idx, val = line.split(";")[1].split(":")
+            val, name, idx = line.split(";")[1].split(":")
             idx = ast.literal_eval(idx)
-            output_map[val] = idx
+            output_map[val] = name, idx
         elif "return" in line:
             start_time = reg_start_time.findall(line)
             if start_time:

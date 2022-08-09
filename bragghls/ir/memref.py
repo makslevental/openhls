@@ -26,7 +26,6 @@ class MemRef:
     def __init__(self, name, *shape, input=False, output=False):
         self.arr_name = name
         self.shape = shape
-        self.pe_index = shape
         self.registers = np.empty(shape, dtype=object)
         self.input = input
         self.output = output

@@ -241,8 +241,10 @@ def compile(
             sv_file_name=f"{name}.sv",
             top_level=name,
             max_fsm_stage=max_fsm_stage,
-            output_name=output_name,
-            output_map={k.replace("%", "output_p_"): v for k, v in output_map.items()},
+            output_map={
+                val_name.replace("%", "output_p_"): (arr_name, idx)
+                for val_name, (arr_name, idx) in output_map.items()
+            },
             width_exponent=width_exponent,
             width_fraction=width_fraction,
             ip_cores_path=os.path.dirname(ip_cores.__file__),

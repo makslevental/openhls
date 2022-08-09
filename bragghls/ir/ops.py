@@ -8,7 +8,13 @@ import numpy as np
 
 from bragghls.compiler import state
 from bragghls.compiler.state import CONSTANT
-from bragghls.config import DTYPE, MUL_LATENCY, ADD_LATENCY, DIV_LATENCY
+from bragghls.config import (
+    DTYPE,
+    MUL_LATENCY,
+    ADD_LATENCY,
+    DIV_LATENCY,
+    REGISTER_TILES_TWICE,
+)
 from bragghls.util import extend_idx, chunks, is_val
 
 
@@ -146,7 +152,7 @@ CONSTANTS = set()
 def make_constant(arg):
     assert isinstance(arg, (float, bool, int)), arg
     arg = str(arg)
-    cst_v = Val(id=f'cst_{arg.replace(".", "")}')
+    cst_v = Val(id=f'cst_{arg.replace(".", "_point_")}')
     if cst_v not in CONSTANTS:
         cst_op = Op(
             OpType.CST,
@@ -164,9 +170,7 @@ def make_constant(arg):
     return cst_v
 
 
-def create_new_op(
-    op_type: OpType, args, *, pe_idx=None, res=None, add_aux_dep=False, op_overload=None
-):
+def create_new_op(op_type: OpType, args, *, pe_idx=None, res=None, op_overload=None):
     if pe_idx is None:
         pe_idx = state.state.pe_idx
     if res is None:
@@ -194,9 +198,7 @@ def create_new_op(
 
     state.state.emit(op.emit())
 
-    if add_aux_dep:
-        state.state.maybe_add_aux_dep(pe_idx, op)
-
+    state.state.maybe_add_aux_dep(pe_idx, op)
     state.state.maybe_add_op(op)
     state.state.map_val_to_pe(res, pe_idx)
     state.state.add_op_res(res, op)
@@ -226,13 +228,12 @@ class FMAC:
         add = self.Add(mul, c)
         return add
 
-    def Result(self, copy=True):
+    def Result(self):
         init_val = [v for v in self.add_vals if "FMAC" not in v.name]
         assert len(init_val) == 1
         args = init_val + self.mul_vals
         op_res = FMACOp(len(args), self.pe_idx)(*args)
-        if copy:
-            op_res = op_res.copy()
+        op_res = op_res.copy()
         state.state.debug_print(f"MAC {self.pe_idx} ends")
         return op_res
 
@@ -267,9 +268,9 @@ def recursive_sum(vals):
 
     perfect_tree_n = 2 ** math.floor(math.log2(len(vals)))
     perfect_tree, vals = vals[:perfect_tree_n], vals[perfect_tree_n:]
-    state.state.debug_print(f"// start perfect tree {perfect_tree}")
+    state.state.debug_print(f"start perfect tree len {len(perfect_tree)}")
     perfect_sum = reduce_perfect_tree(perfect_tree)
-    state.state.debug_print(f"// end perfect tree")
+    state.state.debug_print(f"end perfect tree")
     if len(perfect_tree) == len(vals):
         return perfect_sum + reduce_perfect_tree(vals)
     elif len(vals):
@@ -306,19 +307,21 @@ def Copy(dst, src):
         dst.registers[idx] = val.copy()
 
 
-def ReduceTiling(fmac_arr, init_arr):
-    assert (
-        fmac_arr.registers.shape[1:] == init_arr.registers.shape[1:]
-    ), f"{fmac_arr.arr_name} fmac_arr {fmac_arr.registers.shape} and {init_arr.arr_name} init_arr {init_arr.registers.shape} shape don't match"
-    fmac_arr.registers = np.vstack([fmac_arr.registers, init_arr.registers])
-    fmac_arr.registers = np.apply_along_axis(ReduceAdd, 0, fmac_arr.registers)[
-        np.newaxis
-    ]
-    SelfCopy(fmac_arr)
-
-
 def SelfCopy(memref):
     Copy(memref, memref)
+
+
+def ReduceTiling(fmac_arr, init_arr):
+    assert (
+        fmac_arr.registers.shape[1:] == init_arr.registers.shape
+    ), f"{fmac_arr.arr_name} fmac_arr {fmac_arr.registers.shape} and {init_arr.arr_name} init_arr {init_arr.registers.shape} shape don't match"
+    fmac_arr.registers = np.vstack([fmac_arr.registers, init_arr.registers[np.newaxis]])
+    fmac_arr.registers = np.apply_along_axis(ReduceAdd, 0, fmac_arr.registers)
+    fmac_arr.shape = fmac_arr.registers.shape
+    SelfCopy(fmac_arr)
+    # TODO figure this out re double_cnn and the last reduction
+    if REGISTER_TILES_TWICE:
+        SelfCopy(fmac_arr)
 
 
 def FMACOp(n_args, pe_idx):
@@ -330,7 +333,6 @@ def FMACOp(n_args, pe_idx):
             OpType.FMAC,
             args,
             pe_idx=pe_idx,
-            add_aux_dep=True,
             op_overload=f"{non_init_args}",
         )
 

@@ -15,8 +15,12 @@ config.read(BRAGGHLS_CONFIG_FP)
 VAL_PREFIX = "%"
 DTYPE = "f32"
 DEBUG = config["config"].getboolean("Debug")
-INCLUDE_AUX_DEPS = True
+INCLUDE_AUX_DEPS = config["config"].getboolean("IncludeAuxDeps")
+REGISTER_TILES_TWICE = config["config"].getboolean("RegisterTilesTwice")
+LOOP_TILING_FACTOR = config["config"].getint("LoopTilingFactor")
+
 USING_FLOPOCO = config["ip"].getboolean("UsingFlopoco")
+
 MUL_PIPELINE_DEPTH = int(
     os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
 )
@@ -30,6 +34,7 @@ ADD_PIPELINE_DEPTH = int(
     os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
 )
 ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
+
 WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT") or config["ip"].get("WidthExponent"))
 WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION") or config["ip"].get("WidthFraction"))
 

@@ -79,13 +79,13 @@ def Forward(forward):
     global_names = sorted(
         [str(name) for inp in globals.values() for name in inp.val_names_map.values()]
     )
-
-    assert len(outputs) == 1
-    output_arg = next(iter(outputs.values()))
-    output_dtypes = ", ".join([state.state.dtype] * len(output_arg.val_names_map))
     inps_globals = [f"{v}: {state.state.dtype}" for v in input_names + global_names]
+
+    output_dtypes = []
+    for output_arg in outputs.values():
+        output_dtypes += [state.state.dtype] * len(output_arg.val_names_map)
     state.state.emit(
-        f"func.func @forward({', '.join(inps_globals)}) -> ({output_dtypes})\n"
+        f"func.func @forward({', '.join(inps_globals)}) -> ({', '.join(output_dtypes)})\n"
     )
 
     OLD_FILE = state.state.swap_output_file(io.StringIO())
@@ -98,11 +98,18 @@ def Forward(forward):
     state.state.swap_output_file(OLD_FILE)
 
     # sort by lexico order in the index for determinism
-    output_names = sorted(output_arg.val_names_map.items())
-    for idx, val in output_names:
-        state.state.debug_print(f"output_map;{idx}:{val}")
+    output_names = []
+    for name, output_arg in outputs.items():
+        output_names += sorted(
+            [
+                (name, idx, val_name)
+                for idx, val_name in output_arg.val_names_map.items()
+            ]
+        )
+    for name, idx, val in output_names:
+        state.state.debug_print(f"output_map;{val}:{name}:{idx}")
     state.state.emit(
-        f"return {', '.join([str(v) for _idx, v in output_names])}: {output_dtypes}"
+        f"return {', '.join([str(v) for _name, _idx, v in output_names])}: {', '.join(output_dtypes)}"
     )
     state.state.emit("}")
 

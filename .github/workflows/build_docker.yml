@@ -1,5 +1,8 @@
 name: Build Docker
 on:
+  push:
+    branches:
+      - main
   workflow_run:
     workflows: ["Build and Test"]
     types:

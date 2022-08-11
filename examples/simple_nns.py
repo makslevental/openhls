@@ -81,7 +81,7 @@ class ConvPlusReLU(nn.Module):
     def __init__(self, in_channels, out_channels, bias=True):
         super().__init__()
         self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
-        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias)
+        self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias, stride=(3, 2))
         self.relu = torch.nn.ReLU()
 
     def forward(self, x):

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
+import torch
 
 from bragghls.compiler import state
 from bragghls.ir.ops import Val, make_constant, ReduceAdd
@@ -107,3 +108,7 @@ class GlobalMemRef:
     @property
     def numel(self):
         return np.prod(self.shape)
+
+
+def Tensor(_name, *shape, **kwargs):
+    return torch.Tensor(*shape)

@@ -137,6 +137,15 @@ def parfor(**kwargs):
     return wrapper
 
 
+def tile(**kwargs):
+    kwargs = tuple(tuple(zip_with_scalar(k, range(*v))) for k, v in kwargs.items())
+
+    def wrapper(body):
+        for args in itertools.product(*kwargs):
+            body(**dict(args))
+
+    return wrapper
+
 def make_output_file(fp=None):
     if state.state is None:
         state.state = state.State(open(fp.replace(".py", ".mlir"), "w"))

@@ -183,7 +183,7 @@ class ReduceForLoops(ast.NodeTransformer):
                         node.body[i] = Assign(
                             targets=[dst],
                             value=Call(
-                                func=Name(id=f"{src}.reduce_add"), args=[], keywords=[]
+                                func=Name(id=f"ReduceAdd"), args=[Name(id=src)], keywords=[]
                             ),
                             type_comment=None,
                         )
@@ -408,8 +408,8 @@ def transform_forward(new_tree):
     new_tree = HoistGlobals().visit(new_tree)
     logger.info("Substituting ReLUs")
     new_tree = RemoveIfExp().visit(new_tree)
-    logger.info("Discovering MACs")
-    new_tree = RemoveMAC().visit(new_tree)
+    # logger.info("Discovering MACs")
+    # new_tree = RemoveMAC().visit(new_tree)
     logger.info("Reducing for loops")
     new_tree = ReduceForLoops().visit(new_tree)
     logger.info("Copying parfors")

@@ -788,7 +788,7 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   }
 
   os << "\n";
-  indent() << "@parfor(";
+  indent() << "@tile(";
   auto steps = getIntArrayAttrValue(op, op.getStepsAttrName());
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
     auto iterVar = op.getBody()->getArgument(i);
@@ -1174,7 +1174,7 @@ void ModuleEmitter::emitMemCpy(memref::CopyOp op) {
 //  emitValue(op.target());
 //  os << " = ";
   emitValue(op.target());
-  os << ".alias(";
+  os << ".copy_(";
   emitValue(op.getSource());
   os << ")";
 //  os << ", ";
@@ -1202,7 +1202,7 @@ void ModuleEmitter::emitGlobal(memref::GlobalOp op) {
 void ModuleEmitter::emitGetGlobal(memref::GetGlobalOp op) {
   indent();
   emitValue(op.getResult());
-  os << " = GlobalMemRef(" << "'" << op.name() << "', " << op.name() << ")\n";
+  os << " = Tensor(" << "'" << op.name() << "', " << op.name() << ")\n";
 }
 
 void ModuleEmitter::emitTensorStore(memref::TensorStoreOp op) {
@@ -1442,7 +1442,7 @@ void ModuleEmitter::emitArrayDecl(Value array, bool input, bool output) {
   auto arrayType = array.getType().cast<ShapedType>();
   if (arrayType.hasStaticShape()) {
     emitValue(array);
-    os << " = MemRef('";
+    os << " = Tensor('";
     os << getName(array);
     os << "', ";
     if (!arrayType.getShape().empty())
@@ -1605,9 +1605,9 @@ std::string getValIdent(Value &value) {
 /// Top-level MLIR module emitter.
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
-from bragghls.ir.memref import MemRef, GlobalMemRef
+from bragghls.ir.memref import MemRef, GlobalMemRef, Tensor
 from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy, ReduceTiling, Div
-from bragghls.compiler.runner import parfor, Forward, make_output_file
+from bragghls.compiler.runner import tile, Forward, make_output_file
 import os
 
 make_output_file(os.getenv("RUNNER_OUTPUT_FP") or __file__)
@@ -1636,7 +1636,7 @@ make_output_file(os.getenv("RUNNER_OUTPUT_FP") or __file__)
   }
   os << R"XXX(
 if __name__ == "__main__":
-    Forward(forward)
+    forward()
 )XXX";
 }
 

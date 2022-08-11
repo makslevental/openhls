@@ -154,6 +154,9 @@ def compile(
             "pythonized_mlir", f"{artifacts_dir}/{name}_rewritten.py"
         )
 
+    if not (do_schedule or do_verilog or do_testbench):
+        return
+
     if DEBUG:
         rewritten_mlir_output, output_name = run_rewrite(mod)
         with open(f"{artifacts_dir}/{name}.rewritten.mlir", "w") as f:

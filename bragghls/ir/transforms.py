@@ -10,6 +10,7 @@ from _ast import (
     Return,
     keyword,
     Constant,
+    Module,
 )
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare, Num
 
@@ -183,7 +184,9 @@ class ReduceForLoops(ast.NodeTransformer):
                         node.body[i] = Assign(
                             targets=[dst],
                             value=Call(
-                                func=Name(id=f"ReduceAdd"), args=[Name(id=src)], keywords=[]
+                                func=Name(id=f"torch.sum"),
+                                args=[Name(id=src)],
+                                keywords=[],
                             ),
                             type_comment=None,
                         )
@@ -395,6 +398,19 @@ class TileLoops(ast.NodeTransformer):
         return node
 
 
+class MoveBodiesOut(ast.NodeTransformer):
+    mod_node = None
+
+    def visit_Module(self, node: Module):
+        j, forward = next((i, n) for i, n in enumerate(node.body) if isinstance(n, FunctionDef) and n.name == "forward")
+        for i, b in reversed(list(enumerate(forward.body))):
+            if isinstance(b, FunctionDef):
+                node.body.insert(j, b)
+                del forward.body[i]
+
+        return node
+
+
 def traverse_mlir_op_region_block_iterators(op, handler):
     for i, region in enumerate(op.regions):
         for j, block in enumerate(region):
@@ -419,6 +435,8 @@ def transform_forward(new_tree):
     if LOOP_TILING_FACTOR > 1:
         logger.info("Tiling loops")
         new_tree = TileLoops(tile_factor=LOOP_TILING_FACTOR).visit(new_tree)
+    logger.info("Moving bodies out")
+    new_tree = MoveBodiesOut().visit(new_tree)
     return new_tree
 
 

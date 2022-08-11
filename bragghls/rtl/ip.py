@@ -8,17 +8,30 @@ from bragghls.util import remove_all_leading_whitespace
 
 
 def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):
-    return dedent(
-        f"""\
-            {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
-                .clk(clk),
-                .rst(rst),
-                .X({x}),
-                .Y({y}),
-                .R({r})
-            );
-        """
-    )
+    # TODO:
+    if op_type == "fdiv":
+        return dedent(
+            f"""\
+                {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
+                    .clk(clk),
+                    .X({x}),
+                    .Y({y}),
+                    .R({r})
+                );
+            """
+        )
+    else:
+        return dedent(
+            f"""\
+                {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
+                    .clk(clk),
+                    .rst(rst),
+                    .X({x}),
+                    .Y({y}),
+                    .R({r})
+                );
+            """
+        )
 
 
 def generate_xilinx_fp(op_type, instance_name, id, signal_width, a, b, res, keep):

@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # map_zhengchun_weights()
     parser = argparse.ArgumentParser(description="make stuff")
     parser.add_argument("--out_dir", type=Path, default=Path(__file__).parent)
-    parser.add_argument("--scale", type=int, default=4)
+    parser.add_argument("--scale", type=int, default=1)
     parser.add_argument("--img_size", type=int, default=11)
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()

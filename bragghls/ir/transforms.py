@@ -416,8 +416,9 @@ def transform_forward(new_tree):
     new_tree = CopyParFors().visit(new_tree)
     logger.info("Removing div")
     new_tree = RemoveDiv().visit(new_tree)
-    logger.info("Tiling loops")
-    new_tree = TileLoops(tile_factor=LOOP_TILING_FACTOR).visit(new_tree)
+    if LOOP_TILING_FACTOR > 1:
+        logger.info("Tiling loops")
+        new_tree = TileLoops(tile_factor=LOOP_TILING_FACTOR).visit(new_tree)
     return new_tree
 
 

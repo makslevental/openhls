@@ -5,15 +5,17 @@
 //===----------------------------------------------------------------------===//
 
 #include "EmitHLSPy.h"
-#include "llvm/ADT/APFloat.h"
 #include "Utils.h"
 #include "Visitor.h"
 #include "mlir/IR/AffineExprVisitor.h"
 #include "mlir/IR/AsmState.h"
 #include "mlir/IR/IntegerSet.h"
 #include "mlir/Tools/mlir-translate/Translation.h"
+#include "llvm/ADT/APFloat.h"
 #include "llvm/Support/raw_ostream.h"
+#include <cctype>
 #include <iostream>
+#include <string>
 
 using namespace mlir;
 using namespace bragghls;
@@ -25,13 +27,14 @@ using namespace bragghls;
 std::string getValIdent(Value &value) {
   llvm::SmallString<32> str;
   llvm::raw_svector_ostream os(str);
-  mlir::AsmState asm_state(
-      value.getDefiningOp()->getParentRegion()->getParentOfType<mlir::func::FuncOp>());
+  mlir::AsmState asm_state(value.getDefiningOp()
+                               ->getParentRegion()
+                               ->getParentOfType<mlir::func::FuncOp>());
   value.printAsOperand(os, asm_state);
   return os.str().str();
 }
 
-std::string getValIdent(Value &value, mlir::AsmState& asm_state) {
+std::string getValIdent(Value &value, mlir::AsmState &asm_state) {
   llvm::SmallString<32> str;
   llvm::raw_svector_ostream os(str);
   value.printAsOperand(os, asm_state);
@@ -185,9 +188,9 @@ void BraggHLSEmitterBase::removeName(Value val) {
 SmallString<8> BraggHLSEmitterBase::getName(Value val) {
   // For constant scalar operations, the constant number will be returned rather
   // than the value name.
-//  if (val.getType().dyn_cast<ShapedType>()) {
-//    return {"arr_" + state.nameTable.lookup(val).str().str()};
-//  }
+  //  if (val.getType().dyn_cast<ShapedType>()) {
+  //    return {"arr_" + state.nameTable.lookup(val).str().str()};
+  //  }
   if (auto defOp = val.getDefiningOp()) {
     if (auto constOp = dyn_cast<arith::ConstantOp>(defOp)) {
       auto constAttr = constOp.getValue();
@@ -248,6 +251,7 @@ public:
   template <typename OpType> void emitAlloc(OpType op);
   void emitLoad(memref::LoadOp op);
   void emitStore(memref::StoreOp op);
+  void emitDim(memref::DimOp op);
   void emitMemCpy(memref::CopyOp op);
   void emitGlobal(memref::GlobalOp op);
   void emitGetGlobal(memref::GetGlobalOp op);
@@ -435,6 +439,7 @@ public:
   bool visitOp(memref::AllocaOp op) { return emitter.emitAlloc(op), true; }
   bool visitOp(memref::LoadOp op) { return emitter.emitLoad(op), true; }
   bool visitOp(memref::StoreOp op) { return emitter.emitStore(op), true; }
+  bool visitOp(memref::DimOp op) { return emitter.emitDim(op), true; }
   bool visitOp(memref::DeallocOp op) { return true; }
   bool visitOp(memref::CopyOp op) { return emitter.emitMemCpy(op), true; }
   bool visitOp(memref::GlobalOp op) { return emitter.emitGlobal(op), true; }
@@ -514,6 +519,7 @@ public:
   bool visitOp(arith::DivSIOp op) { return emitter.emitBinary(op, "/"), true; }
   bool visitOp(arith::RemSIOp op) { return emitter.emitBinary(op, "%"), true; }
   bool visitOp(arith::DivUIOp op) { return emitter.emitBinary(op, "/"), true; }
+  bool visitOp(arith::FloorDivSIOp op) { return emitter.emitBinary(op, "//"), true; }
   bool visitOp(arith::RemUIOp op) { return emitter.emitBinary(op, "%"), true; }
   bool visitOp(arith::XOrIOp op) { return emitter.emitBinary(op, "^"), true; }
   bool visitOp(arith::AndIOp op) { return emitter.emitBinary(op, "&"), true; }
@@ -797,6 +803,7 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   mlir::AsmState asm_state(
       op->getParentRegion()->getParentOfType<mlir::func::FuncOp>());
 
+  auto steps = getIntArrayAttrValue(op, op.getStepsAttrName());
   std::set<std::string> args;
   std::set<std::string> outputs;
   auto that = this;
@@ -821,32 +828,16 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     }
   }
 
-  indent() << "@torch.jit.script\n";
-  indent() << "def body" << currentBodyCount << "(";
-  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
-    auto iterVar = op.getBody()->getArgument(i);
-    emitValue(iterVar);
-    os << ": int, ";
-  }
-  for (const auto &item : args)
-    os << item << ": torch.Tensor, ";
-  os << *outputs.begin() << ": torch.Tensor";
-
-
-  os << "):";
-  os << "\n";
+  //  indent() << "@torch.jit.script\n";
+  indent() << "class Kernel" << currentBodyCount << "(nn.Module):\n";
   addIndent();
-  emitBlock(*op.getBody());
-  indent() << "return " << *outputs.begin();
-  reduceIndent();
 
-  os << "\n";
-  indent() << "tile(";
-  auto steps = getIntArrayAttrValue(op, op.getStepsAttrName());
+  indent() << "def __init__(self, ";
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
     auto iterVar = op.getBody()->getArgument(i);
     emitValue(iterVar);
-    os << "=(";
+    os << ": Iterable=";
+    os << "list(range(";
     auto lowerMap = op.getLowerBoundsValueMap().getAffineMap();
     AffineExprEmitter lowerEmitter(state, lowerMap.getNumDims(),
                                    op.getLowerBoundsOperands());
@@ -859,14 +850,49 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     upperEmitter.emitAffineExpr(upperMap.getResult(i));
     os << ", ";
 
-    os << steps[i] << ")";
-    os << ", ";
+    os << steps[i] << ")), ";
   }
-  for (const auto &item : args)
-    os << item << "=" << item << ",";
-  for (const auto &item : outputs)
-    os << item << "=" << item << ",";
-  os << ")(body"<< currentBodyCount <<")\n";
+
+  os << "):";
+  os << "\n";
+  addIndent();
+  indent() << "super().__init__()\n";
+  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+    auto iterVar = op.getBody()->getArgument(i);
+    indent() << "self.";
+    emitValue(iterVar);
+    os << " = ";
+    emitValue(iterVar);
+    os << "\n";
+  }
+  reduceIndent();
+  indent() << "def forward(self,";
+
+  for (const auto &item : args) {
+    os << item << ": torch.Tensor, ";
+  }
+  os << *outputs.begin() << ": torch.Tensor";
+  os << "):\n";
+  addIndent();
+  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+    auto iterVar = op.getBody()->getArgument(i);
+    indent() << "for ";
+    emitValue(iterVar);
+    os << " in ";
+    indent() << "self.";
+    emitValue(iterVar);
+    os << ":\n";
+    addIndent();
+  }
+  emitBlock(*op.getBody());
+  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+    reduceIndent();
+  }
+  indent() << "return " << *outputs.begin();
+  reduceIndent();
+  reduceIndent();
+
+  os << "\n";
   currentBodyCount++;
   os << "\n\n";
 }
@@ -1213,21 +1239,32 @@ void ModuleEmitter::emitStore(memref::StoreOp op) {
   os << "\n";
 }
 
+void ModuleEmitter::emitDim(memref::DimOp op) {
+  indent();
+  emitValue(op.getResult());
+  os << " = ";
+  emitValue(op.getSource());
+  os << ".shape[";
+  emitValue(op.getIndex());
+  os << "]";
+  os << "\n";
+}
+
 void ModuleEmitter::emitMemCpy(memref::CopyOp op) {
-//  indent() << "memcpy(";
+  //  indent() << "memcpy(";
   indent() << "";
-//  emitValue(op.target());
-//  os << " = ";
+  //  emitValue(op.target());
+  //  os << " = ";
   emitValue(op.target());
   os << ".copy_(";
   emitValue(op.getSource());
   os << ")";
-//  os << ", ";
+  //  os << ", ";
 
-//  auto type = op.target().getType().cast<MemRefType>();
-//  os << type.getNumElements() << " * sizeof(" << getTypeName(op.target())
-//     << "))";
-//  os << "\n";
+  //  auto type = op.target().getType().cast<MemRefType>();
+  //  os << type.getNumElements() << " * sizeof(" << getTypeName(op.target())
+  //     << "))";
+  //  os << "\n";
   os << "\n";
 }
 
@@ -1246,15 +1283,12 @@ void ModuleEmitter::emitGlobal(memref::GlobalOp op) {
 
 void ModuleEmitter::emitGetGlobal(memref::GetGlobalOp op) {
   indent();
-//  emitGlobal(parentop);
   emitValue(op.getResult());
-//  os << " = Tensor(" << "'" << op.name() << "', " << op.name() << ")\n";
   auto arrayType = op.getType().template cast<ShapedType>();
-//  os << " = torch.randn(" << op.name() << ")\n";
-  os << " = torch.randn(";
+  os << " = Parameter(torch.randn(";
   for (const auto &item : arrayType.getShape())
     os << item << ", ";
-  os << ")\n";
+  os << "))\n";
 }
 
 void ModuleEmitter::emitTensorStore(memref::TensorStoreOp op) {
@@ -1495,18 +1529,18 @@ void ModuleEmitter::emitArrayDecl(Value array, bool input, bool output) {
   if (arrayType.hasStaticShape()) {
     emitValue(array);
     os << " = torch.empty(";
-//    os << getName(array);
-//    os << "', ";
+    //    os << getName(array);
+    //    os << "', ";
     if (!arrayType.getShape().empty())
       for (auto &shape : arrayType.getShape()) {
         os << shape << ", ";
       }
     else
       os << "1,";
-//    if (input)
-//      os << "input=True";
-//    else if (output)
-//      os << "output=True";
+    //    if (input)
+    //      os << "input=True";
+    //    else if (output)
+    //      os << "output=True";
     os << ")";
   } else
     emitValue(array, /*rank=*/0, /*isPtr=*/true);
@@ -1555,20 +1589,20 @@ void ModuleEmitter::emitNestedLoopFooter(unsigned rank) {
 void ModuleEmitter::emitBlock(Block &block) {
   for (auto &op : block) {
 
-//    if (!llvm::dyn_cast<scf::YieldOp>(op) &&
-//        !llvm::dyn_cast<AffineYieldOp>(op)) {
-//      std::string s;
-//      llvm::raw_string_ostream rs{s};
-//      op.print(rs);
-//      std::stringstream ss(s);
-//      std::string line;
-//      while (std::getline(ss, line, '\n')) {
-//        indent();
-////        os << "# " << line << "\n";
-//        os << "\n";
-//        break;
-//      }
-//    }
+    //    if (!llvm::dyn_cast<scf::YieldOp>(op) &&
+    //        !llvm::dyn_cast<AffineYieldOp>(op)) {
+    //      std::string s;
+    //      llvm::raw_string_ostream rs{s};
+    //      op.print(rs);
+    //      std::stringstream ss(s);
+    //      std::string line;
+    //      while (std::getline(ss, line, '\n')) {
+    //        indent();
+    ////        os << "# " << line << "\n";
+    //        os << "\n";
+    //        break;
+    //      }
+    //    }
 
     if (ExprVisitor(*this).dispatchVisitor(&op)) {
       continue;
@@ -1587,8 +1621,15 @@ void ModuleEmitter::emitFunction(FuncOp func) {
     emitError(func, "has zero or more than one basic blocks.");
 
   // Emit function signature.
-  os << "def " << func.getName() << "(\n";
+  std::string str = func.getName().str();
+  str[0] = toupper(str[0]);
+  os << "class " << str << "(nn.Module):\n";
   addIndent();
+  indent() << "def __init__(self):\n";
+  addIndent();
+  indent() << "super().__init__()\n";
+  reduceIndent();
+  indent() << "def forward(self, ";
 
   // This vector is to record all ports of the function.
   SmallVector<Value, 8> portList;
@@ -1616,26 +1657,24 @@ void ModuleEmitter::emitFunction(FuncOp func) {
     // index, index. However, typically this should not happen.
     if (result.getType().isa<ShapedType>()) {
       emitArrayDecl(result, false, true);
-    }
-    else
+    } else
       emitValue(result, /*rank=*/0, /*isPtr=*/true);
 
     portList.push_back(result);
   }
 
-  reduceIndent();
-  os << "\n):";
+  indent() << "):";
   os << "\n";
 
   // Emit function body.
   addIndent();
 
-//  args = []
-//for index in np.ndindex(*_arg0.curr_shape):
-//  args.append(f"float {_arg0.var_name}_{'_'.join(map(str, index))}")
-//for index in np.ndindex(*_56.curr_shape):
-//  args.append(f"float* {_56.var_name}_{'_'.join(map(str, index))}")
-//print(f"define void @forward({', '.join(args)}) {{\n")
+  //  args = []
+  // for index in np.ndindex(*_arg0.curr_shape):
+  //  args.append(f"float {_arg0.var_name}_{'_'.join(map(str, index))}")
+  // for index in np.ndindex(*_56.curr_shape):
+  //  args.append(f"float* {_56.var_name}_{'_'.join(map(str, index))}")
+  // print(f"define void @forward({', '.join(args)}) {{\n")
 
   emitBlock(func.front());
   reduceIndent();
@@ -1645,61 +1684,24 @@ void ModuleEmitter::emitFunction(FuncOp func) {
   os << "\n";
 }
 
-
 /// Top-level MLIR module emitter.
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(
-from typing import Tuple
+from typing import Iterable
 
-import itertools
 import torch
-from torch._C import Future
+from torch import nn
+from torch.nn.parameter import Parameter
 )XXX";
   os << "\n\n";
-  os << " # fmt: off\n";
   for (auto &op : *module.getBody()) {
     if (auto func = dyn_cast<FuncOp>(op)) {
       //
     } else if (auto global = dyn_cast<memref::GlobalOp>(op)) {
-//      emitGlobal(global);
+      //      emitGlobal(global);
     } else
-      emitError(&op, "is unsupported operation.");
+      emitError(&op, "is unsupported operation 1.");
   }
-  os << " # fmt: on\n";
-
-
-  os << R"XXX(
-def zip_with_scalar(o, l):
-    return zip(itertools.repeat(o), l)
-
-def tile(**kwargs):
-    index_kwargs = tuple(tuple(zip_with_scalar(k, range(*v))) for k, v in
-        kwargs.items() if isinstance(v, tuple))
-    tensor_kwargs = {k: v for k, v in kwargs.items() if isinstance(v, torch
-        .Tensor)}
-
-    sorted_tensor_args = [ten for _, ten in tensor_kwargs.items()]
-    # HACK
-    output_tensor = sorted_tensor_args[-1]
-
-    def wrapper(body):
-        futs: list[Tuple[list[int], Future[torch.Tensor]]] = []
-        for args in itertools.product(*index_kwargs):
-            sorted_idx_args = [idx for _, idx in sorted(args)]
-            total_args = tuple(sorted_idx_args + sorted_tensor_args)
-            # body(*total_args)
-            futs.append((sorted_idx_args, torch.jit._fork(body, *total_args)))
-
-        for idx, fut in futs:
-            res = torch.jit._wait(fut)
-            i, j, k, l = idx
-            output_tensor[i, j, k, l] = res[i, j, k, l]
-
-    return wrapper
-
-
-
-)XXX";
 
   os << "\n\n";
   for (auto &op : *module.getBody()) {
@@ -1709,11 +1711,14 @@ def tile(**kwargs):
     } else if (auto global = dyn_cast<memref::GlobalOp>(op)) {
       //
     } else
-      emitError(&op, "is unsupported operation.");
+      emitError(&op, "is unsupported operation 2.");
   }
   os << R"XXX(
-if __name__ == "__main__":
-    forward()
+if __name__ == '__main__':
+  model = Forward()
+  scripted = torch.jit.script(model)
+  print(scripted.graph)
+
 )XXX";
 }
 

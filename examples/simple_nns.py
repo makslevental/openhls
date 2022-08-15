@@ -330,8 +330,7 @@ def make_max_pool_2d(img_size=11):
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
-            # ([1, 1, img_size, img_size], torch.float32),
-            ([-1, -1, -1, -1], torch.float32),
+            ([1, 1, img_size, img_size], torch.float32),
         ],
     )
     return str(mlir_module)

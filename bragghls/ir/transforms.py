@@ -10,7 +10,7 @@ from _ast import (
     Return,
     keyword,
     Constant,
-    Module,
+    Module, ClassDef,
 )
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare, Num
 
@@ -402,11 +402,43 @@ class MoveBodiesOut(ast.NodeTransformer):
     mod_node = None
 
     def visit_Module(self, node: Module):
-        j, forward = next((i, n) for i, n in enumerate(node.body) if isinstance(n, FunctionDef) and n.name == "forward")
-        for i, b in reversed(list(enumerate(forward.body))):
-            if isinstance(b, FunctionDef):
-                node.body.insert(j, b)
-                del forward.body[i]
+        j, forward = next((i, n) for i, n in enumerate(node.body) if isinstance(n, ClassDef) and n.name == "Forward")
+        init_fn = forward.body[0]
+        forward_fn = forward.body[1]
+        parameters = {b.targets[0].id: (i, b) for i, b in enumerate(forward_fn.body) if isinstance(b, Assign) and hasattr(b.value, "func") and hasattr(b.value.func, "id") and b.value.func.id == "Parameter"}
+        for i, assign_param in reversed(list(parameters.values())):
+            assign_param.targets[0] = Name(f"self.{assign_param.targets[0].id}")
+            init_fn.body.insert(1, assign_param)
+            del forward_fn.body[i]
+
+        kernel_defs = [(i, b) for i, b in enumerate(forward_fn.body) if isinstance(b, ClassDef)]
+        for i, kernel in reversed(list(kernel_defs)):
+            kernel_forward = kernel.body[1]
+            init_fn.body.insert(1, Assign(
+                        targets=[Name(id=f"self.{kernel.name.lower()}")],
+                        value=Call(
+                            func=Name(id=kernel.name),
+                            args=[],
+                            keywords=[],
+                        ),
+                        type_comment=None,
+                    ))
+            forward_fn.body[i] = Assign(
+                        targets=[kernel_forward.body[-1].value],
+                        value=Call(
+                            func=Name(id=f"self.{kernel.name.lower()}"),
+                            args=[],
+                            keywords=[ast.keyword(arg.arg, Name(f"self.{arg.arg}" if arg.arg in parameters else Name(arg.arg))) for arg in kernel_forward.args.args[1:]],
+                        ),
+                        type_comment=None,
+                    )
+            node.body.insert(j, kernel)
+
+        if isinstance(forward_fn.body[-1].targets[0], Subscript):
+            forward_fn.body.append(Return(forward_fn.body[-1].targets[0].value))
+        else:
+            forward_fn.body.append(Return(forward_fn.body[-1].targets[0]))
+
 
         return node
 

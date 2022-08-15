@@ -39,7 +39,7 @@ public:
 
             // Memref-related statements.
             memref::AllocOp, memref::AllocaOp, memref::LoadOp, memref::StoreOp,
-            memref::GlobalOp, memref::GetGlobalOp,
+            memref::GlobalOp, memref::GetGlobalOp, memref::DimOp,
             memref::DeallocOp, memref::CopyOp, memref::TensorStoreOp,
             tensor::ReshapeOp, memref::ReshapeOp, memref::CollapseShapeOp,
             memref::ExpandShapeOp, memref::ReinterpretCastOp,
@@ -59,7 +59,7 @@ public:
 
             // Float binary expressions.
             arith::CmpFOp, arith::AddFOp, arith::SubFOp, arith::MulFOp,
-            arith::DivFOp, arith::RemFOp, arith::MaxFOp, arith::MinFOp,
+            arith::DivFOp, arith::RemFOp, arith::MaxFOp, arith::MinFOp, arith::FloorDivSIOp,
 
             // Integer binary expressions.
             arith::CmpIOp, arith::AddIOp, arith::SubIOp, arith::MulIOp,
@@ -128,6 +128,7 @@ public:
   HANDLE(memref::AllocaOp);
   HANDLE(memref::LoadOp);
   HANDLE(memref::StoreOp);
+  HANDLE(memref::DimOp);
   HANDLE(memref::GlobalOp);
   HANDLE(memref::GetGlobalOp);
   HANDLE(memref::DeallocOp);
@@ -178,6 +179,7 @@ public:
   HANDLE(arith::RemFOp);
   HANDLE(arith::MaxFOp);
   HANDLE(arith::MinFOp);
+  HANDLE(arith::FloorDivSIOp);
 
   // Integer binary expressions.
   HANDLE(arith::CmpIOp);

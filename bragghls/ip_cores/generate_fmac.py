@@ -3,9 +3,9 @@ import math
 from pathlib import Path
 
 import numpy as np
+from bragghls.flopoco import flopoco_converter
 from jinja2 import Template
 
-from bragghls.flopoco.convert_flopoco import convert_float_to_flopoco_binary_str
 from bragghls.flopoco.ops import Val
 
 
@@ -59,7 +59,7 @@ def generate_tb(wE, wF, n_elements):
     else:
         vals = np.linspace(0, 1, 2 * n_elements)
 
-    args = [convert_float_to_flopoco_binary_str(i, wE, wF) for i in vals]
+    args = [flopoco_converter.FPNumber(i, wE, wF).binstr() for i in vals]
     res = Val(0.0, wE, wF)
     ieee_res = np.apply_along_axis(
         np.prod, 1, vals.reshape(2 * n_elements // 2, 2)

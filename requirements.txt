@@ -8,6 +8,7 @@ astor
 jinja2
 cocotb
 matplotlib
+JPype1
 
 -f https://github.com/llvm/torch-mlir/releases
 --pre

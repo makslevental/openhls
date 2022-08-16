@@ -1,160 +1,157 @@
-import os
+import pickle
 from collections import defaultdict
-from pathlib import Path
 
-import jpype
-import jpype.imports
-import matplotlib.pyplot as plt
-from cycler import cycler
-from matplotlib.pyplot import figure
+from bragghls.pd.bresenham import draw_text
 
-from bragghls.pd.bresenham import bresenham
+# def get_tile_coords(device, name):
+#     return device.getTile(name).getTileXCoordinate(), device.getTile(name).getTileYCoordinate()
+#
+#
+# def start_jvm(jar_path):
+#     if not jpype.isJVMStarted():
+#         jpype.startJVM(classpath=jar_path)
+#
+#
+# # https://github.com/Xilinx/RapidWright/releases/download/v2022.1.2-beta/rapidwright-2022.1.2-standalone-lin64.jar
+# os.environ["JAVA_HOME"] = "/usr"
+# api_lib_fp = (
+#         Path(__file__).parent / "rapidwright-2022.1.2-standalone-lin64.jar"
+# ).resolve()
+# start_jvm(str(api_lib_fp))
+#
+# from com.xilinx.rapidwright.device import Device, TileTypeEnum
+#
+# dsp_row_cols = defaultdict(list)
+# coord_tile = {}
+#
+# dsp_tiles = defaultdict(set)
+# d = Device.getDevice("xcu280")
+#
+# device_dict = defaultdict(dict)
+#
+# offsets = [(-1, 0), (-1, 1), (1, 0), (1, 1)]
+# for tile in d.getAllTiles():
+#     tile_name = str(tile.getName())
+#     device_dict[tile_name] = {
+#         "tile_name": tile_name,
+#         "tile_type": str(tile.getTileTypeEnum().name()),
+#         "row": int(tile.getRow()),
+#         "column": int(tile.getColumn()),
+#         "slr": str(tile.getSLR().getName())
+#     }
+#     # device_dict[tile_name]["tile_neighbors"] = {}
+#     # device_dict[tile_name]["tile_xy_neighbors"] = {}
+#     # for offset in offsets:
+#     #     if tile.getTileNeighbor(*offset):
+#     #         device_dict[tile_name]["tile_neighbors"][offset] = str(tile.getTileNeighbor(*offset).getName())
+#     #     if tile.getTileXYNeighbor(*offset):
+#     #         device_dict[tile_name]["tile_xy_neighbors"][offset] = str(tile.getTileXYNeighbor(*offset).getName())
+#     device_dict[tile_name]["tile_sites"] = {}
+#     for site in tile.getSites():
+#         device_dict[tile_name]["tile_sites"][str(site.getName())] = {
+#             "site_type": str(site.getSiteTypeEnum().name()),
+#         }
+#
+#
+# pickle.dump(device_dict, open("xcu280.pth", "wb"))
+device_dict = pickle.load(open("xcu280.pth", "rb"))
+xy_to_tile = {}
+for k, v in device_dict.items():
+    xy_to_tile[(v["row"], v["column"])] = k
 
+dsp_tiles = {k: v for k, v in device_dict.items() if v["tile_type"] == "DSP"}
+slr_dsps = defaultdict(list)
+for k, v in dsp_tiles.items():
+    slr_dsps[v["slr"]].append(k)
 
-def start_jvm(jar_path):
-    if not jpype.isJVMStarted():
-        jpype.startJVM(classpath=jar_path)
-
-
-# https://repo1.maven.org/maven2/com/xilinx/rapidwright/rapidwright-api-lib/2022.1.2/rapidwright-api-lib-2022.1.2.jar
-# https://repo1.maven.org/maven2/com/xilinx/rapidwright/rapidwright/2022.1.2/rapidwright-2022.1.2.jar
-os.environ[
-    "JAVA_HOME"
-] = "/Users/mlevental/Library/Java/JavaVirtualMachines/corretto-17.0.3/Contents/Home/"
-api_lib_fp = (
-    Path(__file__).parent / "rapidwright-2022.1.2-standalone-lin64.jar"
-).resolve()
-start_jvm(str(api_lib_fp))
-
-from com.xilinx.rapidwright.device import Device, TileTypeEnum
-
-dsp_row_cols = defaultdict(list)
-dsp_row_cols = defaultdict(list)
-coord_tile = {}
-
-dsp_tiles = defaultdict(set)
-d = Device.getDevice("xcu280")
-for tile in d.getAllTiles():
-    if tile.getTileTypeEnum() == TileTypeEnum.DSP:
-        dsp_row_cols[tile.getSLR().getName()].append(
-            (tile.getTileXCoordinate(), tile.getTileYCoordinate())
-        )
-        coord_tile[tile.getTileXCoordinate(), tile.getTileYCoordinate()] = tile
-        for site in tile.getSites():
-            dsp_tiles[tile.getTileTypeEnum().name()].add(site.getSiteTypeEnum().name())
-
-idx_to_slrxy_map = {}
-for slr in ["SLR0", "SLR1", "SLR2"]:
-    idx_to_slrxy_map[slr] = {
-        "xs": sorted(set([x for x, y in dsp_row_cols[slr]])),
-        "ys": sorted(set([y for x, y in dsp_row_cols[slr]])),
+slr_dims = {}
+for slr, dsps in slr_dsps.items():
+    slr_dims[slr] = {
+        "rows": sorted(set(dsp_tiles[k]["row"] for k in dsps)),
+        "columns": sorted(set(dsp_tiles[k]["column"] for k in dsps)),
     }
 
-# print(bresenham(
-#     [4, 2],
-#     [4, 57])
-# )
-m_left_leg = [[4, i] for i in range(20, 57 + 1)]
-m_left_slope = list(bresenham([15, 20], [4, 57]))
-m_right_slope = list(
-    bresenham(
-        [15, 20],
-        [28, 57],
-    )
-)
-m_right_leg = [[28, i] for i in range(57, 19, -1)]
+m_x, m_y = draw_text("M", (2, 5), width=32, height=60, thresh=240)
+a_x, a_y = draw_text("A", (5, 0), width=32, height=48, thresh=240)
+x_x, x_y = draw_text("X", width=32, height=33, thresh=240)
 
-a_left_slope = list(bresenham([4, 15], [15, 45]))
-a_cross = [[i, 22] for i in range(10, 21)]
-a_right_slope = list(
-    bresenham(
-        [28, 15],
-        [15, 45],
-    )
-)
+slr0_row, slr0_col = slr_dims["SLR0"]["rows"], slr_dims["SLR0"]["columns"]
+slr1_row, slr1_col = slr_dims["SLR1"]["rows"], slr_dims["SLR1"]["columns"]
+slr2_row, slr2_col = slr_dims["SLR2"]["rows"], slr_dims["SLR2"]["columns"]
 
-x_left_slope = list(bresenham([4, 2], [28, 31]))
-x_right_slope = list(
-    bresenham(
-        [28, 2],
-        [4, 31],
-    )
-)
+f = open("/home/mlevental/dev_projects/bragghls/bragghls/pd/highlight.tcl", "w")
 
-default_cycler = cycler(color=["r", "g", "b", "y"])
-plt.rc("axes", prop_cycle=default_cycler)
-figure(figsize=(10, 20), dpi=300)
-for slr, coords in dsp_row_cols.items():
-    plt.scatter([x for x, y in coords], [y for x, y in coords], label=slr)
+left_offsets = [(-i, -3) for i in range(5)]
+right_offsets = [(-i, 1) for i in range(5)]
+all_pblocks = []
+for x, y in zip(m_x, m_y):
+    this_pblock = []
+    pblock = xy_to_tile[slr2_row[x], slr2_col[y]]
+    this_pblock.append(pblock)
+    print(f"highlight_objects [get_tiles {pblock}] -color red", file=f)
+    for off_x, off_y in left_offsets:
+        pblock = xy_to_tile[slr2_row[x] + off_x, slr2_col[y] + off_y]
+        print(f"highlight_objects [get_tiles {pblock}] -color red", file=f)
+        this_pblock.append(pblock)
+    for off_x, off_y in right_offsets:
+        pblock = xy_to_tile[slr2_row[x] + off_x, slr2_col[y] + off_y]
+        print(f"highlight_objects [get_tiles {pblock}] -color red", file=f)
+        this_pblock.append(pblock)
+    all_pblocks.append(this_pblock)
 
-m_xs = [
-    idx_to_slrxy_map["SLR2"]["xs"][x]
-    for x, _y in m_left_leg + m_left_slope + m_right_slope + m_right_leg
-]
-m_ys = [
-    idx_to_slrxy_map["SLR2"]["ys"][y]
-    for _x, y in m_left_leg + m_left_slope + m_right_slope + m_right_leg
-]
-plt.scatter(m_xs, m_ys, label="M")
-m_tiles = [coord_tile[x, y] for x, y in zip(m_xs, m_ys)]
+for x, y in zip(a_x, a_y):
+    this_pblock = []
+    pblock = xy_to_tile[slr1_row[x - 10], slr1_col[y]]
+    print(f"highlight_objects [get_tiles {pblock}] -color blue", file=f)
+    this_pblock.append(pblock)
+    for off_x, off_y in left_offsets:
+        pblock = xy_to_tile[slr1_row[x - 10] + off_x, slr1_col[y] + off_y]
+        print(f"highlight_objects [get_tiles {pblock}] -color blue", file=f)
+        this_pblock.append(pblock)
+    for off_x, off_y in right_offsets:
+        pblock = xy_to_tile[slr1_row[x - 10] + off_x, slr1_col[y] + off_y]
+        print(f"highlight_objects [get_tiles {pblock}] -color blue", file=f)
+        this_pblock.append(pblock)
+    all_pblocks.append(this_pblock)
 
-a_xs = [
-    idx_to_slrxy_map["SLR1"]["xs"][x]
-    for x, _y in a_left_slope + a_cross + a_right_slope
-]
-a_ys = [
-    idx_to_slrxy_map["SLR1"]["ys"][y]
-    for _x, y in a_left_slope + a_cross + a_right_slope
-]
-plt.scatter(a_xs, a_ys, label="A", color="y")
-a_tiles = [coord_tile[x, y] for x, y in zip(a_xs, a_ys)]
+for x, y in zip(x_x, x_y):
+    this_pblock = []
+    pblock = xy_to_tile[slr0_row[x], slr0_col[y]]
+    print(f"highlight_objects [get_tiles {pblock}] -color green", file=f)
+    this_pblock.append(pblock)
+    for off_x, off_y in left_offsets:
+        pblock = xy_to_tile[slr0_row[x] + off_x, slr0_col[y] + off_y]
+        print(f"highlight_objects [get_tiles {pblock}] -color green", file=f)
+        this_pblock.append(pblock)
+    for off_x, off_y in right_offsets:
+        pblock = xy_to_tile[slr0_row[x] + off_x, slr0_col[y] + off_y]
+        print(
+            f"highlight_objects [get_tiles {xy_to_tile[slr0_row[x] + off_x, slr0_col[y] + off_y]}] -color green",
+            file=f,
+        )
+        this_pblock.append(pblock)
+    all_pblocks.append(this_pblock)
 
-x_xs = [idx_to_slrxy_map["SLR0"]["xs"][x] for x, _y in x_left_slope + x_right_slope]
-x_ys = [idx_to_slrxy_map["SLR0"]["ys"][y] for _x, y in x_left_slope + x_right_slope]
-plt.scatter(x_xs, x_ys, label="X", color="y")
-x_tiles = [coord_tile[x, y] for x, y in zip(x_xs, x_ys)]
 
-plt.legend()
-plt.show()
-
-tile_clem_neighbor = {}
-for tile in m_tiles + a_tiles + x_tiles:
-    clem_neighors = [
-        tile.getTileNeighbor(*offset)
-        for offset in [(-1, 0), (0, -1), (-1, -1), (1, 1)]
-        if "CLEM" in tile.getTileNeighbor(*offset).getName()
-    ]
-    assert len(clem_neighors)
-    tile_clem_neighbor[tile] = clem_neighors
-
-print(len(tile_clem_neighbor))
-
-_tmp = list(tile_clem_neighbor.items())
-for i in range(50):
-    print(f"create_pblock pblock_fmul_{i}")
-    j = 6 * i
-    for k in range(j, j + 5):
-        tile, neigh = _tmp[k]
-        for site in tile.getSites():
-            print(
-                f"resize_pblock [get_pblocks pblock_fmul_{i}] -add {{{site.getName()}}}"
-            )
-        for neig in neigh:
-            for site in neig.getSites():
-                print(
-                    f"resize_pblock [get_pblocks pblock_fmul_{i}] -add {{{site.getName()}}}"
-                )
+f = open("/home/mlevental/dev_projects/bragghls/bragghls/pd/pblock.tcl", "w")
+for i in range(len(all_pblocks) // 3):
+    print(f"create_pblock pblock_fmul_{i}", file=f)
+    j = 3 * i
+    mul_pbock = all_pblocks[j]
+    for tile in mul_pbock:
+        for site in device_dict[tile]["tile_sites"]:
+            print(f"resize_pblock [get_pblocks pblock_fmul_{i}] -add {{{site}}}", file=f)
     print(
-        f"add_cells_to_pblock pblock_fmul_{i} [get_cells [list fmul_{i}]] -clear_locs"
+        f"add_cells_to_pblock pblock_fmul_{i} [get_cells [list fmul_{i}]] -clear_locs", file=f
     )
-    print()
-    # print(f"create_pblock pblock_fadd_{i}")
-    # for k in range(j + 2, j + 6):
-    #     tile, neigh = _tmp[k]
-    #     for site in tile.getSites():
-    #         print(f"resize_pblock [get_pblocks pblock_fadd_{i}] -add {{{site.getName()}}}")
-    #     for neig in neigh:
-    #         for site in neig.getSites():
-    #             print(f"resize_pblock [get_pblocks pblock_fadd_{i}] -add {{{site.getName()}}}")
-    # print(f"add_cells_to_pblock pblock_fadd_{i} [get_cells [list fadd_{i}]] -clear_locs")
-    # print()
+    print(file=f)
+
+    print(f"create_pblock pblock_fadd_{i}", file=f)
+    add_pbock = all_pblocks[j + 1] + all_pblocks[j + 2]
+    for tile in add_pbock:
+        for site in device_dict[tile]["tile_sites"]:
+            print(f"resize_pblock [get_pblocks pblock_fadd_{i}] -add {{{site}}}", file=f)
+    print(
+        f"add_cells_to_pblock pblock_fadd_{i} [get_cells [list fadd_{i}]] -clear_locs", file=f
+    )
+    print(file=f)

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
+export PATH=$BRAGGHLS_DIR/build/ghdl/bin:$PATH
 
-function flopoco () {
+function flopoco_here () {
     docker run --rm=true -v $BRAGGHLS_DIR/bragghls/ip_cores:/flopoco_workspace flopoco "$@"
-#    docker run --rm=true -v /tmp:/flopoco_workspace flopoco "$@"
 }
 
 function make() {
@@ -12,15 +12,19 @@ function make() {
   wE=$2
   wF=$3
   echo $freq
-  echo "fmul"
-  flopoco FPMult wE=$wE wF=$wF name=fmul outputFile=flopoco_fmul_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0 2>&1 | grep "   Pipeline depth ="
-  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fmul_${wE}_${wF}.vhdl fmul 2> /dev/null
-  echo "fadd"
-  flopoco FPAdd wE=$wE wF=$wF name=fadd dualPath=0 outputFile=flopoco_fadd_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0 2>&1  | grep "   Pipeline depth ="
-  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fadd_${wE}_${wF}.vhdl fadd 2> /dev/null
+
+#  echo "fmul"
+#  flopoco_here FPMult wE=$wE wF=$wF name=fmul outputFile=flopoco_fmul_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
+#  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fmul_${wE}_${wF}.vhdl fmul
+#
+#  echo "fadd"
+#  flopoco_here FPAdd wE=$wE wF=$wF name=fadd dualPath=1 outputFile=flopoco_fadd_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
+#  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fadd_${wE}_${wF}.vhdl fadd
+
   echo "fdiv"
-  flopoco FPDiv wE=$wE wF=$wF name=fdiv dualPath=0 outputFile=flopoco_fdiv_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
-  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fdiv_${wE}_${wF}.vhdl fdiv 2> /dev/null
+  flopoco_here FPDiv wE=$wE wF=$wF name=fdiv outputFile=flopoco_fdiv_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $BRAGGHLS_DIR/bragghls/ip_cores/flopoco_fdiv_${wE}_${wF}.vhdl fdiv
+
   echo "\n"
 }
 

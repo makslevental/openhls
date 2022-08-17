@@ -1,7 +1,10 @@
 import configparser
 import logging
 import os
+import re
 from pathlib import Path
+
+from bragghls import ip_cores
 
 root_config_path = Path(__file__).parent.parent.resolve() / "bragghls_config.ini"
 if os.path.exists(root_config_path):
@@ -19,24 +22,47 @@ INCLUDE_AUX_DEPS = config["config"].getboolean("IncludeAuxDeps")
 REGISTER_TILES_TWICE = config["config"].getboolean("RegisterTilesTwice")
 LOOP_TILING_FACTOR = config["config"].getint("LoopTilingFactor")
 
-USING_FLOPOCO = config["ip"].getboolean("UsingFlopoco")
-
-MUL_PIPELINE_DEPTH = int(
-    os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
-)
-MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
-DIV_PIPELINE_DEPTH = int(
-    os.getenv("DIV_PIPELINE_DEPTH") or config["ip"].get("DivPipelineDepth")
-)
-DIV_LATENCY = DIV_PIPELINE_DEPTH + 1
-DIV_RADIX = int(os.getenv("DIV_RADIX") or config["ip"].get("DivRadix"))
-ADD_PIPELINE_DEPTH = int(
-    os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
-)
-ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
-
 WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT") or config["ip"].get("WidthExponent"))
 WIDTH_FRACTION = int(os.getenv("WIDTH_FRACTION") or config["ip"].get("WidthFraction"))
+
+USING_FLOPOCO = config["ip"].getboolean("UsingFlopoco")
+
+if USING_FLOPOCO:
+    pipeline_depth_re = re.compile(r"Pipeline depth: (\d+) cycles")
+    with open(
+        Path(ip_cores.__file__).parent
+        / f"flopoco_fmul_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
+    ) as f:
+        depths = pipeline_depth_re.findall(f.read())
+        MUL_PIPELINE_DEPTH = int(depths[-1])
+    with open(
+        Path(ip_cores.__file__).parent
+        / f"flopoco_fadd_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
+    ) as f:
+        depths = pipeline_depth_re.findall(f.read())
+        ADD_PIPELINE_DEPTH = int(depths[-1])
+    with open(
+        Path(ip_cores.__file__).parent
+        / f"flopoco_fdiv_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
+    ) as f:
+        depths = pipeline_depth_re.findall(f.read())
+        DIV_PIPELINE_DEPTH = int(depths[-1])
+else:
+    MUL_PIPELINE_DEPTH = int(
+        os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
+    )
+    DIV_PIPELINE_DEPTH = int(
+        os.getenv("DIV_PIPELINE_DEPTH") or config["ip"].get("DivPipelineDepth")
+    )
+    # DIV_RADIX = int(os.getenv("DIV_RADIX") or config["ip"].get("DivRadix"))
+    ADD_PIPELINE_DEPTH = int(
+        os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
+    )
+
+MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
+DIV_LATENCY = DIV_PIPELINE_DEPTH + 1
+ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
+
 
 _nameToLevel = {
     "CRITICAL": logging.CRITICAL,

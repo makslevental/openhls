@@ -51,7 +51,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
 
 def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_map):
     tree_conds = []
-    not_latches = {pe.fadd.x, pe.fadd.y, pe.fmul.x, pe.fmul.y}
+    not_latches = set()
     for op in op_datas:
         if DEBUG:
             tree_conds.append(f"\n\t// {op.emit()} start")
@@ -74,6 +74,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                     fsm.make_fsm_conditions([start_time]),
                 )
             )
+            not_latches.update({ip.x, ip.y})
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
@@ -110,16 +111,6 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
             tree_conds.append(f"\t// {op.emit()} end\n")
 
     return make_always_tree(tree_conds, not_latches, comb_or_seq=CombOrSeq.SEQ)
-
-
-def cluster_pes(pes, op_id_data):
-    pe_to_ops = defaultdict(list)
-    for (op_id, op), data in op_id_data.items():
-        if op == OpType.CST:
-            continue
-        pe_to_ops[pes[data.pe_idx]].append(data)
-
-    return pe_to_ops
 
 
 def emit_verilog(
@@ -182,19 +173,33 @@ def emit_verilog(
 
         # TODO: don't emit ip for pes that don't use (like eg div, of which there's only one)
         fadd = FAdd(pe_idx, signal_width)
-        emit(fadd.instantiate())
         fmul = FMul(pe_idx, signal_width)
-        emit(fmul.instantiate())
         fdiv = FDiv(pe_idx, signal_width)
-        emit(fdiv.instantiate())
         frelu = ReLU(pe_idx, signal_width)
-        emit(frelu.instantiate())
         fneg = Neg(pe_idx, signal_width)
-        emit(fneg.instantiate())
         pes[pe_idx] = PE(fadd, fmul, fdiv, frelu, fneg, pe_idx)
 
-    pe_to_ops = cluster_pes(pes, op_id_data)
+    ips_to_instantiate = defaultdict(set)
+    pe_to_ops = defaultdict(list)
+    for (op_id, op), data in op_id_data.items():
+        if op == OpType.CST:
+            continue
+        pe_to_ops[pes[data.pe_idx]].append(data)
+        if op == OpType.FMAC:
+            ips_to_instantiate[pes[data.pe_idx]].add(OpType.ADD)
+            ips_to_instantiate[pes[data.pe_idx]].add(OpType.MUL)
+        else:
+            ips_to_instantiate[pes[data.pe_idx]].add(op)
+
     logger.info(f"Number unique processing elements in design {len(pe_to_ops)}")
+    for pe, pe_ops in ips_to_instantiate.items():
+        for op in pe_ops:
+            ip = getattr(pe, op.value, None)
+            if ip is None:
+                assert op in {OpType.COPY}
+                continue
+            emit(ip.instantiate())
+
     ip_res_val_map = {}
     for pe, op_datas in pe_to_ops.items():
         ip_res_val_map.update(build_ip_res_val_map(pe, op_datas, vals))

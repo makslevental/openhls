@@ -308,7 +308,7 @@ setup(
             sourcedir=os.path.join(CWD, "extensions/flopoco_convert_ext"),
         ),
     ],
-    package_data={"bragghls": ["ip_cores/*.sv", "ip_cores/*.xdc"]},
+    package_data={"bragghls": ["ip_cores/*.vhdl", "ip_cores/*.sv", "ip_cores/*.xdc"]},
     data_files=data_files,
     zip_safe=False,
     entry_points={

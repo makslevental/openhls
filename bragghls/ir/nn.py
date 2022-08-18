@@ -27,6 +27,7 @@ LOWERING_PIPELINE = [
     # TODO fix emitter to handle parallel scf loops (this is hella lazy)
     # "func.func(convert-linalg-to-affine-loops)",
     "func.func(convert-linalg-to-parallel-loops)",
+    "func.func(scf-parallel-loop-fusion)",
     # "func.func(lower-affine)",
     "func.func(promote-buffers-to-stack{max-alloc-size-in-bytes=1000000000 max-rank-of-allocated-memref=10})",
     "cse",

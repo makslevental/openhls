@@ -13,12 +13,14 @@
 #include "mlir/Tools/mlir-translate/Translation.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/Support/raw_ostream.h"
+#include "json.hpp"
 #include <cctype>
 #include <iostream>
 #include <string>
 
 using namespace mlir;
 using namespace bragghls;
+using json = nlohmann::json;
 
 //===----------------------------------------------------------------------===//
 // Utils
@@ -268,6 +270,7 @@ public:
   template <typename AssignOpType> void emitAssign(AssignOpType op);
   int apply_counter = 0;
   unsigned currentBodyCount = 0;
+  json arg_meta{};
 
   /// Control flow operation emitters.
   void emitCall(func::CallOp op);
@@ -817,6 +820,7 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     if (!outputs.count(name))
       args.insert(name);
   });
+  // emit the instantiation
   for (auto result : op.getResults()) {
     if (!isDeclared(result)) {
       indent();
@@ -831,12 +835,19 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   //  indent() << "@torch.jit.script\n";
   indent() << "class Kernel" << currentBodyCount << "(nn.Module):\n";
   addIndent();
+//  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+//    auto iterVar = op.getBody()->getArgument(i);
+//    indent() << "";
+//    emitValue(iterVar);
+//    os << ": list[int] = None";
+//    os << "\n";
+//  }
 
   indent() << "def __init__(self, ";
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
     auto iterVar = op.getBody()->getArgument(i);
     emitValue(iterVar);
-    os << ": Iterable=";
+    os << ": list[int]=";
     os << "list(range(";
     auto lowerMap = op.getLowerBoundsValueMap().getAffineMap();
     AffineExprEmitter lowerEmitter(state, lowerMap.getNumDims(),
@@ -853,7 +864,16 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     os << steps[i] << ")), ";
   }
 
+
   os << "):";
+  os << "\n";
+  arg_meta.clear();
+  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+    auto iterVar = op.getBody()->getArgument(i);
+    auto name = this->getName(iterVar).str().str();
+    arg_meta["parallel_arg_uses"][name] = {};
+  }
+
   os << "\n";
   addIndent();
   indent() << "super().__init__()\n";
@@ -890,11 +910,15 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   }
   indent() << "return " << *outputs.begin();
   reduceIndent();
+  os << "\n";
+  indent() << "parallel_arg_uses = " << arg_meta["parallel_arg_uses"].dump() << "\n";
+  indent() << "idx_name_idx_map = " << arg_meta["idx_name_idx_map"].dump();
   reduceIndent();
 
   os << "\n";
   currentBodyCount++;
   os << "\n\n";
+  arg_meta.clear();
 }
 
 void ModuleEmitter::emitAffineApply(AffineApplyOp op) {
@@ -1207,16 +1231,27 @@ template <typename OpType> void ModuleEmitter::emitAlloc(OpType op) {
 }
 
 void ModuleEmitter::emitLoad(memref::LoadOp op) {
+
+//  indent() << j_map.dump();
   indent();
   emitValue(op.getResult());
   os << " = ";
   emitValue(op.getMemRef());
+  auto memref_name = this->getName(op.getMemRef()).str().str();
   os << "[";
-  if (!op.getIndices().empty())
+  if (!op.getIndices().empty()) {
+    int idx = 0;
     for (auto index : op.getIndices()) {
       emitValue(index);
       os << ",";
+      auto idx_name = this->getName(index).str().str();
+      if (arg_meta["parallel_arg_uses"].count(idx_name)) {
+        arg_meta["parallel_arg_uses"][idx_name].push_back({memref_name, idx});
+        arg_meta["idx_name_idx_map"][memref_name][idx_name] = idx;
+      }
+      idx++;
     }
+  }
   else
     os << "0,";
   os << "]\n";
@@ -1225,12 +1260,21 @@ void ModuleEmitter::emitLoad(memref::LoadOp op) {
 void ModuleEmitter::emitStore(memref::StoreOp op) {
   indent();
   emitValue(op.getMemRef());
+  auto memref_name = this->getName(op.getMemRef()).str().str();
   os << "[";
-  if (!op.getIndices().empty())
+  if (!op.getIndices().empty()) {
+    int idx = 0;
     for (auto index : op.getIndices()) {
       emitValue(index);
       os << ",";
+      auto idx_name = this->getName(index).str().str();
+      if (arg_meta["parallel_arg_uses"].count(idx_name)) {
+        arg_meta["parallel_arg_uses"][idx_name].push_back({memref_name, idx});
+        arg_meta["idx_name_idx_map"][memref_name][idx_name] = idx;
+      }
+      idx++;
     }
+  }
   else
     os << "0,";
   os << "]";
@@ -1688,7 +1732,6 @@ void ModuleEmitter::emitFunction(FuncOp func) {
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(
 from typing import Iterable
-
 import torch
 from torch import nn
 from torch.nn.parameter import Parameter

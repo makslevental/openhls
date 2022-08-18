@@ -20,6 +20,8 @@ DTYPE = "f32"
 DEBUG = config["config"].getboolean("Debug")
 INCLUDE_AUX_DEPS = config["config"].getboolean("IncludeAuxDeps")
 REGISTER_TILES_TWICE = config["config"].getboolean("RegisterTilesTwice")
+KEEP_IPS = config["config"].getboolean("KeepIPs")
+USE_UNIQUE_IP_PARAM = config["config"].getboolean("UseUniqueIpParam")
 LOOP_TILING_FACTOR = config["config"].getint("LoopTilingFactor")
 
 WIDTH_EXPONENT = int(os.getenv("WIDTH_EXPONENT") or config["ip"].get("WidthExponent"))

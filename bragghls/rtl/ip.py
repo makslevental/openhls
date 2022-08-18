@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from textwrap import dedent
 from typing import Tuple
 
+from bragghls.config import KEEP_IPS, USE_UNIQUE_IP_PARAM
 from bragghls.ir.ops import OpType
 from bragghls.rtl.basic import Reg, Wire
 from bragghls.util import remove_all_leading_whitespace
@@ -38,7 +39,7 @@ IP_ID = 0
 
 class IP:
     def __init__(
-        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
+        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=KEEP_IPS
     ):
         global IP_ID
         IP_ID += 1
@@ -53,7 +54,7 @@ class IP:
 
 class BinOpIp(IP):
     def __init__(
-        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=True
+        self, op_type: OpType, pe_idx: Tuple[int, ...], signal_width: int, keep=KEEP_IPS
     ):
         super().__init__(op_type, pe_idx, signal_width, keep)
         self.x = Reg(f"{self.instance_name}_x", signal_width)
@@ -71,7 +72,7 @@ class BinOpIp(IP):
         instance = generate_flopoco_fp(
             self.op_type,
             self.instance_name,
-            self.id,
+            self.id if USE_UNIQUE_IP_PARAM else 1,
             self.x,
             self.y,
             self.r,
@@ -124,7 +125,7 @@ class ReLUOrNegIP(IP):
         )
         instance = generate_relu_or_neg(
             self.op_type,
-            self.id,
+            self.id if USE_UNIQUE_IP_PARAM else 1,
             self.signal_width,
             self.instance_name,
             self.a,

@@ -25,6 +25,7 @@ linear
 small_cnn
 )
 width_pairs=(
+#"3 3"
 "4 4"
 "5 5"
 "6 6"

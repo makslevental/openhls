@@ -38,6 +38,7 @@ set top $::env(TOP)
 eval synth_design -top $top -flatten_hierarchy full -retiming -directive AlternateRoutability -fsm_extraction one_hot -resource_sharing off -shreg_min_size 10 -keep_equivalent_registers -no_lc
 write_checkpoint -force ${checkpoints_dir}/pre_opt
 create_clock -name clk -period 10 -waveform {0 5} [get_ports clk]
+report_utilization -hierarchical -force -file ${reports_dir}/post_synth/pre_opt_hierarchical_utilization.rpt
 
 puts "\n==============================( Optimize Design )================================"
 

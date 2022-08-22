@@ -1,9 +1,9 @@
 (* use_dsp = "yes" *) module intadder_33_f300_uid13
-  (input  clk,
-   input  [32:0] x,
-   input  [32:0] y,
-   input  cin,
-   output [32:0] r);
+  (input wire clk,
+   input wire [32:0] x,
+   input wire [32:0] y,
+   input wire cin,
+   output wire [32:0] r);
   wire [32:0] rtmp;
   wire [32:0] y_d1;
   wire [32:0] y_d2;
@@ -41,11 +41,11 @@
 endmodule
 
 (* use_dsp = "yes" *) module intadder_27_f300_uid10
-  (input  clk,
-   input  [26:0] x,
-   input  [26:0] y,
-   input  cin,
-   output [26:0] r);
+  (input wire clk,
+   input wire [26:0] x,
+   input wire [26:0] y,
+   input wire cin,
+   output wire [26:0] r);
   wire [26:0] rtmp;
   wire [26:0] x_d1;
   wire [26:0] x_d2;
@@ -104,11 +104,11 @@ endmodule
 endmodule
 
 module rightshiftersticky24_by_max_26_f300_uid8
-  (input  clk,
-   input  [23:0] x,
-   input  [4:0] s,
-   output [25:0] r,
-   output sticky);
+  (input wire clk,
+   input wire [23:0] x,
+   input wire [4:0] s,
+   output wire [25:0] r,
+   output wire sticky);
   wire [4:0] ps;
   wire [4:0] ps_d1;
   wire [4:0] ps_d2;
@@ -416,10 +416,10 @@ module rightshiftersticky24_by_max_26_f300_uid8
 endmodule
 
 module normalizer_z_25_25_25_f300_uid6
-  (input  clk,
-   input  [24:0] x,
-   output [4:0] count,
-   output [24:0] r);
+  (input wire clk,
+   input wire [24:0] x,
+   output wire [4:0] count,
+   output wire [24:0] r);
   wire [24:0] level5;
   wire [24:0] level5_d1;
   wire count4;
@@ -641,11 +641,11 @@ module normalizer_z_25_25_25_f300_uid6
 endmodule
 
 module intdualsub_26_f300_uid4
-  (input  clk,
-   input  [25:0] x,
-   input  [25:0] y,
-   output [25:0] xmy,
-   output [25:0] ymx);
+  (input wire clk,
+   input wire [25:0] x,
+   input wire [25:0] y,
+   output wire [25:0] xmy,
+   output wire [25:0] ymx);
   wire [25:0] temprxmy;
   wire [25:0] temprymx;
   wire [25:0] n325_o;
@@ -675,10 +675,10 @@ module intdualsub_26_f300_uid4
 endmodule
 
 module fadd #(parameter ID = 1)
-  (input  clk,
-   input  [33:0] X,
-   input  [33:0] Y,
-   output [33:0] R);
+  (input wire clk,
+   input wire [33:0] X,
+   input wire [33:0] Y,
+   output wire [33:0] R);
   wire [33:0] inx;
   wire [33:0] iny;
   wire exceptionxsuperiory;

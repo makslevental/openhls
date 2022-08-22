@@ -15,13 +15,10 @@ def make_top_module_decl(
     outputs = output_wires
     base_inputs = ["clk", "rst"]
     input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
-
-    base_outputs = []
     output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
-
     input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
     output_wires = ",\n".join(
-        [f"output wire {outp}" for outp in base_outputs + output_ports]
+        [f"output wire {outp}" for outp in output_ports]
     )
 
     mod_top = "`default_nettype none"

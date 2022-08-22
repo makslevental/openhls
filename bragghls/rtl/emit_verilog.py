@@ -113,6 +113,36 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
     return make_always_tree(tree_conds, not_latches, comb_or_seq=CombOrSeq.SEQ)
 
 
+def make_pblock_bridge(ip_name, input_wires, output_wires, width_exp, width_frac):
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
+    else:
+        raise Exception("not using flopoco thus invalid signal width")
+
+    prefix = f"_{ip_name}"
+
+    s = StringIO()
+    prefixed_launch_wires = [f"{prefix}_launch_{input_wire}" for input_wire in input_wires]
+    prefixed_land_wires = [f"{prefix}_land_{input_wire}" for input_wire in input_wires]
+    prefixed_output_wires = [f"{prefix}_{output_wire}" for output_wire in output_wires]
+
+    s.writelines([f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_launch_wires])
+    s.writelines([f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_land_wires])
+    s.writelines([f"\twire [{signal_width - 1}:0] {wire};\n" for wire in prefixed_output_wires])
+
+    s.write("\talways @(posedge clk) begin\n")
+    s.writelines([f"\t\t{wire} <= {wire.replace('land', 'output')};\n" for wire in prefixed_launch_wires])
+    s.write("end\n")
+
+    s.write(f"{ip_name} _{ip_name}(\n")
+    s.writelines([f"\t{input_wire},\n" for input_wire in prefixed_launch_wires])
+    s.writelines([f"\t{output_wire},\n" for output_wire in prefixed_output_wires[:-1]])
+    s.write(f"\t{prefixed_output_wires[-1]}\n")
+    s.writelines([")\n"])
+
+    s.seek(0)
+    return s.read()
+
 def emit_verilog(
     ip_name,
     width_exp,
@@ -130,10 +160,15 @@ def emit_verilog(
         signal_width = width_exp + width_frac + 3
     else:
         raise Exception("precision not right since not using flopoco")
-    input_wires = {v: Wire(v, signal_width) for v in func_args}
+    input_wires = {v: Wire(v, signal_width) for v in func_args if "constant" not in v}
     output_wires = {v: Wire(v, signal_width) for v in returns}
-    vals = {v: Reg(v, signal_width) for v in vals}
 
+    vals = {v: Reg(v, signal_width) for v in vals}
+    for v in func_args:
+        if "constant" in v:
+            vals[v] = Reg(v, signal_width)
+            csts[v] = None
+        
     s = StringIO()
 
     def emit(*args):

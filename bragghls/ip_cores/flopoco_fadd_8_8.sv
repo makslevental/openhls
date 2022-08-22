@@ -1,9 +1,9 @@
 (* use_dsp = "yes" *) module intadder_18_f300_uid133
-  (input  clk,
-   input  [17:0] x,
-   input  [17:0] y,
-   input  cin,
-   output [17:0] r);
+  (input wire clk,
+   input wire [17:0] x,
+   input wire [17:0] y,
+   input wire cin,
+   output wire [17:0] r);
   wire cin_1;
   wire cin_1_d1;
   wire [18:0] x_1;
@@ -76,11 +76,11 @@
 endmodule
 
 (* use_dsp = "yes" *) module intadder_12_f300_uid10
-  (input  clk,
-   input  [11:0] x,
-   input  [11:0] y,
-   input  cin,
-   output [11:0] r);
+  (input wire clk,
+   input wire [11:0] x,
+   input wire [11:0] y,
+   input wire cin,
+   output wire [11:0] r);
   wire [11:0] rtmp;
   wire [11:0] x_d1;
   wire [11:0] x_d2;
@@ -125,11 +125,11 @@ endmodule
 endmodule
 
 module rightshiftersticky9_by_max_11_f300_uid8
-  (input  clk,
-   input  [8:0] x,
-   input  [3:0] s,
-   output [10:0] r,
-   output sticky);
+  (input wire clk,
+   input wire [8:0] x,
+   input wire [3:0] s,
+   output wire [10:0] r,
+   output wire sticky);
   wire [3:0] ps;
   wire [3:0] ps_d1;
   wire [3:0] ps_d2;
@@ -363,10 +363,10 @@ module rightshiftersticky9_by_max_11_f300_uid8
 endmodule
 
 module normalizer_z_10_10_10_f300_uid6
-  (input  clk,
-   input  [9:0] x,
-   output [3:0] count,
-   output [9:0] r);
+  (input wire clk,
+   input wire [9:0] x,
+   output wire [3:0] count,
+   output wire [9:0] r);
   wire [9:0] level4;
   wire [9:0] level4_d1;
   wire count3;
@@ -530,11 +530,11 @@ module normalizer_z_10_10_10_f300_uid6
 endmodule
 
 module intdualsub_11_f300_uid4
-  (input  clk,
-   input  [10:0] x,
-   input  [10:0] y,
-   output [10:0] xmy,
-   output [10:0] ymx);
+  (input wire clk,
+   input wire [10:0] x,
+   input wire [10:0] y,
+   output wire [10:0] xmy,
+   output wire [10:0] ymx);
   wire [10:0] temprxmy;
   wire [10:0] temprymx;
   wire [10:0] n315_o;
@@ -564,10 +564,10 @@ module intdualsub_11_f300_uid4
 endmodule
 
 module fadd #(parameter ID = 1)
-  (input  clk,
-   input  [18:0] X,
-   input  [18:0] Y,
-   output [18:0] R);
+  (input wire clk,
+   input wire [18:0] X,
+   input wire [18:0] Y,
+   output wire [18:0] R);
   wire [18:0] inx;
   wire [18:0] iny;
   wire exceptionxsuperiory;

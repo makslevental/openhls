@@ -209,6 +209,10 @@ def compile(
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
             f.write(verilog_file)
 
+        # pblock_bridge = pblock_bridge.replace("%", "p_")
+        # with open(f"{artifacts_dir}/{name}_pblock_bridge.sv", "w") as f:
+        #     f.write(pblock_bridge)
+
         imports_file = generate_imports_tcl(
             f"{name}.sv", width_exponent, width_fraction
         )

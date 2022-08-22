@@ -42,6 +42,14 @@ class Dot(nn.Module):
     def forward(self, x, y):
         return (x * y).sum()
 
+# class Dot(nn.Module):
+#     def __init__(self):
+#         super().__init__()
+#         self.relu = nn.ReLU()
+#
+#     def forward(self, x, y):
+#         return self.relu(torch.matmul(x, y.T))
+
 
 class DoubleCNN(nn.Module):
     def __init__(self, scale1, scale2=8, in_channels=1):

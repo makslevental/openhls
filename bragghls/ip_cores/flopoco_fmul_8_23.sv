@@ -1,9 +1,9 @@
 module intadder_32_f300_uid14
-  (input  clk,
-   input  [31:0] x,
-   input  [31:0] y,
-   input  cin,
-   output [31:0] r);
+  (input wire clk,
+   input wire [31:0] x,
+   input wire [31:0] y,
+   input wire cin,
+   output wire [31:0] r);
   wire [31:0] rtmp;
   wire [31:0] n300_o;
   wire [31:0] n301_o;
@@ -20,10 +20,10 @@ module intadder_32_f300_uid14
 endmodule
 
 (* USE_DSP = "yes" *) module dspblock_7x24_f300_uid11
-  (input  clk,
-   input  [6:0] x,
-   input  [23:0] y,
-   output [30:0] r);
+  (input wire clk,
+   input wire [6:0] x,
+   input wire [23:0] y,
+   output wire [30:0] r);
   wire [30:0] mint;
   wire [30:0] m;
   wire [30:0] rtmp;
@@ -46,10 +46,10 @@ endmodule
 endmodule
 
 (* USE_DSP = "yes" *) module dspblock_17x24_f300_uid9
-  (input  clk,
-   input  [16:0] x,
-   input  [23:0] y,
-   output [40:0] r);
+  (input wire clk,
+   input wire [16:0] x,
+   input wire [23:0] y,
+   output wire [40:0] r);
   wire [40:0] mint;
   wire [40:0] m;
   wire [40:0] rtmp;
@@ -72,11 +72,11 @@ endmodule
 endmodule
 
 module intadder_33_f300_uid17
-  (input  clk,
-   input  [32:0] x,
-   input  [32:0] y,
-   input  cin,
-   output [32:0] r);
+  (input wire clk,
+   input wire [32:0] x,
+   input wire [32:0] y,
+   input wire cin,
+   output wire [32:0] r);
   wire [32:0] rtmp;
   wire [32:0] x_d1;
   wire [32:0] y_d1;
@@ -107,10 +107,10 @@ module intadder_33_f300_uid17
 endmodule
 
 module intmultiplier_f300_uid5
-  (input  clk,
-   input  [23:0] x,
-   input  [23:0] y,
-   output [47:0] r);
+  (input wire clk,
+   input wire [23:0] x,
+   input wire [23:0] y,
+   output wire [47:0] r);
   wire [16:0] tile_0_x;
   wire [23:0] tile_0_y;
   wire [40:0] tile_0_output;
@@ -845,10 +845,10 @@ module intmultiplier_f300_uid5
 endmodule
 
 module fmul #(parameter ID = 1)
-  (input  clk,
-   input  [33:0] X,
-   input  [33:0] Y,
-   output [33:0] R);
+  (input wire clk,
+   input wire [33:0] X,
+   input wire [33:0] Y,
+   output wire [33:0] R);
   wire sign;
   wire sign_d1;
   wire [7:0] expx;

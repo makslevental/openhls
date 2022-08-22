@@ -115,7 +115,7 @@ class CustomFormatter(logging.Formatter):
 
 
 ch = logging.StreamHandler()
-ch.setLevel(config["config"]["logging_level"].upper())
+ch.setLevel(config["config"]["LoggingLevel"].upper())
 ch.setFormatter(CustomFormatter())
 
-logging.basicConfig(level=config["config"]["logging_level"].upper(), handlers=[ch])
+logging.basicConfig(level=config["config"]["LoggingLevel"].upper(), handlers=[ch])

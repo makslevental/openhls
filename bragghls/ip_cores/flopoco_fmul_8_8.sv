@@ -1,8 +1,8 @@
 (* USE_DSP = "yes" *) module dspblock_9x9_f300_uid9
-  (input  clk,
-   input  [8:0] x,
-   input  [8:0] y,
-   output [17:0] r);
+  (input wire clk,
+   input wire [8:0] x,
+   input wire [8:0] y,
+   output wire [17:0] r);
   wire [17:0] mint;
   wire [17:0] m;
   wire [17:0] rtmp;
@@ -25,11 +25,11 @@
 endmodule
 
 module intadder_18_f300_uid13
-  (input  clk,
-   input  [17:0] x,
-   input  [17:0] y,
-   input  cin,
-   output [17:0] r);
+  (input wire clk,
+   input wire [17:0] x,
+   input wire [17:0] y,
+   input wire cin,
+   output wire [17:0] r);
   wire cin_1;
   wire cin_1_d1;
   wire [18:0] x_1;
@@ -88,10 +88,10 @@ module intadder_18_f300_uid13
 endmodule
 
 module intmultiplier_f300_uid5
-  (input  clk,
-   input  [8:0] x,
-   input  [8:0] y,
-   output [17:0] r);
+  (input wire clk,
+   input wire [8:0] x,
+   input wire [8:0] y,
+   output wire [17:0] r);
   wire [8:0] tile_0_x;
   wire [8:0] tile_0_y;
   wire [17:0] tile_0_output;
@@ -283,10 +283,10 @@ module intmultiplier_f300_uid5
 endmodule
 
 module fmul #(parameter ID = 1)
-  (input  clk,
-   input  [18:0] X,
-   input  [18:0] Y,
-   output [18:0] R);
+  (input wire clk,
+   input wire [18:0] X,
+   input wire [18:0] Y,
+   output wire [18:0] R);
   wire sign;
   wire sign_d1;
   wire [7:0] expx;

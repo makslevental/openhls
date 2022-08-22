@@ -10,3 +10,6 @@
 [submodule "externals/flopoco"]
 	path = externals/flopoco
 	url = https://gitlab.com/flopoco/flopoco.git
+[submodule "externals/fmt"]
+	path = externals/fmt
+	url = https://github.com/fmtlib/fmt.git

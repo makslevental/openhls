@@ -17,6 +17,7 @@
 #include <cctype>
 #include <iostream>
 #include <string>
+#include <fmt/core.h>
 
 using namespace mlir;
 using namespace bragghls;
@@ -843,9 +844,10 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
 //    os << "\n";
 //  }
 
-  indent() << "def __init__(self, ";
+//  indent() << "def __init__(self, ";
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
     auto iterVar = op.getBody()->getArgument(i);
+    indent() << "";
     emitValue(iterVar);
     os << ": list[int]=";
     os << "list(range(";
@@ -861,11 +863,11 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     upperEmitter.emitAffineExpr(upperMap.getResult(i));
     os << ", ";
 
-    os << steps[i] << ")), ";
+    os << steps[i] << "))\n";
   }
 
 
-  os << "):";
+//  os << "):";
   os << "\n";
   arg_meta.clear();
   for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
@@ -875,18 +877,19 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   }
 
   os << "\n";
-  addIndent();
-  indent() << "super().__init__()\n";
-  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
-    auto iterVar = op.getBody()->getArgument(i);
-    indent() << "self.";
-    emitValue(iterVar);
-    os << " = ";
-    emitValue(iterVar);
-    os << "\n";
-  }
-  reduceIndent();
-  indent() << "def forward(self,";
+//  addIndent();
+//  indent() << "super().__init__()\n";
+//  for (unsigned i = 0, e = op.getNumDims(); i < e; ++i) {
+//    auto iterVar = op.getBody()->getArgument(i);
+//    indent() << "self.";
+//    emitValue(iterVar);
+//    os << " = ";
+//    emitValue(iterVar);
+//    os << "\n";
+//  }
+//  reduceIndent();
+  indent() << "@staticmethod\n";
+  indent() << "def forward(";
 
   for (const auto &item : args) {
     os << item << ": torch.Tensor, ";
@@ -899,7 +902,7 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
     indent() << "for ";
     emitValue(iterVar);
     os << " in ";
-    indent() << "self.";
+    indent() << "Kernel" << currentBodyCount << ".";
     emitValue(iterVar);
     os << ":\n";
     addIndent();
@@ -915,10 +918,56 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   indent() << "idx_name_idx_map = " << arg_meta["idx_name_idx_map"].dump();
   reduceIndent();
 
-  os << "\n";
-  currentBodyCount++;
   os << "\n\n";
+  indent() << "goofy_lib.define(\"Kernel" << currentBodyCount << "(";
+
+  for (const auto &item : args) {
+    os << "Tensor " << item << ", ";
+  }
+  os << "Tensor " << *outputs.begin();
+  os << ") -> Tensor\")\n";
+
+  indent() << "goofy_lib.impl(\"Kernel" << currentBodyCount << "\", Kernel" << currentBodyCount << ".forward)\n";
+  os << "\n\n";
+
+  indent() << "@register_impl(\"Kernel"<< currentBodyCount << "\")\n";
+  indent() << "def kernel" << currentBodyCount << "_impl(";
+  for (const auto &item : args) {
+    os << item << ": DTensor" << ", ";
+  }
+  os << *outputs.begin() << ": DTensor";
+  os << ") -> DTensor:\n";
+  addIndent();
+
+  indent() << "";
+  for (const auto &item : args) {
+    os << "local" << item << ", ";
+  }
+  os << "local" << *outputs.begin() << " = pytree.tree_map(unwrap_local_tensor, (";//_3, _arg0, _5))";
+  for (const auto &item : args) {
+    os << item << ", ";
+  }
+  os << *outputs.begin() << "))\n";
+
+  indent() << fmt::format("{0}_place = unwrap_single_placement({0})\n", *outputs.begin());
+  indent() << fmt::format("{0}_shard_arg_name_map = tensor_dim_arg_name_map(Kernel{1}.idx_name_idx_map, '{0}')\n", *outputs.begin(), currentBodyCount);
+  indent() << fmt::format("shard_arg_name = {0}_shard_arg_name_map[{0}_place.dim]\n", *outputs.begin());
+  indent() << fmt::format("new_shard_dim = Kernel{1}.parallel_arg_uses[shard_arg_name]['{0}']\n", *outputs.begin(), currentBodyCount);
+  indent() << fmt::format("setattr(Kernel{1}, shard_arg_name, list(range(0, local{0}.shape[new_shard_dim])))\n", *outputs.begin(), currentBodyCount);
+
+  indent() << fmt::format("local_tensor = Kernel{0}.forward(", currentBodyCount);
+  for (const auto &item : args) {
+    os << "local" << item << ", ";
+  }
+  os << "local" << *outputs.begin() << ")\n";
+
+  indent() << fmt::format("return DTensor(local_tensor, {0}.device_mesh, [Shard(new_shard_dim)])\n", *outputs.begin());
+
+  reduceIndent();
+
+
   arg_meta.clear();
+  currentBodyCount++;
 }
 
 void ModuleEmitter::emitAffineApply(AffineApplyOp op) {
@@ -1735,6 +1784,19 @@ from typing import Iterable
 import torch
 from torch import nn
 from torch.nn.parameter import Parameter
+
+from spmd import Shard
+from spmd.tensor.ops import register_impl, unwrap_single_placement
+import torch.utils._pytree as pytree
+from spmd.tensor.api import DTensor
+from spmd.tensor.utils import unwrap_local_tensor
+
+
+def tensor_dim_arg_name_map(idx_name_idx_map, tensor_name):
+    return {v: k for k, v in idx_name_idx_map[tensor_name].items()}
+
+goofy_lib = torch.library.Library("goofy", "DEF")
+
 )XXX";
   os << "\n\n";
   for (auto &op : *module.getBody()) {

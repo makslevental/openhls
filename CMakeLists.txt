@@ -47,4 +47,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 list(APPEND CMAKE_MODULE_PATH ${MLIR_MAIN_SRC_DIR}/cmake/modules)
 list(APPEND CMAKE_MODULE_PATH ${LLVM_MAIN_SRC_DIR}/cmake)
 
+add_subdirectory(externals/fmt)
+find_package(fmt)
 add_subdirectory(bragghls_translate)

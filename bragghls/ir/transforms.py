@@ -423,37 +423,6 @@ class MoveBodiesOut(ast.NodeTransformer):
             init_fn.body.insert(1, assign_param)
             del forward_fn.body[i]
 
-        buffers = {
-            b.targets[0].id: (i, b)
-            for i, b in enumerate(forward_fn.body)
-            if isinstance(b, Assign)
-            and hasattr(b.value, "func")
-            and hasattr(b.value.func, "attr")
-            and b.value.func.attr == "empty"
-        }
-        # self.register_buffer('running_mean', torch.zeros(num_features))
-        for i, assign_buffer in reversed(list(buffers.values())):
-            expr = Expr(
-                value=Call(
-                    func=Attribute(
-                        value=Name(
-                            id="self",
-                        ),
-                        attr="register_buffer",
-                    ),
-                    args=[
-                        Constant(
-                            value=f"{assign_buffer.targets[0].id}",
-                        ),
-                        assign_buffer.value
-                    ],
-                    keywords=[],
-                ),
-            )
-            init_fn.body.insert(1, expr)
-            del forward_fn.body[i]
-
-
         kernel_defs = [
             (i, b) for i, b in enumerate(forward_fn.body) if isinstance(b, ClassDef)
         ]
@@ -571,17 +540,6 @@ class MoveBodiesOut(ast.NodeTransformer):
         for i, b in reversed(kernel_impls_libs):
             node.body.insert(j, b)
             del forward_fn.body[i]
-
-
-        forward_fn_str = stringify_node(forward_fn)
-        for buffer_name in buffers.keys():
-            forward_fn_str = forward_fn_str.replace(f"{buffer_name}={buffer_name}", f"{buffer_name}=self.{buffer_name}")
-            forward_fn_str = forward_fn_str.replace(f"{buffer_name} = torch", f"self.{buffer_name} = torch")
-            forward_fn_str = forward_fn_str.replace(f"{buffer_name}.copy_", f"self.{buffer_name}.copy_")
-            forward_fn_str = forward_fn_str.replace(f"({buffer_name})", f"(self.{buffer_name})")
-            forward_fn_str = forward_fn_str.replace(f"{buffer_name}[", f"self.{buffer_name}[")
-        forward_fn = ast.parse(forward_fn_str).body[0]
-        forward.body[1] = forward_fn
 
         return node
 

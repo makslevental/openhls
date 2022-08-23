@@ -941,6 +941,29 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
 
   indent() << "";
   for (const auto &item : args) {
+    os << item << "_place, ";
+  }
+  os << *outputs.begin() << "_place = pytree.tree_map(unwrap_single_placement, (";//_3, _arg0, _5))";
+  for (const auto &item : args) {
+    os << item << ", ";
+  }
+  os << *outputs.begin() << "))\n";
+
+  int i = 0;
+  for (const auto &item : args) {
+    if (i > 0) {
+    indent() << fmt::format(R"XXX(
+      mesh = get_global_device_mesh()
+      if isinstance({1}_place, Shard) and isinstance({0}_place, Shard) and {1}_place.dim != {0}_place.dim:
+        {1} = {1}.redistribute(mesh, [Replicate()] * mesh.ndim)
+
+)XXX", *args.begin(), item);
+    }
+    i++;
+  }
+
+  indent() << "";
+  for (const auto &item : args) {
     os << "local" << item << ", ";
   }
   os << "local" << *outputs.begin() << " = pytree.tree_map(unwrap_local_tensor, (";//_3, _arg0, _5))";
@@ -949,19 +972,24 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   }
   os << *outputs.begin() << "))\n";
 
-  indent() << fmt::format("{0}_place = unwrap_single_placement({0})\n", *outputs.begin());
-  indent() << fmt::format("{0}_shard_arg_name_map = tensor_dim_arg_name_map(Kernel{1}.idx_name_idx_map, '{0}')\n", *outputs.begin(), currentBodyCount);
-  indent() << fmt::format("shard_arg_name = {0}_shard_arg_name_map[{0}_place.dim]\n", *outputs.begin());
-  indent() << fmt::format("new_shard_dim = Kernel{1}.parallel_arg_uses[shard_arg_name]['{0}']\n", *outputs.begin(), currentBodyCount);
-  indent() << fmt::format("setattr(Kernel{1}, shard_arg_name, list(range(0, local{0}.shape[new_shard_dim])))\n", *outputs.begin(), currentBodyCount);
 
-  indent() << fmt::format("local_tensor = Kernel{0}.forward(", currentBodyCount);
+  indent() << fmt::format(R"XXX(
+      shard_arg_name = get_shard_arg_name({1}_place, '{1}', Kernel{2})
+      if {0}_place is None:
+        local{0}, new_shard_dim = set_shard_arg_output(shard_arg_name, Kernel{2}, local{0}, "{0}")
+      else:
+        new_shard_dim = {0}_place.dim
+
+)XXX", *outputs.begin(), *args.begin(), currentBodyCount);
+
+
+  indent() << fmt::format("res = Kernel{0}.forward(", currentBodyCount);
   for (const auto &item : args) {
     os << "local" << item << ", ";
   }
   os << "local" << *outputs.begin() << ")\n";
 
-  indent() << fmt::format("return DTensor(local_tensor, {0}.device_mesh, [Shard(new_shard_dim)])\n", *outputs.begin());
+  indent() << fmt::format("return DTensor(res, get_global_device_mesh(), [Shard(new_shard_dim)])\n", *outputs.begin());
 
   reduceIndent();
 
@@ -1780,13 +1808,14 @@ void ModuleEmitter::emitFunction(FuncOp func) {
 /// Top-level MLIR module emitter.
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(
-from typing import Iterable
+import os
 import torch
 from torch import nn
 from torch.nn.parameter import Parameter
 
 from spmd import Shard
 from spmd.tensor.ops import register_impl, unwrap_single_placement
+from spmd import Shard, get_global_device_mesh, Replicate
 import torch.utils._pytree as pytree
 from spmd.tensor.api import DTensor
 from spmd.tensor.utils import unwrap_local_tensor
@@ -1794,6 +1823,27 @@ from spmd.tensor.utils import unwrap_local_tensor
 
 def tensor_dim_arg_name_map(idx_name_idx_map, tensor_name):
     return {v: k for k, v in idx_name_idx_map[tensor_name].items()}
+
+def get_shard_arg_name(input_place, input_name, kernel):
+    shard_arg_name_map = tensor_dim_arg_name_map(kernel.idx_name_idx_map,
+        input_name)
+    shard_arg_name = shard_arg_name_map[input_place.dim]
+    return shard_arg_name
+
+
+def update_kernel_iter(kernel, shard_arg_name, end):
+    setattr(kernel, shard_arg_name, list(range(0, end)))
+
+
+def set_shard_arg_output(shard_arg_name, kernel, output_tensor, output_name):
+    new_shard_dim = kernel.parallel_arg_uses[shard_arg_name][output_name]
+    world_size = int(os.environ['WORLD_SIZE'])
+    local_shape = list(output_tensor.shape)
+    local_shape[new_shard_dim] = output_tensor.shape[new_shard_dim
+        ] // world_size
+    update_kernel_iter(kernel, shard_arg_name, local_shape[new_shard_dim])
+    output_tensor = torch.zeros(*local_shape)
+    return output_tensor, new_shard_dim
 
 goofy_lib = torch.library.Library("goofy", "DEF")
 

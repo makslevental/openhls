@@ -63,6 +63,9 @@ add_llvm_tool(bragghls_translate
 
 llvm_update_compile_flags(bragghls_translate)
 
+#add_subdirectory(fmt)
+#find_package(fmt)
+
 target_link_libraries(bragghls_translate
         PRIVATE
         ${dialect_libs}

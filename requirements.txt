@@ -1,14 +1,21 @@
 -f https://github.com/llvm/torch-mlir/releases
 --pre
+torch-mlir
+
+-f https://github.com/llvm/torch-mlir/releases
+--pre
 torch
 
+-f https://github.com/pytorch/pytorch/releases
+--pre
+torchvision
+
 numpy
+astpretty
+Pillow
 networkx
 astor
 jinja2
 cocotb
 matplotlib
 
--f https://github.com/llvm/torch-mlir/releases
---pre
-torch-mlir

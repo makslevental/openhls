@@ -973,7 +973,8 @@ void ModuleEmitter::emitAffineParallel(AffineParallelOp op) {
   os << *outputs.begin() << "))\n";
 
 
-  indent() << fmt::format(R"XXX(
+  if (args.size())
+    indent() << fmt::format(R"XXX(
       shard_arg_name = get_shard_arg_name({1}_place, '{1}', Kernel{2})
       if {0}_place is None:
         local{0}, new_shard_dim = set_shard_arg_output(shard_arg_name, Kernel{2}, local{0}, "{0}")

@@ -504,11 +504,6 @@ class MoveBodiesOut(ast.NodeTransformer):
             del kernel.body[jj]
             kernel.body.insert(0, idx_name_idx_map_node)
 
-        if isinstance(forward_fn.body[-1].targets[0], Subscript):
-            forward_fn.body.append(Return(forward_fn.body[-1].targets[0].value))
-        else:
-            forward_fn.body.append(Return(forward_fn.body[-1].targets[0]))
-
         goofy_libs = [
             (i, b)
             for i, b in enumerate(forward_fn.body)
@@ -540,6 +535,11 @@ class MoveBodiesOut(ast.NodeTransformer):
         for i, b in reversed(kernel_impls_libs):
             node.body.insert(j, b)
             del forward_fn.body[i]
+
+        if isinstance(forward_fn.body[-1].targets[0], Subscript):
+            forward_fn.body.append(Return(forward_fn.body[-1].targets[0].value))
+        else:
+            forward_fn.body.append(Return(forward_fn.body[-1].targets[0]))
 
         return node
 

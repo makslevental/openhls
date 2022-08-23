@@ -86,9 +86,9 @@ def run_circt(mlir_output):
     return res.decode()
 
 
-def scf_to_affine(fp):
+def scf_to_affine(scf_str):
     cst_map = {}
-    old_lines = open(fp).readlines()
+    old_lines = scf_str.splitlines()
     new_lines = []
 
     for i, line in enumerate(old_lines):
@@ -126,7 +126,8 @@ def compile(
 
     if do_translate:
         logger.info("Translating MLIR back to Python")
-        affine_mlir_str = scf_to_affine(fp)
+        scf_str = open(fp)
+        affine_mlir_str = scf_to_affine(scf_str)
         if DEBUG:
             with open(f"{artifacts_dir}/{name}.affine.mlir", "w") as f:
                 f.write(affine_mlir_str)

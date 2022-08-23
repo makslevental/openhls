@@ -5,6 +5,9 @@ import torch
 from torch import nn
 from torch_mlir import run_pipeline_with_repro_report
 from torch_mlir.dialects.torch.importer.jit_ir import ClassAnnotator, ModuleBuilder
+from torch_mlir.dialects.torch.importer.jit_ir.torchscript_annotations import (
+    extract_annotations,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,23 +46,30 @@ PIPELINE = (
 )
 
 
-def script_module_with_annotations(test_module, annotations):
+def script_module_with_annotations(test_module, annotations=None):
     class_annotator = ClassAnnotator()
     recursivescriptmodule = torch.jit.script(test_module)
     torch._C._jit_pass_inline(recursivescriptmodule.graph)
 
-    type = recursivescriptmodule._c._type()
-    class_annotator.exportNone(type)
-    class_annotator.exportPath(type, ["forward"])
-    class_annotator.annotateArgs(type, ["forward"], annotations)
+    if annotations is not None:
+        type = recursivescriptmodule._c._type()
+        class_annotator.exportNone(type)
+        class_annotator.exportPath(type, ["forward"])
+        class_annotator.annotateArgs(type, ["forward"], annotations)
+    else:
+        extract_annotations(test_module, recursivescriptmodule, class_annotator)
     return recursivescriptmodule, class_annotator
 
 
-def compile_nn_module_to_mlir(nn_mod, shapes_dtypes):
+def compile_nn_module_to_mlir(nn_mod, shapes_dtypes=None):
     logger.info("Compiling PyTorch to MLIR")
+    if shapes_dtypes is not None:
+        shapes_dtypes = [None] + [
+            (in_shape, dtype, True) for in_shape, dtype in shapes_dtypes
+        ]
+
     recursivescriptmodule, class_annotator = script_module_with_annotations(
-        nn_mod,
-        [None] + [(in_shape, dtype, True) for in_shape, dtype in shapes_dtypes],
+        nn_mod, shapes_dtypes
     )
 
     mb = ModuleBuilder()

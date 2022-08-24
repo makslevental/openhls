@@ -28,105 +28,48 @@ The "flow" is
 Turn this
 
 ```python
-class DoubleCNN(nn.Module):
-    def __init__(self, scale):
-        super().__init__()
-        self.conv1 = torch.nn.Conv2d(1, 16 * scale, 3)
-        self.conv2_1 = torch.nn.Conv2d(16 * scale, 8 * scale, 1)
-        self.conv2_2 = torch.nn.Conv2d(16 * scale, 8 * scale, 1)
-        self.conv2_3 = torch.nn.Conv2d(16 * scale, 8 * scale, 1)
-        self.conv3 = torch.nn.Conv2d(8 * scale, 16 * scale, 1)
-        self.conv4 = torch.nn.Conv2d(16 * scale, 8 * scale, 3)
-
-    def forward(self, x):
-        y = self.conv1(x)
-        z = self.conv2_1(y)
-        w = self.conv2_2(y)
-        u = self.conv2_3(y)
-        uuu = z + w + u
-        uu = self.conv3(uuu)
-        return uu.sum()
-```
-
-into this
-
-```mlir
-#map = affine_map<(d0, d1) -> (d0 + d1)>
-module attributes {torch.debug_module_name = "DoubleCNN"} {
-  memref.global "private" constant @__constant_16x1x3x3xf32 : memref<16x1x3x3xf32> = dense<"...">
-  memref.global "private" constant @__constant_16xf32_0 : memref<16xf32> = dense<[0.243066281, 0.331322402, ...]>
-  memref.global "private" constant @__constant_8x16x1x1xf32_1 : memref<8x16x1x1xf32> = dense<"...">
-  memref.global "private" constant @__constant_8xf32_1 : memref<8xf32> = dense<[0.0737214088, 0.0993697941, ...]>
-  memref.global "private" constant @__constant_8x16x1x1xf32_0 : memref<8x16x1x1xf32> = dense<"...">
-  memref.global "private" constant @__constant_8xf32_0 : memref<8xf32> = dense<[0.0834305584, -0.150565714, ...]>
-  memref.global "private" constant @__constant_8x16x1x1xf32 : memref<8x16x1x1xf32> = dense<"...">
-  memref.global "private" constant @__constant_8xf32 : memref<8xf32> = dense<[-0.0900013148, -0.189049691,...]>
-  memref.global "private" constant @__constant_16x8x1x1xf32 : memref<16x8x1x1xf32> = dense<"...">
-  memref.global "private" constant @__constant_16xf32 : memref<16xf32> = dense<[-0.133005634, -0.297289908, ...]>
-  func.func @forward(%arg0: memref<1x1x11x11xf32>) -> memref<f32> {
-    %11 = memref.alloca() : memref<1x16x9x9xf32>
-    memref.copy %10, %11 : memref<1x16x9x9xf32> to memref<1x16x9x9xf32>
-    scf.parallel (%arg1, %arg2, %arg3, %arg4) = (%c0, %c0, %c0, %c0) to (%c1, %c16, %c9, %c9) step (%c1, %c1, %c1, %c1) {
-      scf.for %arg5 = %c0 to %c1 step %c1 {
-        scf.for %arg6 = %c0 to %c3 step %c1 {
-          scf.for %arg7 = %c0 to %c3 step %c1 {
-            %24 = affine.apply #map(%arg3, %arg6)
-            %25 = affine.apply #map(%arg4, %arg7)
-            %26 = memref.load %arg0[%arg1, %arg5, %24, %25] : memref<1x1x11x11xf32>
-            %27 = memref.load %9[%arg2, %arg5, %arg6, %arg7] : memref<16x1x3x3xf32>
-            %28 = memref.load %11[%arg1, %arg2, %arg3, %arg4] : memref<1x16x9x9xf32>
-            %29 = arith.mulf %26, %27 : f32
-            %30 = arith.addf %28, %29 : f32
-            memref.store %30, %11[%arg1, %arg2, %arg3, %arg4] : memref<1x16x9x9xf32>
-          }
-        }
-      }
-      scf.yield
-    }
-    
-    ...
-      
-    }
-    %22 = memref.alloca() : memref<f32>
-    memref.store %cst, %22[] : memref<f32>
-    %23 = memref.alloc() {alignment = 128 : i64} : memref<f32>
-    memref.copy %22, %23 : memref<f32> to memref<f32>
-    scf.for %arg1 = %c0 to %c1 step %c1 {
-      scf.for %arg2 = %c0 to %c16 step %c1 {
-        scf.for %arg3 = %c0 to %c9 step %c1 {
-          scf.for %arg4 = %c0 to %c9 step %c1 {
-            %24 = memref.load %21[%arg1, %arg2, %arg3, %arg4] : memref<1x16x9x9xf32>
-            %25 = memref.load %23[] : memref<f32>
-            %26 = arith.addf %24, %25 : f32
-            memref.store %26, %23[] : memref<f32>
-          }
-        }
-      }
-    }
-    return %23 : memref<f32>
-  }
-}
-
+BraggNN(
+  (cnn_layers_1): Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1))
+  (nlb): NLB(
+    (theta_layer): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+    (phi_layer): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+    (g_layer): Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+    (out_cnn): Conv2d(8, 16, kernel_size=(1, 1), stride=(1, 1))
+    (soft): Softmax(
+      (exp): Exp()
+    )
+  )
+  (cnn_layers_2): Sequential(
+    (0): ReLU()
+    (1): Conv2d(16, 8, kernel_size=(3, 3), stride=(1, 1))
+    (2): ReLU()
+    (3): Conv2d(8, 2, kernel_size=(3, 3), stride=(1, 1))
+    (4): ReLU()
+  )
+  (dense_layers): Sequential(
+    (0): Linear(in_features=50, out_features=16, bias=True)
+    (1): ReLU()
+    (2): Linear(in_features=16, out_features=8, bias=True)
+    (3): ReLU()
+    (4): Linear(in_features=8, out_features=4, bias=True)
+    (5): ReLU()
+    (6): Linear(in_features=4, out_features=2, bias=True)
+    (7): ReLU()
+  )
+)
 ```
 
 into this
 
 <p align="center">
-  <img height="1000" src="docs/images/double_cnn.png" alt="">
+  <img height="1000" src="docs/images/bragghls_done.png" alt="">
 </p>
 <p align="center">
-   245 intervals at ~100 MHz on Xilinx Alveo U280
+   1200 intervals at ~100 MHz on Xilinx Alveo U280
 </p>
 <p align="center">
   (Red represents FMUL logic, green represents FADD logic)
 </p>
-
-<!---
-
-[//]: # (![alt text]&#40;docs/images/double_cnn.png&#41;)
-[//]: # (3:#highlight_objects -color green -leaf_cells [get_cells _forward_inner/fadd*]
-[//]: # (54:#highlight_objects -color red -leaf_cells [get_cells _forward_inner/fmul*])
---->
 
 # Repo structure
 

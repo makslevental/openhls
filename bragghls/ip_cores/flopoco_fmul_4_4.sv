@@ -1,4 +1,4 @@
-(* use_dsp = "yes" *) module dspblock_5x5_f300_uid9
+module dspblock_5x5_f300_uid9
   (input wire clk,
    input wire [4:0] x,
    input wire [4:0] y,

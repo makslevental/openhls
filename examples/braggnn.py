@@ -41,6 +41,7 @@ class Part2(torch.nn.Module):
         self.cnn_layers_2 = Sequential(
             ReLU(),
             Conv2d(16, 8, kernel_size=(3, 3), stride=(1, 1)),
+            ReLU(),
         )
 
     def forward(self, theta_phi_g, x):
@@ -55,7 +56,6 @@ class Part3(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.cnn_layers_2 = Sequential(
-            ReLU(),
             Conv2d(8, 2, kernel_size=(3, 3), stride=(1, 1)),
             ReLU(),
         )

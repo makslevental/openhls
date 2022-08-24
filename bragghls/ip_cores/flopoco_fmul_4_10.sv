@@ -1,4 +1,4 @@
-(* USE_DSP = "yes" *) module dspblock_11x11_f300_uid9
+module dspblock_11x11_f300_uid9
   (input wire clk,
    input wire [10:0] x,
    input wire [10:0] y,

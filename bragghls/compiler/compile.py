@@ -203,7 +203,7 @@ def compile(
             vals,
             csts,
             pe_idxs,
-            include_outer_module=not do_testbench,
+            for_testbench=do_testbench
         )
         verilog_file = verilog_file.replace("%", "p_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:

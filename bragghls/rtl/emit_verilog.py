@@ -1,7 +1,7 @@
 import logging
 from collections import defaultdict
 from io import StringIO
-from textwrap import dedent
+from textwrap import dedent, indent
 
 from bragghls.config import DEBUG, USING_FLOPOCO
 from bragghls.ir.ops import Op, OpType, LATENCIES
@@ -16,7 +16,6 @@ from bragghls.rtl.basic import (
 )
 from bragghls.rtl.fsm import FSM
 from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE
-from bragghls.rtl.module import make_top_module_decl
 
 logger = logging.getLogger(__name__)
 
@@ -122,16 +121,29 @@ def make_pblock_bridge(ip_name, input_wires, output_wires, width_exp, width_frac
     prefix = f"_{ip_name}"
 
     s = StringIO()
-    prefixed_launch_wires = [f"{prefix}_launch_{input_wire}" for input_wire in input_wires]
+    prefixed_launch_wires = [
+        f"{prefix}_launch_{input_wire}" for input_wire in input_wires
+    ]
     prefixed_land_wires = [f"{prefix}_land_{input_wire}" for input_wire in input_wires]
     prefixed_output_wires = [f"{prefix}_{output_wire}" for output_wire in output_wires]
 
-    s.writelines([f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_launch_wires])
-    s.writelines([f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_land_wires])
-    s.writelines([f"\twire [{signal_width - 1}:0] {wire};\n" for wire in prefixed_output_wires])
+    s.writelines(
+        [f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_launch_wires]
+    )
+    s.writelines(
+        [f"\treg [{signal_width - 1}:0] {wire};\n" for wire in prefixed_land_wires]
+    )
+    s.writelines(
+        [f"\twire [{signal_width - 1}:0] {wire};\n" for wire in prefixed_output_wires]
+    )
 
     s.write("\talways @(posedge clk) begin\n")
-    s.writelines([f"\t\t{wire} <= {wire.replace('land', 'output')};\n" for wire in prefixed_launch_wires])
+    s.writelines(
+        [
+            f"\t\t{wire} <= {wire.replace('land', 'output')};\n"
+            for wire in prefixed_launch_wires
+        ]
+    )
     s.write("end\n")
 
     s.write(f"{ip_name} _{ip_name}(\n")
@@ -142,6 +154,7 @@ def make_pblock_bridge(ip_name, input_wires, output_wires, width_exp, width_frac
 
     s.seek(0)
     return s.read()
+
 
 def emit_verilog(
     ip_name,
@@ -154,21 +167,28 @@ def emit_verilog(
     vals,
     csts,
     pe_idxs,
-    include_outer_module=True,
+    for_testbench=False,
 ):
     if USING_FLOPOCO:
         signal_width = width_exp + width_frac + 3
     else:
         raise Exception("precision not right since not using flopoco")
-    input_wires = {v: Wire(v, signal_width) for v in func_args if "constant" not in v}
+    if not for_testbench:
+        input_wires = {
+            v: Wire(v, signal_width) for v in func_args if "constant" not in v
+        }
+    else:
+        input_wires = {v: Wire(v, signal_width) for v in func_args}
+
     output_wires = {v: Wire(v, signal_width) for v in returns}
 
     vals = {v: Reg(v, signal_width) for v in vals}
-    for v in func_args:
-        if "constant" in v:
-            vals[v] = Reg(v, signal_width)
-            csts[v] = None
-        
+    if not for_testbench:
+        for v in func_args:
+            if "constant" in v:
+                vals[v] = Reg(v, signal_width)
+                csts[v] = None
+
     s = StringIO()
 
     def emit(*args):
@@ -182,7 +202,6 @@ def emit_verilog(
             list(f"output_{v}" for v in output_wires.values()),
             width_exp,
             width_frac,
-            include_outer_module,
         )
     )
 
@@ -263,3 +282,28 @@ def emit_verilog(
 
     s.seek(0)
     return s.read(), input_wires, output_wires, fsm.max_fsm_stage
+
+
+def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_frac):
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
+    else:
+        raise Exception("not using flopoco thus invalid signal width")
+    inputs = input_wires
+    outputs = output_wires
+    base_inputs = ["clk", "rst"]
+    input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
+    output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
+    input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
+    output_wires = ",\n".join([f"output wire {outp}" for outp in output_ports])
+
+    mod_top = "`default_nettype none"
+    mod_inner = dedent(
+        f"""\
+        module {ip_name} (
+        """
+    )
+    mod_inner += indent(dedent(input_wires + ",\n" + output_wires), "\t")
+    mod_inner += "\n);\n"
+
+    return "\n".join([mod_top, mod_inner])

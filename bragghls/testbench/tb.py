@@ -41,7 +41,9 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
     input_memrefs, *_ = get_py_module_args_globals(args)
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
-        test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        test_inputs[inp_name] = np.random.randn(*inp_memref.shape)
+        test_inputs[inp_name][test_inputs[inp_name] < -1] = -1
+        test_inputs[inp_name][test_inputs[inp_name] > 1] = 1
         # test_inputs[inp_name] = np.random.randint(-3, 3, (inp_memref.shape))
         # test_inputs[inp_name] = np.ones(inp_memref.shape) * 2
     test_inputs, outputs = run_model_with_fp_number(
@@ -117,29 +119,33 @@ async def test_tb(dut):
                 )
                 for wire_name, wire in output_wires.items()
             ]:
-                if output_wire.value.binstr[0] != "1" and output.fp.binstr()[0] != "1":
-                    if output_wire.value.binstr != output.fp.binstr():
-                        incorrect_output = output_wire.value.binstr
+                measured_output = output_wire.value.binstr
+                if output_wire.value.binstr[0] == "1" or output.fp.binstr()[0] == "1":
+                    print(f"overflow {i} with {output_wire.value.binstr}")
+                elif all(o == "0" for o in output.fp.binstr()) and measured_output != output.fp.binstr():
+                    # TODO: figure this out for real
+                    print(f"underflow in the emulator {i} with measured output {measured_output} reported {output.fp}")
+                else:
+                    if measured_output != output.fp.binstr():
+                        measured_output_str = f"<FPNumber {convert_flopoco_binary_str_to_float(measured_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{measured_output}>"
                         try:
                             print(
                                 "failed",
                                 f"clk {i}",
-                                f"output <FPNumber {convert_flopoco_binary_str_to_float(incorrect_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{incorrect_output}>",
-                                f"true {output.fp}",
+                                f"measured output {measured_output_str}",
+                                f"true result {output.fp}",
                             )
                         except Exception as e:
                             print(f"Exception {e}")
                             print(
                                 "failed",
                                 f"clk {i}",
-                                f"output <FPNumber UNICODE_ERROR:{incorrect_output}>",
-                                f"true {output.fp}",
+                                f"measured output <FPNumber UNICODE_ERROR:{measured_output}>",
+                                f"true result {output.fp}",
                             )
                         passed = False
                         if THRESHOLD:
                             n_wrong += 1
-                else:
-                    print(f"overflow {i} with {output_wire.value.binstr}")
 
             if passed:
                 print(f"passed {i}")

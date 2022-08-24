@@ -85,16 +85,15 @@ class SimpleSumAfterTiling(nn.Module):
         return (zz + ww).sum()
 
 
-class ConvPlusReLU(nn.Module):
+class Conv(nn.Module):
     def __init__(self, in_channels, out_channels, bias=True):
         super().__init__()
         self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
         self.conv2 = torch.nn.Conv2d(out_channels, in_channels, 3, bias=bias)
-        self.relu = torch.nn.ReLU()
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.conv2(x).sum()
+        x = self.conv2(x)
         return x
 
 
@@ -214,7 +213,7 @@ def make_single_small_cnn(
     img_size=11, in_channels=2, out_channels=8, simplify_weights=False, bias=True
 ):
     with torch.no_grad():
-        mod = ConvPlusReLU(in_channels, out_channels, bias)
+        mod = Conv(in_channels, out_channels, bias)
         mod.eval()
         print(mod)
         if simplify_weights:

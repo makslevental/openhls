@@ -19,7 +19,7 @@ module intadder_32_f300_uid14
   assign n302_o = n300_o + n301_o;
 endmodule
 
-(* USE_DSP = "yes" *) module dspblock_7x24_f300_uid11
+module dspblock_7x24_f300_uid11
   (input wire clk,
    input wire [6:0] x,
    input wire [23:0] y,
@@ -45,7 +45,7 @@ endmodule
   assign n298_o = n296_o * n297_o; // umul
 endmodule
 
-(* USE_DSP = "yes" *) module dspblock_17x24_f300_uid9
+module dspblock_17x24_f300_uid9
   (input wire clk,
    input wire [16:0] x,
    input wire [23:0] y,

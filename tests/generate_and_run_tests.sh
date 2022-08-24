@@ -3,6 +3,7 @@
 set -e
 THIS_DIR=.
 BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
+export BRAGGHLS_CONFIG_FP=$BRAGGHLS_DIR/bragghls_config.ini
 
 TB_RANDOM=$((1 + $RANDOM % 1000))
 

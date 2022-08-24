@@ -1,4 +1,4 @@
-(* use_dsp = "yes" *) module intadder_14_f300_uid133
+module intadder_14_f300_uid133
   (input wire clk,
    input wire [13:0] x,
    input wire [13:0] y,
@@ -75,7 +75,7 @@
     n502_q <= y_1_d2;
 endmodule
 
-(* use_dsp = "yes" *) module intadder_10_f300_uid10
+module intadder_10_f300_uid10
   (input wire clk,
    input wire [9:0] x,
    input wire [9:0] y,

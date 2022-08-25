@@ -66,6 +66,7 @@ void bin2fp(int wE, int wF, char *x, mpfr_t sig) {
     while (*p) {
         if (*p != '0' && *p != '1') {
             std::cerr << "ERROR: expecting a binary string, got " << *x << std::endl;
+            throw std::invalid_argument(p);
         }
         p++;
         l++;

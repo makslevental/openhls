@@ -4,7 +4,7 @@ from typing import Tuple
 import numpy as np
 
 from bragghls.compiler import state
-from bragghls.ir.ops import Val, make_constant, ReduceAdd
+from bragghls.ir.ops import Val, make_constant, ReduceAdd, ReduceMax
 from bragghls.util import idx_to_str
 
 MemRefIndex = Tuple[int, ...]
@@ -29,6 +29,9 @@ class MemRef:
         self.registers = np.empty(shape, dtype=object)
         self.input = input
         self.output = output
+        if self.input:
+            for idx, v in np.ndenumerate(self.registers):
+                self[idx]
 
     def __setitem__(self, index, value):
         assert not self.input
@@ -75,6 +78,9 @@ class MemRef:
     def reduce_add(self):
         return ReduceAdd(list(self.registers.flatten()))
 
+    def reduce_max(self):
+        return ReduceMax(list(self.registers.flatten()))
+
     def alias(self, other_memref):
         assert isinstance(other_memref, MemRef)
         self.registers = other_memref.registers
@@ -107,3 +113,6 @@ class GlobalMemRef:
     @property
     def numel(self):
         return np.prod(self.shape)
+
+    def reduce_max(self):
+        return ReduceMax(list(self.vals.flatten()))

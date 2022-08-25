@@ -12,7 +12,9 @@ except:
 
 def convert_flopoco_binary_str_to_float(s, width_exp, width_frac):
     assert len(s) == width_exp + width_frac + 2 + 1
-    return float(flopoco_converter.bin2fp(width_exp, width_frac, s))
+    return float(
+        flopoco_converter.bin2fp(width_exp, width_frac, s).strip().replace("\x01", "")
+    )
 
 
 if __name__ == "__main__":

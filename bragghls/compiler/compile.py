@@ -203,7 +203,7 @@ def compile(
             vals,
             csts,
             pe_idxs,
-            for_testbench=do_testbench
+            for_testbench=do_testbench,
         )
         verilog_file = verilog_file.replace("%", "p_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
@@ -224,9 +224,12 @@ def compile(
     logger.info(f"RTL top-level {name}")
 
     for ip_core_sv in [
-        f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
-        f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
-        f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
+        f"fadd/flopoco_fadd_{width_exponent}_{width_fraction}.sv",
+        f"fsub/flopoco_fsub_{width_exponent}_{width_fraction}.sv",
+        f"fmul/flopoco_fmul_{width_exponent}_{width_fraction}.sv",
+        f"fdiv/flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
+        f"fcmplt/flopoco_fcmplt_{width_exponent}_{width_fraction}.sv",
+        f"flopoco_max.sv",
         f"flopoco_neg.sv",
         f"flopoco_relu.sv",
         f"alveo-u280-xdc.xdc",
@@ -251,7 +254,6 @@ def compile(
             },
             width_exponent=width_exponent,
             width_fraction=width_fraction,
-            ip_cores_path=os.path.dirname(ip_cores.__file__),
             n_test_vectors=n_test_vectors,
             threshold=threshold,
         )

@@ -1,24 +1,26 @@
+import operator
 from collections import namedtuple
 from dataclasses import dataclass
 from functools import reduce
 
 import numpy as np
 
-from bragghls.compiler import state
-from bragghls.config import WIDTH_EXPONENT, WIDTH_FRACTION
-from bragghls.util import idx_to_str, chunks
-
 try:
     from . import flopoco_converter
 except:
     import flopoco_converter
 
+from bragghls.compiler import state
+from bragghls.config import WIDTH_EXPONENT, WIDTH_FRACTION
+from bragghls.util import idx_to_str, chunks
+
 FPNUMBER = namedtuple("FPNUMBER", "pe_idx")(None)
 
 
-def reducer(accum, val):
+def reducer(accum, val, reduce_op):
     if len(val) > 1:
-        return accum + [val[0] + val[1]]
+        res = reduce_op(val[0], val[1])
+        return accum + [res]
     else:
         return accum + val
 
@@ -26,8 +28,17 @@ def reducer(accum, val):
 def ReduceAdd(vals):
     pairs = list(chunks(list(vals), 2))
     while len(pairs) > 1:
-        pairs = list(chunks(reduce(reducer, pairs, []), 2))
+        pairs = list(
+            chunks(reduce(lambda x, y: reducer(x, y, operator.add), pairs, []), 2)
+        )
     return pairs[0][0] + pairs[0][1]
+
+
+def ReduceMax(vals):
+    pairs = list(chunks(list(vals), 2))
+    while len(pairs) > 1:
+        pairs = list(chunks(reduce(lambda x, y: reducer(x, y, max), pairs, []), 2))
+    return max(pairs[0][0], pairs[0][1])
 
 
 def check_make_val(v, width_exponent, width_fraction):
@@ -70,6 +81,12 @@ class Val:
         other = check_make_val(other, self.width_exponent, self.width_fraction)
         return self.fp == other.fp
 
+    def __lt__(self, other):
+        other = check_make_val(other, self.width_exponent, self.width_fraction)
+        # print(self.fp, other.fp, self.fp - other.fp, (self.fp - other.fp).sign())
+        # print((self.fp - other.fp).sign())
+        return (self.fp - other.fp).sign() == 1
+
     def __add__(self, other):
         other = check_make_val(other, self.width_exponent, self.width_fraction)
         v = add(self, other)
@@ -96,6 +113,10 @@ class Val:
         return str(
             f"<IEEE {self.ieee:.5e}> {self.fp} {self.width_exponent} {self.width_fraction}"
         )
+
+    @property
+    def fp_float(self):
+        return float(f"{str(self.fp).split(':')[0].split(' ')[1]}")
 
 
 def mul(x: Val, y: Val):
@@ -170,6 +191,9 @@ class MemRef:
 
     def reduce_add(self):
         return ReduceAdd(self.registers.flatten())
+
+    def reduce_max(self):
+        return ReduceMax(list(self.registers.flatten()))
 
     @property
     def val_names_map(self):
@@ -250,6 +274,9 @@ class GlobalMemRef:
     def numel(self):
         return np.prod(self.shape)
 
+    def reduce_max(self):
+        return ReduceMax(list(self.vals.flatten()))
+
     @staticmethod
     def from_global_memref(memref, width_exponent, width_fraction):
         return GlobalMemRef(
@@ -302,8 +329,19 @@ def Div(cst, val):
 
 
 def main():
-    five = Val(4.0, 4, 4)
-    print(Div(1.0, five))
+    a = Val(2, 4, 4)
+    b = Val(1, 4, 4)
+    print(a - a)
+    print(a, b)
+    print(a - b)
+    a = flopoco_converter.FPNumber(2, 4, 4)
+    b = flopoco_converter.FPNumber(1, 4, 4)
+    print(a + a)
+    print(a - a)
+    print(a - b)
+    print(b - b)
+    print(a - b)
+    print(a + b)
 
 
 if __name__ == "__main__":

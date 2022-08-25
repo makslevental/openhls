@@ -22,19 +22,20 @@ def testbench_runner(
     output_map,
     width_exponent,
     width_fraction,
-    ip_cores_path=(Path(__file__) / "../../../ip_cores").resolve(),
     n_test_vectors=10,
     threshold=None,
 ):
     proj_path = Path(proj_path).resolve()
-    ip_cores_path = Path(ip_cores_path).resolve()
     verilog_sources = [
         proj_path / sv_file_name,
-        ip_cores_path / f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
-        ip_cores_path / f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
-        ip_cores_path / f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
-        ip_cores_path / "flopoco_relu.sv",
-        ip_cores_path / "flopoco_neg.sv",
+        proj_path / f"flopoco_fmul_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_fadd_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_fsub_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_fcmplt_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_max.sv",
+        proj_path / "flopoco_relu.sv",
+        proj_path / "flopoco_neg.sv",
     ]
     runner = get_runner("icarus")()
     runner.build(

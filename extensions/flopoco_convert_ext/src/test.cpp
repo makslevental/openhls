@@ -26,17 +26,21 @@ using namespace flopoco;
 int main(int argc, char *argv[]) {
 //    negtwo();
 //    negoneplusnegone();
-//    FPNumber negtwo(4, 4);
-//    negtwo = -2.0;
-//    FPNumber negone(4, 4);
-//    negone = 5.0;
+    FPNumber negtwo(4, 4);
+    negtwo = -2.0;
+    FPNumber negone(4, 4);
+    negone = 5.0;
 //    auto r = -negone;
-//
-//    mpfr_t mpx;
-//    mpfr_init2(mpx, 1 + 4);
-//    r.getMPFR(mpx);
-//    auto rs = fp2binstr(mpx, 4, 4);
-//    std::cout << rs << "\n";
-    auto ss = bin2fpstr(4, 4, "01101001110");
-    std::cout << ss << "\n";
+    auto zero = negtwo - negone;
+    std::cout << zero.sign << "\n";
+    std::cout << zero.exponent << "\n";
+    std::cout << zero.fraction << "\n";
+////
+////    mpfr_t mpx;
+////    mpfr_init2(mpx, 1 + 4);
+////    r.getMPFR(mpx);
+////    auto rs = fp2binstr(mpx, 4, 4);
+////    std::cout << rs << "\n";
+//    auto ss = bin2fpstr(4, 4, "01101001110");
+//    std::cout << ss << "\n";
 }

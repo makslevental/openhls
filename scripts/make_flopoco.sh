@@ -22,9 +22,17 @@ function make() {
   flopoco_here FPAdd wE=$wE wF=$wF name=fadd dualPath=1 outputFile=flopoco_fadd_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
   $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fadd_${wE}_${wF}.vhdl fadd
 
+  echo "fsub"
+  flopoco_here FPAdd wE=$wE wF=$wF name=fsub dualPath=1 sub=1 outputFile=flopoco_fsub_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fsub_${wE}_${wF}.vhdl fsub
+
   echo "fdiv"
   flopoco_here FPDiv wE=$wE wF=$wF name=fdiv outputFile=flopoco_fdiv_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
   $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fdiv_${wE}_${wF}.vhdl fdiv
+
+  echo "fcmplt"
+  flopoco_here FPComparator wE=$wE wF=$wF name=fcmplt outputFile=flopoco_fcmplt_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0 flags=1 method=3
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fcmplt_${wE}_${wF}.vhdl fcmplt
 
   echo "\n"
 }

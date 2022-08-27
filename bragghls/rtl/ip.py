@@ -8,10 +8,11 @@ from bragghls.rtl.basic import Reg, Wire
 from bragghls.util import remove_all_leading_whitespace
 
 
-def generate_flopoco_fp(op_type, instance_name, id, x, y, r, keep):
+def generate_flopoco_fp(op_type, instance_name, id, signal_width, x, y, r, keep):
+    params = f"{id}, {signal_width}" if op_type == OpType.MAX else id
     return dedent(
         f"""\
-            {'(* keep = "true" *) ' if keep else ''}{op_type} #({id}) {instance_name}(
+            {'(* keep = "true" *) ' if keep else ''}{op_type} #({params}) {instance_name}(
                 .clk(clk),
                 .X({x}),
                 .Y({y}),
@@ -45,7 +46,7 @@ class IP:
         IP_ID += 1
 
         self.id = IP_ID
-        self.op_type = op_type.value
+        self.op_type = op_type
         self.pe_idx_str = "_".join(map(str, pe_idx))
         self.signal_width = signal_width
         self.keep = keep
@@ -73,6 +74,7 @@ class BinOpIp(IP):
             self.op_type,
             self.instance_name,
             self.id if USE_UNIQUE_IP_PARAM else 1,
+            self.signal_width,
             self.x,
             self.y,
             self.r,
@@ -86,6 +88,11 @@ class FAdd(BinOpIp):
         super().__init__(OpType.ADD, pe_idx, signal_width)
 
 
+class FSub(BinOpIp):
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.SUB, pe_idx, signal_width)
+
+
 class FMul(BinOpIp):
     def __init__(self, pe_idx, signal_width):
         super().__init__(OpType.MUL, pe_idx, signal_width)
@@ -96,10 +103,16 @@ class FDiv(BinOpIp):
         super().__init__(OpType.DIV, pe_idx, signal_width)
 
 
+class FMax(BinOpIp):
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.MAX, pe_idx, signal_width)
+
+
 def generate_relu_or_neg(op_type, id, signal_width, instance_name, a, res):
     op = dedent(
         f"""\
             {op_type} #({id}, {signal_width}) {instance_name}(
+                .clk(clk),
                 .a({a}),
                 .res({res})
             );
@@ -147,8 +160,10 @@ class Neg(ReLUOrNegIP):
 @dataclass(frozen=True)
 class PE:
     fadd: FAdd
+    fsub: FSub
     fmul: FMul
     fdiv: FDiv
+    fmax: FMax
     frelu: ReLU
     fneg: Neg
     idx: Tuple[int, ...]
@@ -171,6 +186,9 @@ def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
 
     add_files -norecurse -scan_for_includes flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
+    
+    sub_files -norecurse -scan_for_includes flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
+    import_files -norecurse flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
     
     add_files -norecurse -scan_for_includes flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fmul_{width_exponent}_{width_fraction}.sv -force

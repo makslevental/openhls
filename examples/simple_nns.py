@@ -4,7 +4,6 @@ from pathlib import Path
 
 import torch
 from torch import nn
-from torch_mlir_e2e_test.torchscript.annotations import export, annotate_args
 
 from bragghls.ir.nn import compile_nn_module_to_mlir, set_weights
 
@@ -41,6 +40,7 @@ class Dot(nn.Module):
 
     def forward(self, x, y):
         return (x * y).sum()
+
 
 # class Dot(nn.Module):
 #     def __init__(self):
@@ -110,7 +110,6 @@ class Exp(nn.Module):
         y2 = y1 * y1 * 0.5
         y3 = y2 * 0.03333333333333328
         y4 = y2 * y2 * 0.08333333333333333
-        # TODO: subtract max here somewhere to make more numerically stable
         return (y1 + y2) + (y3 + y4) + 1
         # return (
         #     x
@@ -121,19 +120,76 @@ class Exp(nn.Module):
         # )
 
 
-class Softmax(nn.Module):
+class SoftMax(nn.Module):
     def __init__(self):
         super().__init__()
         self.exp = Exp()
 
-    @export
-    @annotate_args([None, ([-1, -1, -1, -1], torch.float32, True)])
     def forward(self, x):
+        x += -x.max()
         y = self.exp(x)
         z = y.sum()
         factor = 1 / z
-        # TODO: something failing here
         return y * factor
+
+
+class Max(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+
+    def forward(self, x):
+        return x.max()
+
+
+class Neg(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+
+    def forward(self, x):
+        return -x
+
+
+class SubMax(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+
+    def forward(self, x):
+        return x - x.max()
+
+
+class Sub(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+
+    def forward(self, x):
+        return x - 1
+
+
+class SubSelf(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+
+    def forward(self, x):
+        return x - x
+
+
+class SubOne(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+        self.y = torch.ones(5)
+
+    def forward(self, x):
+        # return x + (-x.max())
+        return self.y - 1
+
+
+class ReLU(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+        self.relu = torch.nn.ReLU()
+
+    def forward(self, x):
+        return self.relu(x)
 
 
 class MaxPool2dCeilModeTrueModule(torch.nn.Module):
@@ -145,13 +201,6 @@ class MaxPool2dCeilModeTrueModule(torch.nn.Module):
             dilation=3,
         )
 
-    @export
-    @annotate_args(
-        [
-            None,
-            ([-1, -1, -1, -1], torch.float32, True),
-        ]
-    )
     def forward(self, x):
         return self.mp2d(x)
 
@@ -249,9 +298,9 @@ def make_double_small_cnn(
     return str(mlir_module)
 
 
-def make_softmax(scale=8, img_size=11):
+def make_soft_max(scale=8, img_size=11):
     with torch.no_grad():
-        mod = Softmax()
+        mod = SoftMax()
         mod.eval()
         print(mod)
         x = torch.randn((1, scale, img_size, img_size))
@@ -265,7 +314,118 @@ def make_softmax(scale=8, img_size=11):
     return str(mlir_module)
 
 
-def make_exp(scale=1, img_size=11):
+def make_max(size=8):
+    with torch.no_grad():
+        mod = Max(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_sub_max(size=8):
+    with torch.no_grad():
+        mod = SubMax(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_sub(size=8):
+    with torch.no_grad():
+        mod = Sub(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_sub_self(size=8):
+    with torch.no_grad():
+        mod = SubSelf(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+def make_sub_one(size=8):
+    with torch.no_grad():
+        mod = SubOne(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_relu(size=8):
+    with torch.no_grad():
+        mod = ReLU(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_neg(size=8):
+    with torch.no_grad():
+        mod = Neg(size)
+        mod.eval()
+        print(mod)
+        x = torch.randn(size)
+        z = mod(x)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_exp(scale=8, img_size=11):
     with torch.no_grad():
         mod = Exp()
         mod.eval()
@@ -358,11 +518,18 @@ if __name__ == "__main__":
             "linear_no_sum",
             "small_cnn",
             "double_cnn",
-            "softmax",
+            "soft_max",
             "exp",
             "div",
             "simple_sum",
             "max_pool_2d",
+            "max",
+            "sub",
+            "sub_self",
+            "sub_one",
+            "sub_max",
+            "relu",
+            "neg",
         ],
         default="linear",
     )
@@ -380,8 +547,22 @@ if __name__ == "__main__":
         mlir_str = make_single_small_cnn(img_size=args.size)
     elif args.net == "double_cnn":
         mlir_str = make_double_small_cnn(img_size=args.size)
-    elif args.net == "softmax":
-        mlir_str = make_softmax(img_size=args.size)
+    elif args.net == "soft_max":
+        mlir_str = make_soft_max(img_size=args.size)
+    elif args.net == "max":
+        mlir_str = make_max(size=args.size)
+    elif args.net == "relu":
+        mlir_str = make_relu(size=args.size)
+    elif args.net == "sub":
+        mlir_str = make_sub(size=args.size)
+    elif args.net == "sub_self":
+        mlir_str = make_sub_self(size=args.size)
+    elif args.net == "sub_one":
+        mlir_str = make_sub_one(size=args.size)
+    elif args.net == "sub_max":
+        mlir_str = make_sub_max(size=args.size)
+    elif args.net == "neg":
+        mlir_str = make_neg(size=args.size)
     elif args.net == "exp":
         mlir_str = make_exp(img_size=args.size)
     elif args.net == "div":

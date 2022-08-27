@@ -19,16 +19,16 @@ PYBIND11_MODULE(flopoco_converter, m) {
       .def(py::init<double, int, int>(), "constructor", py::arg("x"),
            py::arg("wE"), py::arg("wF"))
       .def("__add__",
-           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x + y; })
+           [](const flopoco::FPNumber &x, const flopoco::FPNumber &y) { return x + y; })
       .def("__sub__",
-           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x + -y; })
+           [](const flopoco::FPNumber &x, const flopoco::FPNumber &y) { return x - y; })
       .def("__mul__",
-           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x * y; })
+           [](const flopoco::FPNumber &x, const flopoco::FPNumber &y) { return x * y; })
       .def("__truediv__",
-           [](flopoco::FPNumber &x, flopoco::FPNumber &y) { return x / y; })
+           [](const flopoco::FPNumber &x, const flopoco::FPNumber &y) { return x / y; })
       .def("__eq__",
-           [](flopoco::FPNumber &x, flopoco::FPNumber &y) {
-             auto z = (x + (-y));
+           [](const flopoco::FPNumber &x, const flopoco::FPNumber &y) {
+             auto z = x - y;
              auto zero = flopoco::FPNumber(0.0, x.wE, x.wF);
              return (z.fraction == zero.fraction && z.exponent == zero.exponent);
            })

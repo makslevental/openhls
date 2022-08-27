@@ -15,7 +15,7 @@ from bragghls.rtl.basic import (
     CombOrSeq,
 )
 from bragghls.rtl.fsm import FSM
-from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE
+from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE, FMax, FSub
 
 logger = logging.getLogger(__name__)
 
@@ -25,15 +25,9 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
     for op in op_datas:
         res_val = vals.get(op.res, op.res)
         assert res_val not in ip_res_val_map
-        if op.type in {OpType.MUL, OpType.DIV, OpType.ADD, OpType.SUB, OpType.GT}:
-            if op.type == OpType.ADD:
-                ip_res_val_map[res_val] = pe.fadd.r
-            elif op.type == OpType.MUL:
-                ip_res_val_map[res_val] = pe.fmul.r
-            elif op.type == OpType.DIV:
-                ip_res_val_map[res_val] = pe.fdiv.r
-            else:
-                logger.warning(f"not mapping {res_val} to {op} in ip_res_val_map")
+        if op.type in {OpType.ADD, OpType.SUB, OpType.MUL, OpType.DIV, OpType.MAX}:
+            ip = getattr(pe, op.type.value, None)
+            ip_res_val_map[res_val] = ip.r
         elif op.type in {OpType.NEG, OpType.RELU}:
             ip = getattr(pe, op.type.value, None)
             ip_res_val_map[res_val] = ip.res
@@ -43,7 +37,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
         elif op.type == OpType.FMAC:
             ip_res_val_map[res_val] = pe.fadd.r
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"{op}")
 
     return ip_res_val_map
 
@@ -62,7 +56,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
         in_a = vals.get(args[0], input_wires.get(args[0], args[0]))
         in_a = ip_res_val_map.get(in_a, in_a)
 
-        if op.type in {OpType.MUL, OpType.DIV, OpType.ADD}:
+        if op.type in {OpType.ADD, OpType.SUB, OpType.MUL, OpType.DIV, OpType.MAX}:
             in_b = vals.get(args[1], input_wires.get(args[1], args[1]))
             in_b = ip_res_val_map.get(in_b, in_b)
 
@@ -80,11 +74,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                     [ip.a], [in_a], fsm.make_fsm_conditions([start_time])
                 )
             )
-            tree_conds.append(
-                make_always_branch(
-                    [res_val], [ip.res], fsm.make_fsm_conditions([end_time])
-                )
-            )
+            not_latches.update({ip.a})
         elif op.type in {OpType.COPY}:
             tree_conds.append(
                 make_always_branch(
@@ -227,11 +217,13 @@ def emit_verilog(
 
         # TODO: don't emit ip for pes that don't use (like eg div, of which there's only one)
         fadd = FAdd(pe_idx, signal_width)
+        fsub = FSub(pe_idx, signal_width)
         fmul = FMul(pe_idx, signal_width)
         fdiv = FDiv(pe_idx, signal_width)
+        fmax = FMax(pe_idx, signal_width)
         frelu = ReLU(pe_idx, signal_width)
         fneg = Neg(pe_idx, signal_width)
-        pes[pe_idx] = PE(fadd, fmul, fdiv, frelu, fneg, pe_idx)
+        pes[pe_idx] = PE(fadd, fsub, fmul, fdiv, fmax, frelu, fneg, pe_idx)
 
     ips_to_instantiate = defaultdict(set)
     pe_to_ops = defaultdict(list)
@@ -250,7 +242,7 @@ def emit_verilog(
         for op in pe_ops:
             ip = getattr(pe, op.value, None)
             if ip is None:
-                assert op in {OpType.COPY}
+                assert op in {OpType.COPY}, op
                 continue
             emit(ip.instantiate())
 

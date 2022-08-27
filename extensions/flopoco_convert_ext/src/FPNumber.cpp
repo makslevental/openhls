@@ -399,25 +399,31 @@ namespace flopoco {
         return operator-=(-x);
     }
 
-    FPNumber &FPNumber::operator-() {
-      sign = 1 - sign;
-      return *this;
+    FPNumber FPNumber::operator-() {
+        FPNumber fpr = *this;
+        fpr.sign = 1 - sign;
+        return fpr;
     }
 
-    FPNumber FPNumber::operator*(FPNumber fpy) {
-        auto fpx = this;
-        if (fpx->wE != fpy.wE)
-          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
-        if (fpx->wF != fpy.wF)
-          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
+    FPNumber FPNumber::operator*(const FPNumber &other) const {
+        if (this->wE != other.wE)
+            throw std::runtime_error("FPNumber: exponent widths don't match.");
+        if (this->wF != other.wF)
+            throw std::runtime_error("FPNumber: fraction widths don't match.");
 
-        int wER = fpx->wE;
-        int wFR = fpx->wF;
+        int wER = this->wE;
+        int wFR = this->wF;
+
+        FPNumber fpx(wER, wFR);
+        FPNumber fpy(wER, wFR);
+        fpx = *this;
+        fpy = other;
+
         mpfr_t x, y, r;
-        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(x, 1 + fpx.wF);
         mpfr_init2(y, 1 + fpy.wF);
         mpfr_init2(r, 1 + wFR);
-        fpx->getMPFR(x);
+        fpx.getMPFR(x);
         fpy.getMPFR(y);
 
         mpfr_mul(r, x, y, GMP_RNDN);
@@ -426,20 +432,26 @@ namespace flopoco {
         return fpr;
     }
 
-    FPNumber FPNumber::operator+(FPNumber fpy) {
-        auto fpx = this;
-        if (fpx->wE != fpy.wE)
-          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
-        if (fpx->wF != fpy.wF)
-          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
 
-        int wER = fpx->wE;
-        int wFR = fpx->wF;
+    FPNumber FPNumber::operator+(const FPNumber &other) const {
+        if (this->wE != other.wE)
+            throw std::runtime_error("FPNumber: exponent widths don't match.");
+        if (this->wF != other.wF)
+            throw std::runtime_error("FPNumber: fraction widths don't match.");
+
+        int wER = this->wE;
+        int wFR = this->wF;
+
+        FPNumber fpx(wER, wFR);
+        FPNumber fpy(wER, wFR);
+        fpx = *this;
+        fpy = other;
+
         mpfr_t x, y, r;
-        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(x, 1 + fpx.wF);
         mpfr_init2(y, 1 + fpy.wF);
         mpfr_init2(r, 1 + wFR);
-        fpx->getMPFR(x);
+        fpx.getMPFR(x);
         fpy.getMPFR(y);
 
         mpfr_add(r, x, y, GMP_RNDN);
@@ -448,20 +460,52 @@ namespace flopoco {
         return fpr;
     }
 
-    FPNumber FPNumber::operator/(FPNumber fpy) {
-        auto fpx = this;
-        if (fpx->wE != fpy.wE)
-          throw std::runtime_error("FPNumber::mult: exponent widths don't match.");
-        if (fpx->wF != fpy.wF)
-          throw std::runtime_error("FPNumber::mult: fraction widths don't match.");
+    FPNumber FPNumber::operator-(const FPNumber &other) const {
+        if (this->wE != other.wE)
+            throw std::runtime_error("FPNumber: exponent widths don't match.");
+        if (this->wF != other.wF)
+            throw std::runtime_error("FPNumber: fraction widths don't match.");
 
-        int wER = fpx->wE;
-        int wFR = fpx->wF;
+        int wER = this->wE;
+        int wFR = this->wF;
+
+        FPNumber fpx(wER, wFR);
+        FPNumber fpy(wER, wFR);
+        fpx = *this;
+        fpy = other;
+
         mpfr_t x, y, r;
-        mpfr_init2(x, 1 + fpx->wF);
+        mpfr_init2(x, 1 + fpx.wF);
         mpfr_init2(y, 1 + fpy.wF);
         mpfr_init2(r, 1 + wFR);
-        fpx->getMPFR(x);
+        fpx.getMPFR(x);
+        fpy.getMPFR(y);
+
+        mpfr_sub(r, x, y, GMP_RNDN);
+        // Set outputs
+        FPNumber fpr(wER, wFR, r);
+        return fpr;
+    }
+
+    FPNumber FPNumber::operator/(const FPNumber &other) const {
+        if (this->wE != other.wE)
+            throw std::runtime_error("FPNumber: exponent widths don't match.");
+        if (this->wF != other.wF)
+            throw std::runtime_error("FPNumber: fraction widths don't match.");
+
+        int wER = this->wE;
+        int wFR = this->wF;
+
+        FPNumber fpx(wER, wFR);
+        FPNumber fpy(wER, wFR);
+        fpx = *this;
+        fpy = other;
+
+        mpfr_t x, y, r;
+        mpfr_init2(x, 1 + fpx.wF);
+        mpfr_init2(y, 1 + fpy.wF);
+        mpfr_init2(r, 1 + wFR);
+        fpx.getMPFR(x);
         fpy.getMPFR(y);
 
         mpfr_div(r, x, y, GMP_RNDN);

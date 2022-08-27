@@ -10,6 +10,8 @@ from _ast import (
     Return,
     keyword,
     Constant,
+    UnaryOp,
+    USub,
 )
 from ast import Assign, Mult, Add, BinOp, Name, Call, IfExp, Compare, Num
 
@@ -169,24 +171,43 @@ class ReduceForLoops(ast.NodeTransformer):
             return None
 
         src = nodes[0].value.value.id
-        return dst, src
+        return dst, src, nodes[2].value
 
     def visit_FunctionDef(self, node):
         if node.name == "forward":
             fors = [(i, b) for i, b in enumerate(node.body) if isinstance(b, For)]
             if fors:
-                for i, for_loop in fors:
+                for i, for_loop in reversed(fors):
                     nested_for_loop_visitor = NestedForLoopVisitor(self.body_predicate)
                     nested_for_loop_visitor.visit_For(for_loop)
                     if nested_for_loop_visitor.match is not None:
-                        dst, src = nested_for_loop_visitor.match
+                        dst, src, value = nested_for_loop_visitor.match
+                        if isinstance(value, BinOp):
+                            reduce_name = value.op.__class__.__name__.lower()
+                        elif isinstance(value, Call):
+                            reduce_name = value.func.id
+                        else:
+                            raise Exception("unknown reduction")
                         node.body[i] = Assign(
                             targets=[dst],
                             value=Call(
-                                func=Name(id=f"{src}.reduce_add"), args=[], keywords=[]
+                                func=Name(id=f"{src}.reduce_{reduce_name}"),
+                                args=[],
+                                keywords=[],
                             ),
                             type_comment=None,
                         )
+                        node.body.insert(
+                            i + 1,
+                            Expr(
+                                Call(
+                                    func=Name(id="SelfCopy"),
+                                    args=[dst.value],
+                                    keywords=[],
+                                )
+                            ),
+                        )
+
         return node
 
 
@@ -207,6 +228,8 @@ class CopyParFors(ast.NodeTransformer):
 
         res = res and any(
             isinstance(n.value, BinOp)
+            or isinstance(n.value, UnaryOp)
+            and isinstance(n.value.op, USub)
             or (isinstance(n.value, Call) and "relu" in n.value.func.id)
             for n in nodes
         )

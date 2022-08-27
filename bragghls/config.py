@@ -33,38 +33,43 @@ if USING_FLOPOCO:
     pipeline_depth_re = re.compile(r"Pipeline depth: (\d+) cycles")
     with open(
         Path(ip_cores.__file__).parent
+        / "fmul"
         / f"flopoco_fmul_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
     ) as f:
         depths = pipeline_depth_re.findall(f.read())
         MUL_PIPELINE_DEPTH = int(depths[-1])
     with open(
         Path(ip_cores.__file__).parent
+        / "fadd"
         / f"flopoco_fadd_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
     ) as f:
         depths = pipeline_depth_re.findall(f.read())
         ADD_PIPELINE_DEPTH = int(depths[-1])
     with open(
         Path(ip_cores.__file__).parent
+        / "fsub"
+        / f"flopoco_fsub_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
+    ) as f:
+        depths = pipeline_depth_re.findall(f.read())
+        SUB_PIPELINE_DEPTH = int(depths[-1])
+    with open(
+        Path(ip_cores.__file__).parent
+        / "fdiv"
         / f"flopoco_fdiv_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
     ) as f:
         depths = pipeline_depth_re.findall(f.read())
         DIV_PIPELINE_DEPTH = int(depths[-1])
-else:
-    MUL_PIPELINE_DEPTH = int(
-        os.getenv("MUL_PIPELINE_DEPTH") or config["ip"].get("MulPipelineDepth")
-    )
-    DIV_PIPELINE_DEPTH = int(
-        os.getenv("DIV_PIPELINE_DEPTH") or config["ip"].get("DivPipelineDepth")
-    )
-    # DIV_RADIX = int(os.getenv("DIV_RADIX") or config["ip"].get("DivRadix"))
-    ADD_PIPELINE_DEPTH = int(
-        os.getenv("ADD_PIPELINE_DEPTH") or config["ip"].get("AddPipelineDepth")
-    )
 
 MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
 DIV_LATENCY = DIV_PIPELINE_DEPTH + 1
 ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
+SUB_LATENCY = SUB_PIPELINE_DEPTH + 1
 
+# comb ops with registered outputs
+MAX_LATENCY = 2
+GT_LATENCY = 2
+NEG_LATENCY = 2
+RELU_LATENCY = 2
 
 _nameToLevel = {
     "CRITICAL": logging.CRITICAL,

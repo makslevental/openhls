@@ -16,8 +16,14 @@ sizes=(
 #16
 )
 nets=(
+max
+neg
+relu
+sub
+#sub_max
+div
 dot_product
-softmax
+soft_max
 #double_cnn
 simple_sum
 exp
@@ -43,9 +49,9 @@ function is_power_of_two () {
 
 for size in "${sizes[@]}"; do
   for net in "${nets[@]}"; do
-    if ! is_power_of_two "$size" && [ $net == "softmax" ]; then
-      continue
-    fi
+#    if ! is_power_of_two "$size" && [ $net == "softmax" ]; then
+#      continue
+#    fi
 
     echo python $BRAGGHLS_DIR/examples/simple_nns.py $net --size $size --out_dir $THIS_DIR
     python $BRAGGHLS_DIR/examples/simple_nns.py $net --size $size --out_dir $THIS_DIR
@@ -56,7 +62,11 @@ for size in "${sizes[@]}"; do
       we=$1
       wf=$2
 
-      if [ $we == "4" ] && [ $wf == "4" ] && [ $net == "softmax" ]; then
+      if [ $we == "4" ] && [ $wf == "4" ] && [ $net == "soft_max" ]; then
+        continue
+      fi
+
+      if [ $we == "4" ] && [ $wf == "4" ] && [ $size == 8 ] && [ $net == "simple_sum" ]; then
         continue
       fi
 

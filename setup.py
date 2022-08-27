@@ -240,7 +240,7 @@ class CMakeBuild(build_ext):
         if bool(int(os.getenv("BUILD_LLVM", "1"))):
             build_llvm(base_cmake_args)
         if bool(int(os.getenv("BUILD_CIRCT", "1"))):
-                build_circt(base_cmake_args)
+            build_circt(base_cmake_args)
         if bool(int(os.getenv("BUILD_BRAGGHLS_TRANSLATE", "1"))):
             build_bragghls(base_cmake_args)
 
@@ -308,7 +308,23 @@ setup(
             sourcedir=os.path.join(CWD, "extensions/flopoco_convert_ext"),
         ),
     ],
-    package_data={"bragghls": ["ip_cores/*.vhdl", "ip_cores/*.sv", "ip_cores/*.xdc"]},
+    package_data={
+        "bragghls": [
+            "ip_cores/*.vhdl",
+            "ip_cores/*.sv",
+            "ip_cores/*.xdc",
+            "ip_cores/fadd/*.vhdl",
+            "ip_cores/fadd/*.sv",
+            "ip_cores/fcmplt/*.vhdl",
+            "ip_cores/fcmplt/*.sv",
+            "ip_cores/fdiv/*.vhdl",
+            "ip_cores/fdiv/*.sv",
+            "ip_cores/fmul/*.vhdl",
+            "ip_cores/fmul/*.sv",
+            "ip_cores/fsub/*.vhdl",
+            "ip_cores/fsub/*.sv",
+        ],
+    },
     data_files=data_files,
     zip_safe=False,
     entry_points={

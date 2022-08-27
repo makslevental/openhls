@@ -3,6 +3,7 @@ import logging
 import networkx as nx
 
 from bragghls.config import VAL_PREFIX, DTYPE, DEBUG, INCLUDE_AUX_DEPS
+from bragghls.util import extend_idx
 
 logging.basicConfig(encoding="utf-8", level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -98,7 +99,8 @@ class State:
             src = self.get_arg_src(val)
             if isinstance(src, str):
                 assert src in {INPUT_ARG, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT}
-                return
+                if src in {MEMREF_ARG, GLOBAL_MEMREF_ARG}:
+                    self.pe_idx = extend_idx(tuple(map(int, val.id.split("_"))))
             else:
                 self.pe_idx = src.pe_idx
         else:

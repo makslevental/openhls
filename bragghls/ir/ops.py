@@ -1,4 +1,5 @@
 import math
+import operator
 from dataclasses import dataclass
 from enum import Enum
 from functools import reduce
@@ -12,8 +13,13 @@ from bragghls.config import (
     DTYPE,
     MUL_LATENCY,
     ADD_LATENCY,
+    SUB_LATENCY,
     DIV_LATENCY,
     REGISTER_TILES_TWICE,
+    MAX_LATENCY,
+    GT_LATENCY,
+    NEG_LATENCY,
+    RELU_LATENCY,
 )
 from bragghls.util import extend_idx, chunks, is_val
 
@@ -30,12 +36,16 @@ class OpType(Enum):
     SUB = "fsub"
     MUL = "fmul"
     DIV = "fdiv"
+    MAX = "fmax"
     GT = "fcmpugt"
     NEG = "fneg"
     RELU = "frelu"
     CST = "arith.constant"
     COPY = "copy"
     FMAC = "fmac"
+
+    def __str__(self):
+        return self.value
 
 
 OPS = {op.value: op for op in OpType}
@@ -58,6 +68,7 @@ class Val:
     __neg__ = overload_op(OpType.NEG)
     copy = overload_op(OpType.COPY)
     relu = overload_op(OpType.RELU)
+    max = overload_op(OpType.MAX)
 
     def __repr__(self):
         return f"{state.state.val_prefix}val_{self.id}"
@@ -110,12 +121,13 @@ FMAC_LATENCY = lambda n_elements: MUL_LATENCY + ADD_LATENCY * n_elements
 class Latencies:
     latencies = {
         OpType.ADD: ADD_LATENCY,
-        OpType.SUB: ADD_LATENCY,
+        OpType.SUB: SUB_LATENCY,
         OpType.MUL: MUL_LATENCY,
         OpType.DIV: DIV_LATENCY,
-        OpType.GT: 1,
-        OpType.NEG: 1,
-        OpType.RELU: 1,
+        OpType.MAX: MAX_LATENCY,
+        OpType.GT: GT_LATENCY,
+        OpType.NEG: NEG_LATENCY,
+        OpType.RELU: RELU_LATENCY,
         OpType.CST: 0,
         OpType.COPY: 1,
         OpType.FMAC: -1,
@@ -152,7 +164,7 @@ CONSTANTS = set()
 def make_constant(arg):
     assert isinstance(arg, (float, bool, int)), arg
     arg = str(arg)
-    cst_v = Val(id=f'cst_{arg.replace(".", "_point_")}')
+    cst_v = Val(id=f'cst_{arg.replace(".", "_point_").replace("+", "_plus_")}')
     if cst_v not in CONSTANTS:
         cst_op = Op(
             OpType.CST,
@@ -238,44 +250,46 @@ class FMAC:
         return op_res
 
 
-def reducer(accum, val):
+def reducer(accum, val, reduce_op):
     # hack because simulator ops come through here too
     if isinstance(val[0], Val):
         state.state.update_current_pe_idx(val=val[0])
-    return accum + [val[0] + val[1]]
+    return accum + [reduce_op(val[0], val[1])]
 
 
-def reduce_perfect_tree(vals):
+def reduce_perfect_tree(vals, reduce_op):
     log_len = math.log2(len(vals))
     assert log_len == int(log_len), f"len {len(vals)} of {vals} is not a power of 2"
     initial_val = []
 
     pairs = list(chunks(list(vals), 2))
     while len(pairs) > 1:
-        pairs = list(chunks(reduce(reducer, pairs, initial_val), 2))
+        pairs = list(
+            chunks(reduce(lambda x, y: reducer(x, y, reduce_op), pairs, initial_val), 2)
+        )
 
     if isinstance(pairs[0][0], Val):
         state.state.update_current_pe_idx(val=pairs[0][0])
-    return pairs[0][0] + pairs[0][1]
+    return reduce_op(pairs[0][0], pairs[0][1])
 
 
 ALREADY_COPIED = set()
 
 
-def recursive_sum(vals):
+def recursive(vals, reduce_op):
     if len(vals) == 1:
         return vals[0]
 
     perfect_tree_n = 2 ** math.floor(math.log2(len(vals)))
     perfect_tree, vals = vals[:perfect_tree_n], vals[perfect_tree_n:]
     state.state.debug_print(f"start perfect tree len {len(perfect_tree)}")
-    perfect_sum = reduce_perfect_tree(perfect_tree)
+    perfect_sum = reduce_perfect_tree(perfect_tree, reduce_op)
     state.state.debug_print(f"end perfect tree")
     if len(perfect_tree) == len(vals):
-        return perfect_sum + reduce_perfect_tree(vals)
+        return reduce_op(perfect_sum, reduce_perfect_tree(vals, reduce_op))
     elif len(vals):
         assert perfect_tree_n > len(vals)
-        smaller_sum = recursive_sum(vals)
+        smaller_sum = recursive(vals, reduce_op)
         if (
             isinstance(smaller_sum, Val)
             and smaller_sum not in ALREADY_COPIED
@@ -290,13 +304,17 @@ def recursive_sum(vals):
         ):
             ALREADY_COPIED.add(perfect_sum)
             perfect_sum = perfect_sum.copy()
-        return perfect_sum + smaller_sum
+        return reduce_op(perfect_sum, smaller_sum)
     else:
         return perfect_sum
 
 
 def ReduceAdd(vals):
-    return recursive_sum(vals)
+    return recursive(vals, operator.add)
+
+
+def ReduceMax(vals):
+    return recursive(vals, lambda x, y: x.max(y))
 
 
 def Copy(dst, src):

@@ -7,7 +7,7 @@ import torch
 from torch.nn import Conv2d, Sequential, ReLU, Linear
 
 from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
-from examples.simple_nns import Softmax
+from simple_nns import SoftMax
 
 
 class Part1(torch.nn.Module):
@@ -17,7 +17,7 @@ class Part1(torch.nn.Module):
         self.theta_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
         self.phi_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
         self.g_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
-        self.soft = Softmax()
+        self.soft = SoftMax()
 
     def forward(self, inp):
         # print(inp.shape)
@@ -107,7 +107,7 @@ class NLB(torch.nn.Module):
         self.out_cnn = torch.nn.Conv2d(
             in_channels=self.inter_ch, out_channels=in_ch, kernel_size=1, padding=0
         )
-        self.soft = Softmax()
+        self.soft = SoftMax()
 
     def forward(self, x):
         theta = self.theta_layer(x)
@@ -216,7 +216,10 @@ def make_braggn_part2(scale, img_size=11, simplify_weights=True):
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
-        z = mod(torch.randn(1, 8, img_size - 2, img_size - 2), torch.randn(1, 16, img_size - 2, img_size - 2))
+        z = mod(
+            torch.randn(1, 8, img_size - 2, img_size - 2),
+            torch.randn(1, 16, img_size - 2, img_size - 2),
+        )
         print(z.shape)
     mlir_module = compile_nn_module_to_mlir(
         mod,
@@ -234,7 +237,7 @@ def make_braggn_part3(scale, img_size=11, simplify_weights=True):
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
-        
+
         z = mod(torch.randn(1, 8, img_size - 4, img_size - 4))
         print(z.shape)
     mlir_module = compile_nn_module_to_mlir(
@@ -299,8 +302,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     args.out_dir = args.out_dir.resolve()
 
-    for i, make in enumerate([make_braggn_part1, make_braggn_part2, make_braggn_part3], start=1):
-        out_dir = (args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts" / f"part_{i}").resolve()
+    for i, make in enumerate(
+        [make_braggn_part1, make_braggn_part2, make_braggn_part3], start=1
+    ):
+        out_dir = (
+            args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts" / f"part_{i}"
+        ).resolve()
         os.makedirs(f"{out_dir}", exist_ok=True)
         dot_str = make(args.scale, img_size=args.img_size, simplify_weights=False)
         open(f"{out_dir}/braggnn_part_{i}.mlir", "w").write(dot_str)

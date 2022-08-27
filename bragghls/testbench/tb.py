@@ -8,6 +8,7 @@ import os.path
 
 import cocotb
 import numpy as np
+from cocotb.binary import BinaryValue, BinaryRepresentation
 from cocotb.clock import Clock
 from cocotb.handle import ModifiableObject
 from cocotb.triggers import FallingEdge
@@ -42,10 +43,11 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
     test_inputs = {}
     for inp_name, inp_memref in input_memrefs.items():
         test_inputs[inp_name] = np.random.randn(*inp_memref.shape)
-        test_inputs[inp_name][test_inputs[inp_name] < -1] = -1
-        test_inputs[inp_name][test_inputs[inp_name] > 1] = 1
-        # test_inputs[inp_name] = np.random.randint(-3, 3, (inp_memref.shape))
-        # test_inputs[inp_name] = np.ones(inp_memref.shape) * 2
+        # test_inputs[inp_name] = np.random.random(inp_memref.shape)
+        # test_inputs[inp_name][test_inputs[inp_name] < -1] = -1
+        # test_inputs[inp_name][test_inputs[inp_name] > 1] = 1
+        # test_inputs[inp_name] = np.random.randint(-10, 10, (inp_memref.shape))
+        # test_inputs[inp_name] = np.ones(inp_memref.shape) * 1
     test_inputs, outputs = run_model_with_fp_number(
         mod, test_inputs, width_exponent=width_exponent, width_fraction=width_fraction
     )
@@ -56,9 +58,22 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
                 inp_name = inp_name.replace("%", "p_")
                 if hasattr(dut, inp_name):
                     mod_obj = getattr(dut, inp_name)
-                    mod_obj.value = int(fpval.fp.binstr(), 2)
+                    vec = BinaryValue(
+                        value=fpval.fp.binstr(),
+                        n_bits=None,
+                        bigEndian=True,
+                        binaryRepresentation=BinaryRepresentation.UNSIGNED,
+                    )
+                    mod_obj.setimmediatevalue(vec)
 
     return test_inputs, outputs
+
+
+def get_tolerance(width_exponent, width_fraction):
+    if (width_exponent, width_fraction) <= (5, 5):
+        return 1e-1
+    else:
+        return 1e-2
 
 
 @cocotb.test()
@@ -71,6 +86,7 @@ async def test_tb(dut):
     MODULE_FP = os.getenv("MODULE_FP")
     THRESHOLD = float(os.getenv("THRESHOLD", "0"))
     TB_RANDOM = int(os.getenv("TB_RANDOM", "1"))
+    DEBUG = bool(int(os.getenv("DEBUG", "0")))
     OUTPUT_MAP = {
         val_name: (arr_name, tuple(idx))
         for val_name, (arr_name, idx) in json.loads(
@@ -91,8 +107,10 @@ async def test_tb(dut):
         name: mod_obj for name, mod_obj in dut._sub_handles.items() if "output" in name
     }
 
-    if THRESHOLD:
-        n_wrong = 0
+    await FallingEdge(dut.clk)
+    await FallingEdge(dut.clk)
+
+    n_wrong = 0
 
     for i in range(LATENCY * TEST_VECTORS):
         if i % LATENCY == 0:
@@ -100,11 +118,12 @@ async def test_tb(dut):
                 module, WIDTH_EXPONENT, WIDTH_FRACTION, dut
             )
             # for arr_name, input in test_inputs.items():
-            #     print(
-            #         "input",
-            #         arr_name,
-            #         input,
-            #     )
+            #     if hasattr(input, "input") and input.input:
+            #         print(
+            #             "input",
+            #             arr_name,
+            #             list(input.registers.flatten() if isinstance(input, MemRef) else input.global_array.flatten()),
+            #         )
             # for arr_name, expected_output in expected_outputs.items():
             #     print(
             #         "expected output",
@@ -115,7 +134,6 @@ async def test_tb(dut):
         elif i % LATENCY == 1:
             dut.rst.value = 0
         elif i % LATENCY == LATENCY - 1:
-            passed = True
             for output_wire, output in [
                 (
                     wire,
@@ -123,68 +141,43 @@ async def test_tb(dut):
                         OUTPUT_MAP[wire_name][1]
                     ],
                 )
-                for wire_name, wire in output_wires.items()
+                for wire_name, wire in sorted(
+                    output_wires.items(),
+                    key=lambda wire_name_: int(wire_name_[0].split("_")[-1]),
+                )
             ]:
                 measured_output = output_wire.value.binstr
-                if output_wire.value.binstr[0] == "1" or output.fp.binstr()[0] == "1":
-                    print(f"overflow {i} with {output_wire.value.binstr}")
-                elif all(o == "0" for o in output.fp.binstr()) and measured_output != output.fp.binstr():
-                    # TODO: figure this out for real
-                    try:
-                        measured_output_str = f"<FPNumber {convert_flopoco_binary_str_to_float(measured_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{measured_output}>"
-                        print(
-                            "underflow",
-                            f"clk {i}",
-                            f"wire {output_wire._name}",
-                            f"measured output {measured_output_str}",
-                            f"true result {output}",
-                        )
-                    except Exception as e:
-                        print(f"Exception {e}")
-                        print(
-                            "underflow",
-                            f"clk {i}",
-                            f"wire {output_wire._name}",
-                            f"measured output <FPNumber UNICODE_ERROR:{measured_output}>",
-                            f"true result {output.fp}",
-                        )
-                else:
-                    if measured_output != output.fp.binstr():
-                        try:
-                            measured_output_str = f"<FPNumber {convert_flopoco_binary_str_to_float(measured_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{measured_output}>"
-                            print(
-                                "failed",
-                                f"clk {i}",
-                                f"measured output {measured_output_str}",
-                                f"true result {output}",
-                            )
-                        except Exception as e:
-                            print(f"Exception {e}")
-                            print(
-                                "failed",
-                                f"clk {i}",
-                                f"measured output <FPNumber UNICODE_ERROR:{measured_output}>",
-                                f"true result {output}",
-                            )
-                        passed = False
-                        if THRESHOLD:
-                            n_wrong += 1
+                expected_output = output.fp
+                if measured_output != expected_output.binstr():
+                    n_wrong += 1
 
-            if passed:
-                print(f"passed {i}")
-            elif not THRESHOLD:
-                await FallingEdge(dut.clk)
-                await FallingEdge(dut.clk)
-                assert False
+                if DEBUG:
+                    try:
+                        measured_output_str = f"{convert_flopoco_binary_str_to_float(measured_output, WIDTH_EXPONENT, WIDTH_FRACTION)}:{measured_output}"
+                    except:
+                        measured_output_str = f"UNICODE_ERROR:{measured_output}"
+                    expected_output_str = f"{expected_output}"
+                    print(output_wire._name)
+                    print("equal", measured_output == expected_output.binstr())
+                    print(measured_output_str)
+                    print(
+                        expected_output_str.replace("<FPNumber ", "").replace(">", "")
+                    )
+                    print("*" * 10)
+
+            print("click", i)
 
         await FallingEdge(dut.clk)
 
     if THRESHOLD:
-        num_all_vals = n_wrong / (TEST_VECTORS * len(output_wires))
+        total = TEST_VECTORS * len(output_wires)
+        num_all_vals = n_wrong / total
         print(
             "threshold",
             THRESHOLD,
-            "total n_wrong",
+            "total",
+            total,
+            "n_wrong",
             n_wrong,
             "percent failed",
             num_all_vals,

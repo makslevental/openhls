@@ -25,12 +25,9 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
     for op in op_datas:
         res_val = vals.get(op.res, op.res)
         assert res_val not in ip_res_val_map
-        if op.type in {OpType.ADD, OpType.SUB, OpType.MUL, OpType.DIV, OpType.MAX}:
+        if op.type in {OpType.ADD, OpType.DIV, OpType.MUL, OpType.SUB, OpType.MAX, OpType.NEG, OpType.RELU}:
             ip = getattr(pe, op.type.value, None)
             ip_res_val_map[res_val] = ip.r
-        elif op.type in {OpType.NEG, OpType.RELU}:
-            ip = getattr(pe, op.type.value, None)
-            ip_res_val_map[res_val] = ip.res
         elif op.type in {OpType.COPY}:
             # this is a hack for when a copy is the last thing just prior to a return
             ip_res_val_map[res_val] = res_val
@@ -71,10 +68,10 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
-                    [ip.a], [in_a], fsm.make_fsm_conditions([start_time])
+                    [ip.x], [in_a], fsm.make_fsm_conditions([start_time])
                 )
             )
-            not_latches.update({ip.a})
+            not_latches.update({ip.x})
         elif op.type in {OpType.COPY}:
             tree_conds.append(
                 make_always_branch(
@@ -217,13 +214,21 @@ def emit_verilog(
 
         # TODO: don't emit ip for pes that don't use (like eg div, of which there's only one)
         fadd = FAdd(pe_idx, signal_width)
-        fsub = FSub(pe_idx, signal_width)
-        fmul = FMul(pe_idx, signal_width)
         fdiv = FDiv(pe_idx, signal_width)
+        fmul = FMul(pe_idx, signal_width)
+        fsub = FSub(pe_idx, signal_width)
         fmax = FMax(pe_idx, signal_width)
         frelu = ReLU(pe_idx, signal_width)
         fneg = Neg(pe_idx, signal_width)
-        pes[pe_idx] = PE(fadd, fsub, fmul, fdiv, fmax, frelu, fneg, pe_idx)
+        pes[pe_idx] = PE(
+            fadd=fadd,
+            fdiv=fdiv,
+            fmul=fmul,
+            fsub=fsub,
+            fmax=fmax,
+            frelu=frelu,
+            fneg=fneg,
+            idx=pe_idx)
 
     ips_to_instantiate = defaultdict(set)
     pe_to_ops = defaultdict(list)

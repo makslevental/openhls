@@ -1,8 +1,8 @@
 module intcomparator_8_101_f300_uid4
-    (input clk,
-        input[7:0] x,
-        input[7:0] y,
-        output xlty,
+    (input wire clk,
+        input wire [7:0] x,
+        input wire [7:0] y,
+        output wire xlty,
         output xgty);
     wire xltyi;
     wire xgtyi;
@@ -26,12 +26,12 @@ module intcomparator_8_101_f300_uid4
     assign n96_o = n95_o ? 1'b1 : 1'b0;
 endmodule
 
-module fcmplt
-    (input clk,
-        input[10:0] X,
-        input[10:0] Y,
-        output unordered,
-        output XltY);
+module fcmplt #(parameter ID=1)
+    (input wire clk,
+        input wire [10:0] X,
+        input wire [10:0] Y,
+        output wire unordered,
+        output wire XltY);
     wire[1:0] excx;
     wire[1:0] excy;
     wire signx;

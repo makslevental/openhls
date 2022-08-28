@@ -4,15 +4,15 @@ module fneg
         ID=1,
         WIDTH=16
     )(
-    input clk,
-    input wire[WIDTH-1:0] a,
-    output reg[WIDTH-1:0] res
+    input wire clk,
+    input wire[WIDTH-1:0] X,
+    output reg[WIDTH-1:0] R
 );
     always @(posedge clk) begin
-        if (a != 0) begin
-            res <= a ^ (1 << (WIDTH-3));
+        if (X != 0) begin
+            R <= X ^ (1 << (WIDTH-3));
         end else begin
-            res <= a;
+            R <= X;
         end
     end
 endmodule

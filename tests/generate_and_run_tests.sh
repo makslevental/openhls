@@ -4,6 +4,7 @@ set -e
 THIS_DIR=.
 BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
 export BRAGGHLS_CONFIG_FP=$BRAGGHLS_DIR/bragghls_config.ini
+export DEBUG=0
 
 TB_RANDOM=$((1 + $RANDOM % 1000))
 
@@ -20,7 +21,6 @@ max
 neg
 relu
 sub
-#sub_max
 div
 dot_product
 soft_max
@@ -33,7 +33,8 @@ small_cnn
 )
 width_pairs=(
 #"3 3"
-"4 4"
+#"4 4"
+"5 4"
 "5 5"
 "6 6"
 "7 7"

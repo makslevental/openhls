@@ -20,6 +20,7 @@ from bragghls.compiler.runner import (
     run_model_with_fp_number,
 )
 from bragghls.flopoco.convert_flopoco import convert_flopoco_binary_str_to_float
+from bragghls.flopoco.ops import MemRef as FPMemRef
 from bragghls.util import import_module_from_fp
 
 logger = logging.getLogger(__file__)
@@ -48,6 +49,7 @@ def set_inputs(mod, width_exponent, width_fraction, dut=None):
         # test_inputs[inp_name][test_inputs[inp_name] > 1] = 1
         # test_inputs[inp_name] = np.random.randint(-10, 10, (inp_memref.shape))
         # test_inputs[inp_name] = np.ones(inp_memref.shape) * 1
+
     test_inputs, outputs = run_model_with_fp_number(
         mod, test_inputs, width_exponent=width_exponent, width_fraction=width_fraction
     )
@@ -93,6 +95,7 @@ async def test_tb(dut):
             os.getenv("OUTPUT_MAP", "{}")
         ).items()
     }
+    print(f"{TB_RANDOM=}")
 
     np.random.seed(TB_RANDOM)
 
@@ -117,19 +120,20 @@ async def test_tb(dut):
             test_inputs, expected_outputs = set_inputs(
                 module, WIDTH_EXPONENT, WIDTH_FRACTION, dut
             )
-            # for arr_name, input in test_inputs.items():
-            #     if hasattr(input, "input") and input.input:
-            #         print(
-            #             "input",
-            #             arr_name,
-            #             list(input.registers.flatten() if isinstance(input, MemRef) else input.global_array.flatten()),
-            #         )
-            # for arr_name, expected_output in expected_outputs.items():
-            #     print(
-            #         "expected output",
-            #         arr_name,
-            #         list(expected_output.registers.flatten()),
-            #     )
+            if DEBUG:
+                for arr_name, input in test_inputs.items():
+                    if hasattr(input, "input") and input.input:
+                        print(
+                            "input",
+                            arr_name,
+                            list(input.registers.flatten() if isinstance(input, FPMemRef) else input.global_array.flatten()),
+                        )
+                for arr_name, expected_output in expected_outputs.items():
+                    print(
+                        "expected output",
+                        arr_name,
+                        list(expected_output.registers.flatten()),
+                    )
             dut.rst.value = 1
         elif i % LATENCY == 1:
             dut.rst.value = 0
@@ -159,9 +163,12 @@ async def test_tb(dut):
                     expected_output_str = f"{expected_output}"
                     print(output_wire._name)
                     print("equal", measured_output == expected_output.binstr())
-                    print(measured_output_str)
+                    print("measured output", measured_output_str)
                     print(
-                        expected_output_str.replace("<FPNumber ", "").replace(">", "")
+                        "expected output fp", expected_output_str.replace("<FPNumber ", "").replace(">", "")
+                    )
+                    print(
+                        "expected output ieee", output.ieee
                     )
                     print("*" * 10)
 

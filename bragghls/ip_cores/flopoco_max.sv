@@ -1,8 +1,8 @@
-module fmax#(parameter
+module fmax #(parameter
     ID=1,
     WIDTH=10
 )
-    (input clk,
+    (input wire clk,
         input wire[WIDTH-1:0] X,
         input wire[WIDTH-1:0] Y,
         output reg[WIDTH-1:0] R
@@ -11,7 +11,7 @@ module fmax#(parameter
     wire unordered;
     wire XltY;
 
-    fcmplt _fcmplt(
+    fcmplt#(ID) _fcmplt(
         clk,
         X,
         Y,

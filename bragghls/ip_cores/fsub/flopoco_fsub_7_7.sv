@@ -1,9 +1,9 @@
 module intadder_16_f300_uid1333
-    (input clk,
-        input[15:0] x,
-        input[15:0] y,
-        input cin,
-        output[15:0] r);
+    (input wire clk,
+        input wire [15:0] x,
+        input wire [15:0] y,
+        input wire cin,
+       output wire [15:0] r);
     wire cin_1;
     wire cin_1_d1;
     wire[16:0] x_1;
@@ -76,11 +76,11 @@ module intadder_16_f300_uid1333
 endmodule
 
 module intadder_11_f300_uid1000
-    (input clk,
-        input[10:0] x,
-        input[10:0] y,
-        input cin,
-        output[10:0] r);
+    (input wire clk,
+        input wire [10:0] x,
+        input wire [10:0] y,
+        input wire cin,
+       output wire [10:0] r);
     wire[10:0] rtmp;
     wire[10:0] x_d1;
     wire[10:0] x_d2;
@@ -125,11 +125,11 @@ module intadder_11_f300_uid1000
 endmodule
 
 module rightshiftersticky8_by_max_10_f300_uid88
-    (input clk,
-        input[7:0] x,
-        input[3:0] s,
-        output[9:0] r,
-        output sticky);
+    (input wire clk,
+        input wire [7:0] x,
+        input wire [3:0] s,
+       output wire [9:0] r,
+        output wire sticky);
     wire[3:0] ps;
     wire[3:0] ps_d1;
     wire[3:0] ps_d2;
@@ -363,10 +363,10 @@ module rightshiftersticky8_by_max_10_f300_uid88
 endmodule
 
 module normalizer_z_9_9_9_f300_uid66
-    (input clk,
-        input[8:0] x,
-        output[3:0] count,
-        output[8:0] r);
+    (input wire clk,
+        input wire [8:0] x,
+       output wire [3:0] count,
+       output wire [8:0] r);
     wire[8:0] level4;
     wire[8:0] level4_d1;
     wire count3;
@@ -530,11 +530,11 @@ module normalizer_z_9_9_9_f300_uid66
 endmodule
 
 module intdualsub_10_f300_uid444
-    (input clk,
-        input[9:0] x,
-        input[9:0] y,
-        output[9:0] xmy,
-        output[9:0] ymx);
+    (input wire clk,
+        input wire [9:0] x,
+        input wire [9:0] y,
+       output wire [9:0] xmy,
+       output wire [9:0] ymx);
     wire[9:0] temprxmy;
     wire[9:0] temprymx;
     wire[9:0] n318_o;
@@ -564,10 +564,10 @@ module intdualsub_10_f300_uid444
 endmodule
 
 module fsub#(parameter ID=1)
-    (input clk,
-        input[16:0] X,
-        input[16:0] Y,
-        output[16:0] R);
+    (input wire clk,
+        input wire [16:0] X,
+        input wire [16:0] Y,
+       output wire [16:0] R);
     wire[16:0] inx;
     wire[16:0] iny;
     wire exceptionxsuperiory;

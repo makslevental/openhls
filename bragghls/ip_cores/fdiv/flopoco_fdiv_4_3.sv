@@ -1,6 +1,6 @@
 module selfunction_f300_uid4
-    (input[8:0] x,
-        output[2:0] y);
+    (input wire [8:0] x,
+       output wire [2:0] y);
     wire[2:0] y0;
     wire[2:0] y1;
     wire n303_o;
@@ -2067,10 +2067,10 @@ module selfunction_f300_uid4
 endmodule
 
 module fdiv#(parameter ID=1)
-    (input clk,
-        input[9:0] X,
-        input[9:0] Y,
-        output[9:0] R);
+    (input wire clk,
+        input wire [9:0] X,
+        input wire [9:0] Y,
+       output wire [9:0] R);
     wire[3:0] fx;
     wire[3:0] fy;
     wire[5:0] expr0;

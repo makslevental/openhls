@@ -65,7 +65,7 @@ into this
   <img height="1000" src="docs/images/bragghls_done.png" alt="">
 </p>
 <p align="center">
-   1200 intervals at ~100 MHz on Xilinx Alveo U280
+   1200 intervals at ~100 MHz on Xilinx Alveo U280 with <b>pipeline depth 2</b> (and so the throughput is actually ~4.7μs/sample)
 </p>
 <p align="center">
   (Red represents FMUL logic, green represents FADD logic)

@@ -101,15 +101,3 @@ write_qor_suggestions -force       -file ${reports_dir}/qor_suggestions/post_rou
 
 exit 0
 
-
-#highlight_objects -color green -leaf_cells [get_cells _forward_inner/fadd*]
-#highlight_objects -color red -leaf_cells [get_cells _forward_inner/fmul*]
-#highlight_objects -color red -leaf_cells [get_cells sigProd*]
-#highlight_objects -color red -leaf_cells [get_cells sigProd*]
-#highlight_objects -color red -leaf_cells [get_cells sticky_d1*]
-#highlight_objects -color red -leaf_cells [get_cells sign_d1*]
-#highlight_objects -color red -leaf_cells [get_cells _forward_inner/sign_d1*]
-#highlight_objects -color red -leaf_cells [get_cells exc_d1*]
-#highlight_objects -color red -leaf_cells [get_cells expSig*]
-#highlight_objects -color red -leaf_cells [get_cells expSumPre*]
-#highlight_objects -color red -leaf_cells [get_cells fmul*]

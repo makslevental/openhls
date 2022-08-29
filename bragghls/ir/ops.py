@@ -331,10 +331,12 @@ def SelfCopy(memref):
 
 def ReduceTiling(fmac_arr, init_arr):
     assert (
-        fmac_arr.registers.shape[1:] == init_arr.registers.shape
+        fmac_arr.registers.shape[:len(init_arr.shape)] == init_arr.registers.shape
     ), f"{fmac_arr.arr_name} fmac_arr {fmac_arr.registers.shape} and {init_arr.arr_name} init_arr {init_arr.registers.shape} shape don't match"
-    fmac_arr.registers = np.vstack([fmac_arr.registers, init_arr.registers[np.newaxis]])
-    fmac_arr.registers = np.apply_along_axis(ReduceAdd, 0, fmac_arr.registers)
+    reduction_dim_sizes = fmac_arr.registers.shape[len(init_arr.shape):]
+    to_reduce = fmac_arr.registers.reshape([*init_arr.shape, np.prod(reduction_dim_sizes)])
+    inited = np.concatenate([to_reduce, np.expand_dims(init_arr.registers, axis=-1)], axis=-1)
+    fmac_arr.registers = np.apply_along_axis(ReduceAdd, -1, inited)
     fmac_arr.shape = fmac_arr.registers.shape
     SelfCopy(fmac_arr)
     # TODO figure this out re double_cnn and the last reduction

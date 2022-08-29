@@ -199,7 +199,7 @@ def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
     add_files -norecurse -scan_for_includes flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
     
-    sub_files -norecurse -scan_for_includes flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
+    add_files -norecurse -scan_for_includes flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
 
     update_compile_order -fileset sources_1

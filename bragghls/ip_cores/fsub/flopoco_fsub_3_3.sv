@@ -110,7 +110,7 @@ module intadder_7_f300_uid1000
         n432_q <= y_1_d1;
 endmodule
 
-module rightshiftersticky4_by_max_6_f300_uid8
+module rightshiftersticky4_by_max_6_f300_uid8888888888888888
     (input wire clk,
         input wire [3:0] x,
         input wire [2:0] s,
@@ -274,7 +274,7 @@ module rightshiftersticky4_by_max_6_f300_uid8
         n409_q <= level1;
 endmodule
 
-module normalizer_z_5_5_5_f300_uid6
+module normalizer_z_5_5_5_f300_uid666666
     (input wire clk,
         input wire [4:0] x,
        output wire [2:0] count,
@@ -1047,7 +1047,7 @@ module fsub#(parameter ID=1)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_3_3.vhdl:464:23  */
     assign norm_n110 = norm_r; // (signal)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_3_3.vhdl:460:4  */
-    normalizer_z_5_5_5_f300_uid6 norm(
+    normalizer_z_5_5_5_f300_uid666666 norm(
         .clk(clk),
         .x(fracrclose1),
         .count(norm_count),
@@ -1083,7 +1083,7 @@ module fsub#(parameter ID=1)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_3_3.vhdl:479:28  */
     assign rightshiftercomponent_n135 = rightshiftercomponent_sticky; // (signal)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_3_3.vhdl:474:4  */
-    rightshiftersticky4_by_max_6_f300_uid8 rightshiftercomponent(
+    rightshiftersticky4_by_max_6_f300_uid8888888888888888 rightshiftercomponent(
         .clk(clk),
         .x(fracnewy),
         .s(shiftval),

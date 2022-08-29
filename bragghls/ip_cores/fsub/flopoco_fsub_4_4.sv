@@ -1,4 +1,4 @@
-module intadder_10_f300_uid1333
+module intadder_10_f300_uid13333
     (input wire clk,
         input wire [9:0] x,
         input wire [9:0] y,
@@ -1234,7 +1234,7 @@ module fsub#(parameter ID=1)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_4_4.vhdl:528:23  */
     assign fpsub_4_4_f300_uid2_finalroundadd_n225 = fpsub_4_4_f300_uid2_finalroundadd_r; // (signal)
     /* /home/mlevental/dev_projects/bragghls/scripts/flopoco_fsub_4_4.vhdl:523:4  */
-    intadder_10_f300_uid13 fpsub_4_4_f300_uid2_finalroundadd(
+    intadder_10_f300_uid13333 fpsub_4_4_f300_uid2_finalroundadd(
         .clk(clk),
         .x(resultbeforeround),
         .y(n224_o),

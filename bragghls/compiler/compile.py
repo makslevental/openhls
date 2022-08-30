@@ -18,7 +18,7 @@ from bragghls.config import DEBUG, WIDTH_EXPONENT, WIDTH_FRACTION
 from bragghls.ir.parse import parse_mlir_module
 from bragghls.ir.transforms import transform_forward, rewrite_schedule_vals
 from bragghls.rtl.emit_verilog import emit_verilog
-from bragghls.rtl.ip import generate_imports_tcl
+from bragghls.rtl.basic import generate_imports_tcl, gen_clock_xdc
 from bragghls.testbench.tb_runner import testbench_runner
 from bragghls.util import import_module_from_fp, import_module_from_string
 
@@ -117,6 +117,7 @@ def compile(
     width_fraction,
     n_test_vectors,
     threshold,
+    clock_period,
 ):
     fp = os.path.abspath(fp)
     dirname, filename = os.path.split(fp)
@@ -219,6 +220,13 @@ def compile(
         with open(f"{artifacts_dir}/imports.tcl", "w") as f:
             f.write(imports_file)
 
+        clock_xdc_file = gen_clock_xdc(
+            input_wires, output_wires, clock_period=clock_period
+        )
+        clock_xdc_file = clock_xdc_file.replace("%", "p_")
+        with open(f"{artifacts_dir}/clock.xdc", "w") as f:
+            f.write(clock_xdc_file)
+
         logger.info(f"Final FSM time step {max_fsm_stage}")
 
     logger.info(f"RTL top-level {name}")
@@ -309,6 +317,13 @@ def main():
         type=float,
         help="Test for average number of testbench failures instead of absolute",
     )
+    parser.add_argument(
+        "-c",
+        "--clock_period",
+        type=float,
+        default=10,
+        help="Clock period (for synthesis)",
+    )
     args = parser.parse_args()
     compile(
         args.fp,
@@ -321,6 +336,7 @@ def main():
         WIDTH_FRACTION,
         args.n_test_vectors,
         args.threshold,
+        args.clock_period
     )
 
 

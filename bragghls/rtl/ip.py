@@ -169,44 +169,6 @@ class PE:
     idx: Tuple[int, ...]
 
 
-def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
-    return dedent(
-        f"""\
-    add_files -fileset constrs_1 -norecurse alveo-u280-xdc.xdc
-    import_files -fileset constrs_1 alveo-u280-xdc.xdc
-
-    add_files -norecurse -scan_for_includes {sv_filename} -force
-    import_files -norecurse {sv_filename} -force
-
-    add_files -norecurse -scan_for_includes flopoco_relu.sv -force
-    import_files -norecurse flopoco_relu.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_neg.sv -force
-    import_files -norecurse flopoco_neg.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_max.sv -force
-    import_files -norecurse flopoco_max.sv -force
-
-    add_files -norecurse -scan_for_includes flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
-    import_files -norecurse flopoco_fadd_{width_exponent}_{width_fraction}.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_fcmplt_{width_exponent}_{width_fraction}.sv -force
-    import_files -norecurse flopoco_fcmplt_{width_exponent}_{width_fraction}.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_fdiv_{width_exponent}_{width_fraction}.sv -force
-    import_files -norecurse flopoco_fdiv_{width_exponent}_{width_fraction}.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
-    import_files -norecurse flopoco_fmul_{width_exponent}_{width_fraction}.sv -force
-    
-    add_files -norecurse -scan_for_includes flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
-    import_files -norecurse flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
-
-    update_compile_order -fileset sources_1
-    """
-    )
-
-
 if __name__ == "__main__":
     print(FAdd((0, 0), 11).instantiate())
     print(FMul((0, 0), 11).instantiate())

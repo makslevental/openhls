@@ -33,9 +33,28 @@ if { [file exists ${reports_dir}/qor_suggestions/post_route.rqs] == 1} {
 
 puts "\n===========================( RTL Synthesize and Map )==========================="
 
-set top $::env(TOP)
+create_fileset -blockset -define_from braggnn_part_1 braggnn_part_1
+create_fileset -blockset -define_from braggnn_part_2 braggnn_part_2
+create_fileset -blockset -define_from braggnn_part_3 braggnn_part_3
+set ooc_runs [get_runs -filter {IS_SYNTHESIS && name != "synth_1"} ]
+foreach run $ooc_runs {
+  reset_run $run
+  set_property -dict [ list \
+   STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY full \
+   STEPS.SYNTH_DESIGN.ARGS.DIRECTIVE AlternateRoutability \
+   STEPS.SYNTH_DESIGN.ARGS.FSM_EXTRACTION one_hot \
+   STEPS.SYNTH_DESIGN.ARGS.RESOURCE_SHARING off \
+   STEPS.SYNTH_DESIGN.ARGS.SHREG_MIN_SIZE 10 \
+   STEPS.SYNTH_DESIGN.ARGS.KEEP_EQUIVALENT_REGISTERS true \
+   STEPS.SYNTH_DESIGN.ARGS.NO_LC true \
+   ] [get_runs $run]
+}
+if { [ llength $ooc_runs ] } {
+  launch_runs -jobs 16 $ooc_runs
+}
+foreach run $ooc_runs { wait_on_run $run }
 
-eval synth_design -top $top -flatten_hierarchy full -mode out_of_context -retiming -directive AlternateRoutability -fsm_extraction one_hot -resource_sharing off -shreg_min_size 10 -keep_equivalent_registers -no_lc
+eval synth_design -top braggnn -flatten_hierarchy full -mode out_of_context -retiming -directive AlternateRoutability -fsm_extraction one_hot -resource_sharing off -shreg_min_size 10 -keep_equivalent_registers -no_lc
 write_checkpoint -force ${checkpoints_dir}/pre_opt
 
 report_utilization -hierarchical -force -file ${reports_dir}/post_synth/pre_opt_hierarchical_utilization.rpt
@@ -51,8 +70,28 @@ report_methodology  -file ${reports_dir}/post_synth/methodology.rpt
 
 puts "\n================================( Place Design )================================="
 
-#set_property ALLOW_COMBINATORIAL_LOOPS TRUE [get_nets -regexp .*]
-#eval place_design -directive SSI_SpreadLogic_high -ultrathreads -fanout_opt
+create_pblock pblock_1
+set_property CONTAIN_ROUTING 1 [get_pblocks pblock_1]
+set_property IS_SOFT 0 [get_pblocks pblock_1]
+resize_pblock pblock_1 -add SLR2:SLR2
+add_cells_to_pblock pblock_1 [get_cells [list part_1]] -clear_locs
+add_cells_to_pblock pblock_1 [get_cells -regexp part_1_launch_output_p.*] -clear_locs
+
+create_pblock pblock_2
+set_property CONTAIN_ROUTING 1 [get_pblocks pblock_2]
+set_property IS_SOFT 0 [get_pblocks pblock_2]
+resize_pblock pblock_2 -add SLR1:SLR1
+add_cells_to_pblock pblock_2 [get_cells [list part_2]] -clear_locs
+add_cells_to_pblock pblock_2 [get_cells -regexp part_1_land_output_p.*] -clear_locs
+add_cells_to_pblock pblock_2 [get_cells -regexp part_2_launch_output_p.*] -clear_locs
+
+create_pblock pblock_3
+set_property CONTAIN_ROUTING 1 [get_pblocks pblock_3]
+set_property IS_SOFT 0 [get_pblocks pblock_3]
+resize_pblock pblock_3 -add SLR0:SLR0
+add_cells_to_pblock pblock_3 [get_cells [list part_3]] -clear_locs
+add_cells_to_pblock pblock_3 [get_cells -regexp part_2_land_output_p.*] -clear_locs
+
 eval place_design -ultrathreads -fanout_opt
 
 puts "\n==============================( Post-place optimization )================================"

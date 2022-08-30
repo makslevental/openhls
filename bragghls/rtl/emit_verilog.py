@@ -25,7 +25,15 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
     for op in op_datas:
         res_val = vals.get(op.res, op.res)
         assert res_val not in ip_res_val_map
-        if op.type in {OpType.ADD, OpType.DIV, OpType.MUL, OpType.SUB, OpType.MAX, OpType.NEG, OpType.RELU}:
+        if op.type in {
+            OpType.ADD,
+            OpType.DIV,
+            OpType.MUL,
+            OpType.SUB,
+            OpType.MAX,
+            OpType.NEG,
+            OpType.RELU,
+        }:
             ip = getattr(pe, op.type.value, None)
             ip_res_val_map[res_val] = ip.r
         elif op.type in {OpType.COPY}:
@@ -143,6 +151,31 @@ def make_pblock_bridge(ip_name, input_wires, output_wires, width_exp, width_frac
     return s.read()
 
 
+def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_frac):
+    if USING_FLOPOCO:
+        signal_width = width_exp + width_frac + 3
+    else:
+        raise Exception("not using flopoco thus invalid signal width")
+    inputs = input_wires
+    outputs = output_wires
+    base_inputs = ["clk", "rst"]
+    input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
+    output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
+    input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
+    output_wires = ",\n".join([f"output wire {outp}" for outp in output_ports])
+
+    mod_top = "`default_nettype none"
+    mod_inner = dedent(
+        f"""\
+        module {ip_name} (
+        """
+    )
+    mod_inner += indent(dedent(input_wires + ",\n" + output_wires), "\t")
+    mod_inner += "\n);\n"
+
+    return "\n".join([mod_top, mod_inner])
+
+
 def emit_verilog(
     ip_name,
     width_exp,
@@ -228,7 +261,8 @@ def emit_verilog(
             fmax=fmax,
             frelu=frelu,
             fneg=fneg,
-            idx=pe_idx)
+            idx=pe_idx,
+        )
 
     ips_to_instantiate = defaultdict(set)
     pe_to_ops = defaultdict(list)
@@ -258,9 +292,12 @@ def emit_verilog(
         emit(make_pe_always(fsm, pe, op_datas, vals, input_wires, ip_res_val_map))
     emit(fsm.make_fsm())
 
+    output_wire_names = []
     for v, wire in output_wires.items():
         reg = Reg(wire.id, wire.signal_width)
-        emit(f"assign output_{wire} = {ip_res_val_map[reg]};")
+        output_wire_name = f"output_{wire}"
+        emit(f"assign {output_wire_name} = {ip_res_val_map[reg]};")
+        output_wire_names.append(output_wire_name)
 
     emit(
         dedent(
@@ -278,29 +315,4 @@ def emit_verilog(
     emit("endmodule")
 
     s.seek(0)
-    return s.read(), input_wires, output_wires, fsm.max_fsm_stage
-
-
-def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_frac):
-    if USING_FLOPOCO:
-        signal_width = width_exp + width_frac + 3
-    else:
-        raise Exception("not using flopoco thus invalid signal width")
-    inputs = input_wires
-    outputs = output_wires
-    base_inputs = ["clk", "rst"]
-    input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
-    output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
-    input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
-    output_wires = ",\n".join([f"output wire {outp}" for outp in output_ports])
-
-    mod_top = "`default_nettype none"
-    mod_inner = dedent(
-        f"""\
-        module {ip_name} (
-        """
-    )
-    mod_inner += indent(dedent(input_wires + ",\n" + output_wires), "\t")
-    mod_inner += "\n);\n"
-
-    return "\n".join([mod_top, mod_inner])
+    return s.read(), input_wires, output_wire_names, fsm.max_fsm_stage

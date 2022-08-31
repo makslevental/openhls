@@ -72,14 +72,14 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                     fsm.make_fsm_conditions([start_time]),
                 )
             )
-            not_latches.update({ip.x, ip.y})
+            # not_latches.update({ip.x, ip.y})
         elif op.type in {OpType.NEG, OpType.RELU}:
             tree_conds.append(
                 make_always_branch(
                     [ip.x], [in_a], fsm.make_fsm_conditions([start_time])
                 )
             )
-            not_latches.update({ip.x})
+            # not_latches.update({ip.x})
         elif op.type in {OpType.COPY}:
             tree_conds.append(
                 make_always_branch(
@@ -104,7 +104,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
         if DEBUG:
             tree_conds.append(f"\t// {op.emit()} end\n")
 
-    return make_always_tree(tree_conds, not_latches, comb_or_seq=CombOrSeq.SEQ)
+    return make_always_tree(tree_conds, not_latches)
 
 
 def make_pblock_bridge(ip_name, input_wires, output_wires, width_exp, width_frac):

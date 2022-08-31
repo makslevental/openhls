@@ -60,15 +60,16 @@ class CombOrSeq(enum.Enum):
     SEQ = "posedge clk"
 
 
-def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.SEQ):
+def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
     vals_to_init = sorted([f"\t{v} <= 1'b0;" for v in vals_to_init])
 
     return "\n".join(
+        # [f"always @ ({comb_or_seq.value}) begin"] + vals_to_init + conds + ["end"]
         [f"always @ ({comb_or_seq.value}) begin"] + vals_to_init + conds + ["end"]
     )
 
 
-def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.SEQ):
+def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.COMB):
     return indent(
         dedent(
             "\n".join(
@@ -84,19 +85,19 @@ def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.SEQ):
     )
 
 
-def make_fmac_branches(pe, fmul_states, fadd_states, init_val, args):
+def make_fmac_branches(pe, fmul_states, fadd_states, init_val, args, comb_or_seq=CombOrSeq.COMB):
     return indent(
         dedent(
             "\n".join(
                 [
                     f"""\
         if (1'b1 == {fsm_state}) begin
-            {pe.fmul.x} <= {args[2 * i]};
-            {pe.fmul.y} <= {args[2 * i + 1]};
+            {pe.fmul.x} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {args[2 * i]};
+            {pe.fmul.y} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {args[2 * i + 1]};
         end
         if (1'b1 == {fadd_states[i]}) begin
-            {pe.fadd.x} <= {init_val if i == 0 else pe.fadd.r};
-            {pe.fadd.y} <= {pe.fmul.r};
+            {pe.fadd.x} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {init_val if i == 0 else pe.fadd.r};
+            {pe.fadd.y} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} {pe.fmul.r};
         end
         """
                     for i, fsm_state in enumerate(fmul_states)

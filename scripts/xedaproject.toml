@@ -1,0 +1,28 @@
+[[design]]
+name = 'linear'
+
+[design.rtl]
+sources = [
+    "flopoco_fadd_5_4.sv",
+    "flopoco_fcmplt_5_4.sv",
+    "flopoco_fdiv_5_4.sv",
+    "flopoco_fmul_5_4.sv",
+    "flopoco_fsub_5_4.sv",
+    "flopoco_max.sv",
+    "flopoco_neg.sv",
+    "flopoco_relu.sv",
+    "linear.sv",
+    "alveo-u280-xdc.xdc"
+]
+
+top = 'linear'
+clock_port = 'clk'
+
+[flows.vivado_synth]
+fpga.part = 'xcu280-fsvh2892-2L-e'
+clock_period = 5.0
+synth.strategy = 'Timing'
+impl.strategy = 'Timing'
+out_of_context = true
+write_checkpoint = true
+timeout_seconds = 86400

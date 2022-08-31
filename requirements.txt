@@ -12,3 +12,5 @@ matplotlib
 -f https://github.com/llvm/torch-mlir/releases
 --pre
 torch-mlir
+
+git+https://github.com/makslevental/xeda@read_xdc

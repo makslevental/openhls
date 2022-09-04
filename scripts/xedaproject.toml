@@ -21,8 +21,8 @@ clock_port = 'clk'
 [flows.vivado_synth]
 fpga.part = 'xcu280-fsvh2892-2L-e'
 clock_period = 5.0
-synth.strategy = 'Timing'
-impl.strategy = 'Timing'
+synth.strategy = 'ExtraTimingAltRouting'
+impl.strategy = 'ExtraTimingAltRouting'
 out_of_context = true
 write_checkpoint = true
 timeout_seconds = 86400

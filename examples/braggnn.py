@@ -311,3 +311,9 @@ if __name__ == "__main__":
         os.makedirs(f"{out_dir}", exist_ok=True)
         dot_str = make(args.scale, img_size=args.img_size, simplify_weights=False)
         open(f"{out_dir}/braggnn_part_{i}.mlir", "w").write(dot_str)
+    out_dir = (
+        args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts"
+    ).resolve()
+    os.makedirs(f"{out_dir}", exist_ok=True)
+    dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=False)
+    open(f"{out_dir}/braggnn.mlir", "w").write(dot_str)

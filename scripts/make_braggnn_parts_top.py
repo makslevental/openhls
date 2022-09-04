@@ -57,6 +57,8 @@ for part_1_output in part_1_outputs:
     top.write(f"(* USER_SLL_REG=\"true\", shreg_extract=\"no\" *) reg [{signal_width - 1}:0] part_1_launch_{part_1_output};\n")
 for part_1_output in part_1_outputs:
     top.write(f"(* USER_SLL_REG=\"true\", shreg_extract=\"no\" *) reg [{signal_width - 1}:0] part_1_land_{part_1_output};\n")
+for part_1_output in part_1_outputs:
+    top.write(f"wire [{signal_width - 1}:0] part_1_land_{part_1_output}_wire;\n")
 
 top.write("\n")
 
@@ -75,41 +77,41 @@ for part_1_output in part_1_outputs[:-1]:
 top.write(f"part_1_{part_1_outputs[-1]}\n")
 top.write(");\n")
 
+# mux in
+
 top.write("\n")
 
-comb_or_seq = CombOrSeq.SEQPOS
 
-top.write("// posedge\n")
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
-for part_1_output in part_1_outputs[:len(part_1_outputs) // 2]:
+for part_1_output in part_1_outputs:
     top.write(f"part_1_launch_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_{part_1_output};\n")
 top.write("end\n")
 
-comb_or_seq = CombOrSeq.SEQNEG
 
-top.write("// negedge\n")
-top.write(f"always @ ({comb_or_seq.value}) begin\n")
-for part_1_output in part_1_outputs[len(part_1_outputs) // 2:]:
-    top.write(f"part_1_launch_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_{part_1_output};\n")
-top.write("end\n")
+launch_regs = [f"part_1_launch_{part_1_output}" for part_1_output in part_1_outputs]
+land_wires = [f"part_1_land_{part_1_output}_wire" for part_1_output in part_1_outputs]
 
-top.write("\n")
-
-comb_or_seq = CombOrSeq.SEQPOS
-
-top.write(f"always @ ({comb_or_seq.value}) begin\n")
-for part_1_output in part_1_outputs[:len(part_1_outputs) // 2]:
-    top.write(f"part_1_land_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_launch_{part_1_output};\n")
-top.write("end\n")
-
-comb_or_seq = CombOrSeq.SEQNEG
-
-top.write(f"always @ ({comb_or_seq.value}) begin\n")
-for part_1_output in part_1_outputs[:len(part_1_outputs) // 2]:
-    top.write(f"part_1_land_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_launch_{part_1_output};\n")
-top.write("end\n")
+top.write(f"""\
+wire out;
+counter#(1) counter_(
+    .clk(clk),
+    .rst(rst),
+    .out(out)
+);
+mux_to_demux_2#({(len(part_1_outputs) // 2) * signal_width}) uut(
+    .inp({{{','.join(launch_regs)}}}),
+    .sel(out),
+    .outp({{{','.join(land_wires)}}})
+);
+""")
 
 top.write("\n")
+
+top.write(f"always @ ({comb_or_seq.value}) begin\n")
+for part_1_output in part_1_outputs:
+    top.write(f"part_1_land_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_land_{part_1_output}_wire;\n")
+top.write("end\n")
+
 
 for part_2_output in part_2_outputs:
     top.write(f"wire [{signal_width - 1}:0] part_2_{part_2_output};\n")
@@ -138,19 +140,15 @@ top.write(");\n")
 
 top.write("\n")
 
-comb_or_seq = CombOrSeq.SEQPOS
-
-top.write("always @ ({comb_or_seq.value}) begin\n")
-for part_2_output in part_2_outputs[:len(part_2_outputs) // 2]:
+top.write(f"always @ ({comb_or_seq.value}) begin\n")
+for part_2_output in part_2_outputs:
     top.write(f"part_2_launch_{part_2_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_2_{part_2_output};\n")
 top.write("end\n")
 
 top.write("\n")
 
-comb_or_seq = CombOrSeq.SEQNEG
-
-top.write("always @ ({comb_or_seq.value}) begin\n")
-for part_2_output in part_2_outputs[len(part_2_outputs) // 2:]:
+top.write(f"always @ ({comb_or_seq.value}) begin\n")
+for part_2_output in part_2_outputs:
     top.write(f"part_2_land_{part_2_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_2_launch_{part_2_output};\n")
 top.write("end\n")
 

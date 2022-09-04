@@ -156,13 +156,7 @@ def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_fr
         signal_width = width_exp + width_frac + 3
     else:
         raise Exception("not using flopoco thus invalid signal width")
-    inputs = input_wires
-    outputs = output_wires
     base_inputs = ["clk", "rst"]
-    input_ports = [f"[{signal_width - 1}:0] {i}" for i in inputs]
-    output_ports = [f"[{signal_width - 1}:0] {o}" for o in outputs]
-    input_wires = ",\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
-    output_wires = ",\n".join([f"output wire {outp}" for outp in output_ports])
 
     mod_top = "`default_nettype none"
     mod_inner = dedent(
@@ -170,8 +164,19 @@ def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_fr
         module {ip_name} (
         """
     )
-    mod_inner += indent(dedent(input_wires + ",\n" + output_wires), "\t")
+
+    input_ports = ",\n".join(map(str, input_wires + base_inputs))
+    output_ports = ",\n".join(map(str, output_wires))
+    mod_inner += indent(dedent(input_ports + ",\n" + output_ports), "\t")
     mod_inner += "\n);\n"
+
+    input_ports = [f"[{signal_width - 1}:0] {i}" for i in input_wires]
+    output_ports = [f"[{signal_width - 1}:0] {o}" for o in output_wires]
+    input_wires = ";\n".join([f"input wire {inp}" for inp in base_inputs + input_ports])
+    output_wires = ";\n".join([f"output wire {outp}" for outp in output_ports]) + ";"
+
+    mod_inner += indent(dedent(input_wires + ";\n" + output_wires), "\t")
+    mod_inner += "\n\n"
 
     return "\n".join([mod_top, mod_inner])
 
@@ -315,4 +320,23 @@ def emit_verilog(
     emit("endmodule")
 
     s.seek(0)
-    return s.read(), input_wires, output_wire_names, fsm.max_fsm_stage
+    module = s.read()
+
+    s.seek(0)
+    s.truncate()
+
+    emit(
+        make_top_module_decl(
+            ip_name,
+            list(input_wires.values()),
+            list(f"output_{v}" for v in output_wires.values()),
+            width_exp,
+            width_frac,
+        )
+    )
+    emit("endmodule")
+    s.seek(0)
+
+    blackbox = s.read()
+
+    return module, blackbox, input_wires, output_wire_names, fsm.max_fsm_stage

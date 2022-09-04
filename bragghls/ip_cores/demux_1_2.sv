@@ -2,7 +2,7 @@ module demux_1x2#(parameter
     WIDTH=2
 )(
     input wire[WIDTH-1:0] y,               // 1 Input
-    input sel,       // Select
+    input wire sel,       // Select
     output wire[1:0][WIDTH-1:0] outp
 );
     assign outp[1'b0] = (sel == 1'b0) ? y:0;

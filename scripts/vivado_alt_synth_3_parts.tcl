@@ -54,6 +54,10 @@ if { [ llength $ooc_runs ] } {
 }
 foreach run $ooc_runs { wait_on_run $run }
 
+# read_checkpoint -cell part_1 braggnn_part_1_synth_1/braggnn_part_1.dcp
+# read_checkpoint -cell part_2 braggnn_part_2_synth_1/braggnn_part_2.dcp
+# read_checkpoint -cell part_3 braggnn_part_3_synth_1/braggnn_part_3.dcp
+
 eval synth_design -top braggnn -flatten_hierarchy full -mode out_of_context -retiming -directive AlternateRoutability -fsm_extraction one_hot -resource_sharing off -shreg_min_size 10 -keep_equivalent_registers -no_lc
 write_checkpoint -force ${checkpoints_dir}/pre_opt
 
@@ -75,6 +79,7 @@ set_property CONTAIN_ROUTING 1 [get_pblocks pblock_1]
 set_property IS_SOFT 0 [get_pblocks pblock_1]
 resize_pblock pblock_1 -add SLR2:SLR2
 add_cells_to_pblock pblock_1 [get_cells [list part_1]] -clear_locs
+# add_cells_to_pblock pblock_1 [get_cells [list MUX_2X1]] -clear_locs
 add_cells_to_pblock pblock_1 [get_cells -regexp part_1_launch_output_p.*] -clear_locs
 
 create_pblock pblock_2
@@ -82,6 +87,7 @@ set_property CONTAIN_ROUTING 1 [get_pblocks pblock_2]
 set_property IS_SOFT 0 [get_pblocks pblock_2]
 resize_pblock pblock_2 -add SLR1:SLR1
 add_cells_to_pblock pblock_2 [get_cells [list part_2]] -clear_locs
+# add_cells_to_pblock pblock_2 [get_cells [list DEMUX_1X2]] -clear_locs
 add_cells_to_pblock pblock_2 [get_cells -regexp part_1_land_output_p.*] -clear_locs
 add_cells_to_pblock pblock_2 [get_cells -regexp part_2_launch_output_p.*] -clear_locs
 
@@ -139,4 +145,3 @@ report_qor_suggestions -max_paths 1000 -report_all_suggestions -max_strategies 1
 write_qor_suggestions -force       -file ${reports_dir}/qor_suggestions/post_route.rqs
 
 exit 0
-

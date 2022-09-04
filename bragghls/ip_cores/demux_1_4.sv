@@ -2,7 +2,7 @@ module demux_1x4#(parameter
     WIDTH=2
 )(
     input wire[WIDTH-1:0] y,               // 1 Input
-    input[1:0] sel,       // Select
+    input wire [1:0] sel,       // Select
     // output wire[WIDTH-1:0] a, b, c, d       // 4 Outputs
     output wire[3:0][WIDTH-1:0] outp
 );

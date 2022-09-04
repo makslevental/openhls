@@ -193,7 +193,7 @@ def compile(
 
     if do_verilog:
         logger.info("Emitting RTL")
-        verilog_file, input_wires, output_wires, max_fsm_stage = emit_verilog(
+        module, blackbox, input_wires, output_wires, max_fsm_stage = emit_verilog(
             name,
             width_exponent,
             width_fraction,
@@ -206,9 +206,13 @@ def compile(
             pe_idxs,
             for_testbench=do_testbench,
         )
-        verilog_file = verilog_file.replace("%", "p_")
+        module = module.replace("%", "p_")
         with open(f"{artifacts_dir}/{name}.sv", "w") as f:
-            f.write(verilog_file)
+            f.write(module)
+
+        blackbox = blackbox.replace("%", "p_")
+        with open(f"{artifacts_dir}/{name}_blackbox.sv", "w") as f:
+            f.write(blackbox)
 
         # pblock_bridge = pblock_bridge.replace("%", "p_")
         # with open(f"{artifacts_dir}/{name}_pblock_bridge.sv", "w") as f:
@@ -336,7 +340,7 @@ def main():
         WIDTH_FRACTION,
         args.n_test_vectors,
         args.threshold,
-        args.clock_period
+        args.clock_period,
     )
 
 

@@ -4,7 +4,7 @@ module mux_to_demux_2#(parameter
     WIDTH=2
 )(
     input wire[1:0][WIDTH-1:0] inp,
-    input sel,
+    input wire sel,
     output wire[1:0][WIDTH-1:0] outp
 );
 

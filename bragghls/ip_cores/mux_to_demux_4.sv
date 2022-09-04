@@ -5,7 +5,7 @@ module mux_to_demux_4#(parameter
 )(
     // input wire[WIDTH-1:0] a_in, b_in, c_in, d_in,      // 4 Inputs
     input wire[3:0][WIDTH-1:0] inp,
-    input[1:0] sel,                   // Select
+    input wire[1:0] sel,                   // Select
     // output wire[WIDTH-1:0] a_out, b_out, c_out, d_out   // 4 Outputs
     output wire[3:0][WIDTH-1:0] outp
 );

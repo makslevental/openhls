@@ -210,7 +210,7 @@ BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini python $(pwd)/examples/simple_nns.
 ```
 
 which runs [examples/simple_nns.py](examples/simple_nns.py) and produces an artifacts folder
-at [examples/linear_bragghls_artifacts](examples/linear_bragghls_artifacts) which will contains a `linear.mlir` file
+at [examples/linear_bragghls_artifacts](examples/linear_11_bragghls_artifacts) which will contains a `linear.mlir` file
 that looks like
 
 ```mlir
@@ -237,7 +237,7 @@ module attributes {torch.debug_module_name = "Linear"} {
 Then running
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b
+BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_11_bragghls_artifacts/linear.mlir -t -r -s -v -b
 ```
 
 will generate `linear.sv` and run the automatically generated (no artifact) testbench, and produce the following output:

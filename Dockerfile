@@ -19,6 +19,7 @@ RUN ./scripts/clone_externals.sh
 RUN pip install -r requirements.txt
 RUN pip install . -vvvv
 
-ENTRYPOINT BRAGGHLS_CONFIG_FP=bragghls_config.ini python examples/linear.py \
- && BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1 \
+ENTRYPOINT BRAGGHLS_CONFIG_FP=bragghls_config.ini python examples/simple_nns.py linear --size 11 \
+ && BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini \
+  bragghls_compiler $(pwd)/examples/linear_11_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1 \
  && /bin/bash

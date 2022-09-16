@@ -1,16 +1,15 @@
--f https://github.com/llvm/torch-mlir/releases
+-f https://github.com/llvm/torch-mlir/releases/expanded_assets/snapshot-20220913.595
 --pre
 torch
+
+-f https://github.com/llvm/torch-mlir/releases/expanded_assets/snapshot-20220913.595
+--pre
+torch-mlir
 
 numpy
 networkx
 astor
 jinja2
-cocotb
+cocotb==1.6.2
 matplotlib
-
--f https://github.com/llvm/torch-mlir/releases
---pre
-torch-mlir
-
 git+https://github.com/makslevental/xeda@read_xdc

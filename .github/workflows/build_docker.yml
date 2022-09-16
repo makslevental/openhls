@@ -32,4 +32,7 @@ jobs:
     steps:
       - name: Check the built docker image
         run: |
-          docker run -it mlevental/bragghls
+          cd /bragghls
+          export BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini
+          python examples/simple_nns.py linear --size 11
+          bragghls_compiler $(pwd)/examples/linear_11_bragghls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1

@@ -3,6 +3,7 @@ import enum
 from textwrap import dedent
 
 signal_width = 12
+tdm_wires = 200
 
 class CombOrSeq(enum.Enum):
     COMB = "*"
@@ -79,7 +80,7 @@ top.write(");\n")
 
 top.write("\n")
 
-# for part_1_output in part_1_outputs:
+# for part_1_output in part_1_outputs[-tdm_wires:]:
 #     top.write(f"wire [{signal_width - 1}:0] part_1_land_{part_1_output}_wire;\n")
 
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
@@ -88,12 +89,17 @@ for part_1_output in part_1_outputs:
 top.write("end\n")
 
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
-for part_1_output in part_1_outputs:
+for part_1_output in part_1_outputs[:-tdm_wires]:
     top.write(f"part_1_land_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_launch_{part_1_output};\n")
 top.write("end\n")
 
-# launch_regs = [f"part_1_launch_{part_1_output}" for part_1_output in part_1_outputs]
-# land_wires = [f"part_1_land_{part_1_output}_wire" for part_1_output in part_1_outputs]
+# top.write(f"always @ ({comb_or_seq.value}) begin\n")
+# for part_1_output in part_1_outputs[-tdm_wires:]:
+#     top.write(f"part_1_land_{part_1_output} {'=' if comb_or_seq == CombOrSeq.COMB else '<='} part_1_land_{part_1_output}_wire;\n")
+# top.write("end\n")
+#
+# launch_regs = [f"part_1_launch_{part_1_output}" for part_1_output in part_1_outputs[-tdm_wires:]]
+# land_wires = [f"part_1_land_{part_1_output}_wire" for part_1_output in part_1_outputs[-tdm_wires:]]
 #
 # top.write(f"""\
 # wire out;
@@ -102,7 +108,7 @@ top.write("end\n")
 #     .rst(rst),
 #     .out(out)
 # );
-# mux_to_demux_2#({(len(part_1_outputs) // 2) * signal_width}) uut(
+# mux_to_demux_2#({(len(part_1_outputs[-tdm_wires:]) // 2) * signal_width}) uut(
 #     .inp({{{','.join(launch_regs)}}}),
 #     .sel(out),
 #     .outp({{{','.join(land_wires)}}})

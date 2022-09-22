@@ -1,4 +1,5 @@
 module counter#(parameter
+    ID=1,
     WIDTH=2
 )(
     input wire clk,

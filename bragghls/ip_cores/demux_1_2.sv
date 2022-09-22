@@ -1,4 +1,5 @@
 module demux_1x2#(parameter
+    ID=1,
     WIDTH=2
 )(
     input wire[WIDTH-1:0] y,               // 1 Input

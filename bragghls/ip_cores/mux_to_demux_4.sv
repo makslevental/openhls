@@ -1,6 +1,7 @@
 // multiplexer to demultiplexer
 
 module mux_to_demux_4#(parameter
+    ID=1,
     WIDTH=2
 )(
     // input wire[WIDTH-1:0] a_in, b_in, c_in, d_in,      // 4 Inputs
@@ -12,14 +13,14 @@ module mux_to_demux_4#(parameter
 
     wire[WIDTH-1:0] y;
 
-    mux_4x1#(WIDTH) MUX_4X1(
+    mux_4x1#(ID, WIDTH) MUX_4X1(
         // .a(a_in), .b(b_in), .c(c_in), .d(d_in),
         .inp(inp),
         .sel(sel),
         .y(y)
     );
 
-    demux_1x4#(WIDTH) DEMUX_1X4(
+    demux_1x4#(ID, WIDTH) DEMUX_1X4(
         .y(y),
         .sel(sel),
         .outp(outp)

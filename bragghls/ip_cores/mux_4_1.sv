@@ -1,5 +1,6 @@
 // 4x1 multiplexer
 module mux_4x1#(parameter
+    ID=1,
     WIDTH=2
 )(
     // input wire[WIDTH-1:0] a, b, c, d,      // 4 Inputs

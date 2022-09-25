@@ -60,7 +60,7 @@ class CombOrSeq(enum.Enum):
     SEQ = "posedge clk"
 
 
-def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
+def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.SEQ):
     vals_to_init = sorted([f"\t{v} <= 1'b0;" for v in vals_to_init])
 
     return "\n".join(
@@ -69,7 +69,7 @@ def make_always_tree(conds, vals_to_init, comb_or_seq=CombOrSeq.COMB):
     )
 
 
-def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.COMB):
+def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.SEQ):
     return indent(
         dedent(
             "\n".join(
@@ -85,7 +85,7 @@ def make_always_branch(lefts, rights, cond, comb_or_seq=CombOrSeq.COMB):
     )
 
 
-def make_fmac_branches(pe, fmul_states, fadd_states, init_val, args, comb_or_seq=CombOrSeq.COMB):
+def make_fmac_branches(pe, fmul_states, fadd_states, init_val, args, comb_or_seq=CombOrSeq.SEQ):
     return indent(
         dedent(
             "\n".join(

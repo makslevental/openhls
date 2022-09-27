@@ -23,7 +23,7 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get -y install libgmp3-dev libmpfr-dev libmpfi-dev iverilog ninja-build cmake clang
+          sudo apt-get -y install libgmp3-dev libmpfr-dev libmpfi-dev iverilog ninja-build cmake clang zstd libzstd-dev
           pip install numpy==1.23.1 pybind11>=2.10.0
 
       - name: Install macos system packages

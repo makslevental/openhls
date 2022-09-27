@@ -21,6 +21,9 @@ if { [file exists project_1/project_1.xpr] == 1} {
   puts "\n Creating Project"
   create_project project_1 project_1 -part xcu280-fsvh2892-2L-e -force
   set_property board_part xilinx.com:au280:part0:1.1 [current_project]
+  cd part_1
+  source imports.tcl
+  cd ..
   source imports.tcl
 }
 
@@ -54,16 +57,18 @@ if { [ llength $ooc_runs ] } {
 }
 foreach run $ooc_runs { wait_on_run $run }
 
-# read_checkpoint -cell part_1 braggnn_part_1_synth_1/braggnn_part_1.dcp
-# read_checkpoint -cell part_2 braggnn_part_2_synth_1/braggnn_part_2.dcp
-# read_checkpoint -cell part_3 braggnn_part_3_synth_1/braggnn_part_3.dcp
+# read_checkpoint -cell part_1 ./project_1/project_1.runs/braggnn_part_1_synth_1/braggnn_part_1.dcp
+# read_checkpoint -cell part_2 ./project_1/project_1.runs/braggnn_part_2_synth_1/braggnn_part_2.dcp
+# read_checkpoint -cell part_3 ./project_1/project_1.runs/braggnn_part_3_synth_1/braggnn_part_3.dcp
 
+# -mode out_of_context
 eval synth_design -top braggnn -flatten_hierarchy full -mode out_of_context -retiming -directive AlternateRoutability -fsm_extraction one_hot -resource_sharing off -shreg_min_size 10 -keep_equivalent_registers -no_lc
 write_checkpoint -force ${checkpoints_dir}/pre_opt
 
 report_utilization -hierarchical -force -file ${reports_dir}/post_synth/pre_opt_hierarchical_utilization.rpt
 
 puts "\n==============================( Optimize Design )================================"
+read_xdc -mode out_of_context clock.xdc
 
 eval opt_design -directive ExploreWithRemap
 write_checkpoint -force ${checkpoints_dir}/post_synth

@@ -2,7 +2,7 @@ FROM python:latest
 
 RUN apt-get update
 RUN apt-get install -y build-essential clang git vim \
-    binutils-dev binutils-gold cmake ninja-build
+    binutils-dev binutils-gold cmake ninja-build zstd libzstd-dev
 RUN apt-get install -y libgmp3-dev libmpfr-dev libmpfi-dev iverilog
 
 # Change linker to gold.

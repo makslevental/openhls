@@ -41,6 +41,8 @@ write_checkpoint -force ${checkpoints_dir}/pre_opt
 report_utilization -hierarchical -force -file ${reports_dir}/post_synth/pre_opt_hierarchical_utilization.rpt
 
 puts "\n==============================( Optimize Design )================================"
+read_xdc -mode out_of_context clock.xdc
+set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]
 
 eval opt_design -directive ExploreWithRemap
 write_checkpoint -force ${checkpoints_dir}/post_synth

@@ -135,7 +135,7 @@ The build steps are many and tortuous.
 On Linux you can `bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"` for Clang and
 
 ```shell
-sudo apt-get install libgmp3-dev libmpfr-dev libmpfi-dev iverilog
+sudo apt-get install libgmp3-dev libmpfr-dev libmpfi-dev iverilog libzstd-dev
 ```
 
 On Mac you can

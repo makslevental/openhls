@@ -141,12 +141,6 @@ def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
     add_files -norecurse -scan_for_includes flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fsub_{width_exponent}_{width_fraction}.sv -force
 
-    update_compile_order -fileset sources_1
-    
-    read_xdc -mode out_of_context clock.xdc
-
-    #set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]
-    
     """
     )
 

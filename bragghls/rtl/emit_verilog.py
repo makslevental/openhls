@@ -165,7 +165,7 @@ def make_top_module_decl(ip_name, input_wires, output_wires, width_exp, width_fr
         """
     )
 
-    input_ports = ",\n".join(map(str, input_wires + base_inputs))
+    input_ports = ",\n".join(map(str, base_inputs + input_wires))
     output_ports = ",\n".join(map(str, output_wires))
     mod_inner += indent(dedent(input_ports + ",\n" + output_ports), "\t")
     mod_inner += "\n);\n"

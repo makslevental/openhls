@@ -42,13 +42,12 @@ class Dot(nn.Module):
         return (x * y).sum()
 
 
-# class Dot(nn.Module):
-#     def __init__(self):
-#         super().__init__()
-#         self.relu = nn.ReLU()
-#
-#     def forward(self, x, y):
-#         return self.relu(torch.matmul(x, y.T))
+class MatMul(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, mat1, mat2):
+        return torch.mm(mat1, mat2)
 
 
 class DoubleCNN(nn.Module):
@@ -244,6 +243,20 @@ def make_linear(size=11, simplify_weights=False, bias=True):
     return str(mlir_module)
 
 
+def make_matmul(M=2, N=3, K=2):
+    with torch.no_grad():
+        mod = MatMul()
+        mod.eval()
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([M, N], torch.int),
+            ([N, K], torch.int),
+        ],
+    )
+    return str(mlir_module)
+
+
 def make_linear_no_sum(size=11, simplify_weights=False, bias=True):
     with torch.no_grad():
         mod = LinearNoSum(size, bias=bias)
@@ -376,6 +389,7 @@ def make_sub_self(size=8):
         ],
     )
     return str(mlir_module)
+
 
 def make_sub_one(size=8):
     with torch.no_grad():
@@ -516,6 +530,7 @@ if __name__ == "__main__":
             "dot_product",
             "linear",
             "linear_no_sum",
+            "matmul",
             "small_cnn",
             "double_cnn",
             "soft_max",
@@ -543,6 +558,8 @@ if __name__ == "__main__":
         mlir_str = make_linear(size=args.size)
     elif args.net == "linear_no_sum":
         mlir_str = make_linear_no_sum(size=args.size)
+    elif args.net == "matmul":
+        mlir_str = make_matmul()
     elif args.net == "small_cnn":
         mlir_str = make_single_small_cnn(img_size=args.size)
     elif args.net == "double_cnn":

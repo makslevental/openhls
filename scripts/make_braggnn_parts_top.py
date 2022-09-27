@@ -1,10 +1,13 @@
+import random
 import re
+import numpy as np
 import enum
 from textwrap import dedent
 
 signal_width = 12
 num_tdm_wires = 0
-num_mux_to_demux = 10
+num_mux_to_demux = 20
+stub_inputs = True
 
 
 class CombOrSeq(enum.Enum):
@@ -23,7 +26,7 @@ part_1_inputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"input wire \[{signal_width - 1}:0\] (.*);", part_1, re.MULTILINE
+            rf"input wire \[{signal_width - 1}:0\] (.*);", part_1, re.MULTILINE
         )
     ]
 )
@@ -31,7 +34,7 @@ part_1_outputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"output wire \[{signal_width - 1}:0\] (.*);", part_1, re.MULTILINE
+            rf"output wire \[{signal_width - 1}:0\] (.*);", part_1, re.MULTILINE
         )
     ]
 )
@@ -40,7 +43,7 @@ part_2_inputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"input wire \[{signal_width - 1}:0\] (.*);", part_2, re.MULTILINE
+            rf"input wire \[{signal_width - 1}:0\] (.*);", part_2, re.MULTILINE
         )
     ]
 )
@@ -48,7 +51,7 @@ part_2_outputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"output wire \[{signal_width - 1}:0\] (.*);", part_2, re.MULTILINE
+            rf"output wire \[{signal_width - 1}:0\] (.*);", part_2, re.MULTILINE
         )
     ]
 )
@@ -57,7 +60,7 @@ part_3_inputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"input wire \[{signal_width - 1}:0\] (.*);", part_3, re.MULTILINE
+            rf"input wire \[{signal_width - 1}:0\] (.*);", part_3, re.MULTILINE
         )
     ]
 )
@@ -65,7 +68,7 @@ part_3_outputs = sorted(
     [
         v.strip().replace(",", "")
         for v in re.findall(
-            fr"output wire \[{signal_width - 1}:0\] (.*);", part_3, re.MULTILINE
+            rf"output wire \[{signal_width - 1}:0\] (.*);", part_3, re.MULTILINE
         )
     ]
 )
@@ -82,12 +85,20 @@ top.write(
     )
 )
 
-for part_1_input in part_1_inputs:
-    top.write(f"input wire [{signal_width - 1}:0] {part_1_input},\n")
+if not stub_inputs:
+    for part_1_input in part_1_inputs:
+        top.write(f"input wire [{signal_width - 1}:0] {part_1_input},\n")
+
 for part_3_output in part_3_outputs[:-1]:
     top.write(f"output wire [{signal_width - 1}:0] {part_3_output},\n")
 top.write(f"output wire [{signal_width - 1}:0] {part_3_outputs[-1]}\n")
 top.write(");\n")
+
+if stub_inputs:
+    for part_1_input in part_1_inputs:
+        top.write(
+            f"reg [{signal_width - 1}:0] {part_1_input} = {signal_width}'{bin(random.randint(10, 2**12 -1))[1:]};\n"
+        )
 
 top.write("\n")
 
@@ -105,7 +116,7 @@ top.write("\n")
 top.write(
     dedent(
         """\
-        braggnn_part_1 part_1 (
+        (* keep = "true" *) braggnn_part_1 part_1 (
         clk,
         rst,\n"""
     )
@@ -121,17 +132,15 @@ top.write(");\n")
 
 top.write("\n")
 
+# step = len(part_1_outputs) // num_tdm_wires
 if num_tdm_wires > 0:
-    step = len(part_1_outputs) // num_tdm_wires
-    tdm_indices = set(range(0, len(part_1_outputs), step))
+    tdm_indices = set(
+        np.round(np.linspace(0, len(part_1_outputs) - 1, num_tdm_wires)).astype(int)
+    )
 else:
     tdm_indices = set()
-
 reg_indices = sorted(list(set(range(len(part_1_outputs))) - tdm_indices))
 tdm_indices = sorted(list(tdm_indices))
-
-for part_1_output in [part_1_outputs[t] for t in tdm_indices]:
-    top.write(f"wire [{signal_width - 1}:0] part_1_land_{part_1_output}_wire;\n")
 
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
 for part_1_output in part_1_outputs:
@@ -140,6 +149,7 @@ for part_1_output in part_1_outputs:
     )
 top.write("end\n")
 
+
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
 for part_1_output in [part_1_outputs[t] for t in reg_indices]:
     top.write(
@@ -147,6 +157,10 @@ for part_1_output in [part_1_outputs[t] for t in reg_indices]:
     )
 top.write("end\n")
 
+top.write("\n")
+
+for part_1_output in [part_1_outputs[t] for t in tdm_indices]:
+    top.write(f"wire [{signal_width - 1}:0] part_1_land_{part_1_output}_wire;\n")
 top.write(f"always @ ({comb_or_seq.value}) begin\n")
 for part_1_output in [part_1_outputs[t] for t in tdm_indices]:
     top.write(
@@ -201,7 +215,7 @@ top.write("\n")
 top.write(
     dedent(
         """\
-        braggnn_part_2 part_2 (
+        (* keep = "true" *) braggnn_part_2 part_2 (
         clk,
         rst,\n"""
     )
@@ -237,7 +251,7 @@ top.write("\n")
 top.write(
     dedent(
         """\
-        braggnn_part_3 part_3 (
+        (* keep = "true" *) braggnn_part_3 part_3 (
         clk,
         rst,\n"""
     )
@@ -252,22 +266,29 @@ top.write(");\n")
 
 top.write("endmodule")
 
-# for i in range(1, 4):
-#     top.write("\n")
-#     blackbox = open(f"part_{i}/braggnn_part_{i}_blackbox.sv").read()
-#     top.write(blackbox)
-#     top.write("\n")
-
-
 clock = open("clock.xdc", "w")
 clock.write("create_clock -name clk -period 10 -waveform {0.000 5} [get_ports clk]\n")
+clock.write("set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\n")
 
-# set_input_delay -clock [get_clocks clk] 0 [get_ports X]
-# set_input_delay -clock [get_clocks clk] 0 [get_ports Y]
-# set_output_delay -clock [get_clocks clk] 0 [get_ports R]
-
-for input in part_1_inputs:
-    clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
+if not stub_inputs:
+    for input in part_1_inputs:
+        clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
 
 for output in part_3_outputs:
     clock.write(f"set_output_delay -clock [get_clocks clk] 0 [get_ports {output}]\n")
+
+imports = open("imports.tcl", "w")
+imports.write(
+    """
+add_files -norecurse -scan_for_includes part_2/braggnn_part_2.sv -force
+import_files -norecurse part_2/braggnn_part_2.sv -force
+
+add_files -norecurse -scan_for_includes part_3/braggnn_part_3.sv -force
+import_files -norecurse part_3/braggnn_part_3.sv -force
+
+add_files -norecurse -scan_for_includes top.sv -force
+import_files -norecurse top.sv -force
+
+update_compile_order -fileset sources_1
+"""
+)

@@ -53,7 +53,6 @@ report_methodology  -file ${reports_dir}/post_synth/methodology.rpt
 
 puts "\n================================( Place Design )================================="
 
-#set_property ALLOW_COMBINATORIAL_LOOPS TRUE [get_nets -regexp .*]
 #eval place_design -directive SSI_SpreadLogic_high -ultrathreads -fanout_opt
 eval place_design -ultrathreads -fanout_opt
 

@@ -7,7 +7,7 @@ from textwrap import dedent
 signal_width = 12
 num_tdm_wires = 0
 num_mux_to_demux = 20
-stub_inputs = True
+stub_inputs = False
 
 
 class CombOrSeq(enum.Enum):

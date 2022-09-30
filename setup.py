@@ -88,6 +88,7 @@ def build_llvm(base_cmake_args):
         "-DLLVM_ENABLE_PROJECTS=mlir",
         "-DLLVM_TARGETS_TO_BUILD=host",
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
+        "-DLLVM_ENABLE_ZSTD=OFF"
     ]
     run_cmake(llvm_dir, cmake_args, LLVM_BUILD_DIR)
 

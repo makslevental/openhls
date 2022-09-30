@@ -4,10 +4,10 @@ import numpy as np
 import enum
 from textwrap import dedent
 
-signal_width = 12
+signal_width = 11
 num_tdm_wires = 0
 num_mux_to_demux = 20
-stub_inputs = False
+num_input_stubs = 100
 
 
 class CombOrSeq(enum.Enum):
@@ -85,20 +85,28 @@ top.write(
     )
 )
 
-if not stub_inputs:
-    for part_1_input in part_1_inputs:
-        top.write(f"input wire [{signal_width - 1}:0] {part_1_input},\n")
+if num_input_stubs > 0:
+    stub_idxs = set(
+        np.round(np.linspace(0, len(part_1_inputs) - 1, num_input_stubs)).astype(int)
+    )
+else:
+    stub_idxs = set()
+
+non_stub_indxs = sorted(list(set(range(len(part_1_inputs))) - stub_idxs))
+stub_idxs = sorted(list(stub_idxs))
+
+for part_1_input in [part_1_inputs[i] for i in non_stub_indxs]:
+    top.write(f"input wire [{signal_width - 1}:0] {part_1_input},\n")
 
 for part_3_output in part_3_outputs[:-1]:
     top.write(f"output wire [{signal_width - 1}:0] {part_3_output},\n")
 top.write(f"output wire [{signal_width - 1}:0] {part_3_outputs[-1]}\n")
 top.write(");\n")
 
-if stub_inputs:
-    for part_1_input in part_1_inputs:
-        top.write(
-            f"reg [{signal_width - 1}:0] {part_1_input} = {signal_width}'{bin(random.randint(10, 2**12 -1))[1:]};\n"
-        )
+for part_1_input in [part_1_inputs[i] for i in stub_idxs]:
+    top.write(
+        f"reg [{signal_width - 1}:0] {part_1_input} = {signal_width}'{bin(random.randint(10, 2**12 -1))[1:]};\n"
+    )
 
 top.write("\n")
 
@@ -268,11 +276,10 @@ top.write("endmodule")
 
 clock = open("clock.xdc", "w")
 clock.write("create_clock -name clk -period 10 -waveform {0.000 5} [get_ports clk]\n")
-clock.write("set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\n")
+# clock.write("set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\n")
 
-if not stub_inputs:
-    for input in part_1_inputs:
-        clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
+for input in [part_1_inputs[i] for i in non_stub_indxs]:
+    clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
 
 for output in part_3_outputs:
     clock.write(f"set_output_delay -clock [get_clocks clk] 0 [get_ports {output}]\n")

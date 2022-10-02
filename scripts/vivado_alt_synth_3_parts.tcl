@@ -123,8 +123,7 @@ report_utilization -hierarchical -force -file ${reports_dir}/post_place/hierarch
 
 puts "\n================================( Route Design )================================="
 
-#eval route_design -directive AlternateCLBRouting
-eval route_design
+eval route_design -directive AlternateCLBRouting
 
 puts "\n=========================( Post-Route Physical Optimization )=========================="
 

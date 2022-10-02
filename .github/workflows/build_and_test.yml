@@ -56,7 +56,7 @@ jobs:
           key: ${{ runner.os }}-llvm-build-${{ secrets.CACHE_VERSION }}-${{ steps.get-llvm-hash.outputs.hash }}
 
       - name: Rebuild LLVM
-#        if: steps.cache-llvm-repo.outputs.cache-hit != 'true'
+        if: steps.cache-llvm-repo.outputs.cache-hit != 'true'
         run: |
           mkdir -p build/llvm
           cd build/llvm

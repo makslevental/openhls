@@ -13,10 +13,10 @@ from simple_nns import SoftMax
 class Part1(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.cnn_layers_1 = Conv2d(1, 14, kernel_size=(3, 3), stride=(1, 1))
-        self.theta_layer = Conv2d(14, 8, kernel_size=(1, 1), stride=(1, 1))
-        self.phi_layer = Conv2d(14, 8, kernel_size=(1, 1), stride=(1, 1))
-        self.g_layer = Conv2d(14, 8, kernel_size=(1, 1), stride=(1, 1))
+        self.cnn_layers_1 = Conv2d(1, 16, kernel_size=(3, 3), stride=(1, 1))
+        self.theta_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+        self.phi_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
+        self.g_layer = Conv2d(16, 8, kernel_size=(1, 1), stride=(1, 1))
         self.soft = SoftMax()
 
     def forward(self, inp):
@@ -37,10 +37,10 @@ class Part1(torch.nn.Module):
 class Part2(torch.nn.Module):
     def __init__(self):
         super().__init__()
-        self.out_cnn = Conv2d(8, 14, kernel_size=(1, 1), stride=(1, 1))
+        self.out_cnn = Conv2d(8, 16, kernel_size=(1, 1), stride=(1, 1))
         self.cnn_layers_2 = Sequential(
             ReLU(),
-            Conv2d(14, 8, kernel_size=(3, 3), stride=(1, 1)),
+            Conv2d(16, 8, kernel_size=(3, 3), stride=(1, 1)),
             ReLU(),
         )
 
@@ -218,14 +218,14 @@ def make_braggn_part2(scale, img_size=11, simplify_weights=True):
             mod.apply(set_weights)
         z = mod(
             torch.randn(1, 8, img_size - 2, img_size - 2),
-            torch.randn(1, 14, img_size - 2, img_size - 2),
+            torch.randn(1, 16, img_size - 2, img_size - 2),
         )
         print(z.shape)
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
             ([1, 8, img_size - 2, img_size - 2], torch.float32),
-            ([1, 14, img_size - 2, img_size - 2], torch.float32),
+            ([1, 16, img_size - 2, img_size - 2], torch.float32),
         ],
     )
     return str(mlir_module)
@@ -306,7 +306,7 @@ if __name__ == "__main__":
         [make_braggn_part1, make_braggn_part2, make_braggn_part3], start=1
     ):
         out_dir = (
-            args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts" / f"part_{i}"
+            args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts_3_parts" / f"part_{i}"
         ).resolve()
         os.makedirs(f"{out_dir}", exist_ok=True)
         dot_str = make(args.scale, img_size=args.img_size, simplify_weights=False)

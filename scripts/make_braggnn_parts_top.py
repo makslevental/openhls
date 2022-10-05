@@ -4,10 +4,10 @@ import numpy as np
 import enum
 from textwrap import dedent
 
-signal_width = 11
-num_tdm_wires = 0
-num_mux_to_demux = 20
-num_input_stubs = 100
+signal_width = 12
+num_tdm_wires = 1944
+num_mux_to_demux = 500
+num_input_stubs = 0
 
 
 class CombOrSeq(enum.Enum):
@@ -198,7 +198,7 @@ if num_tdm_wires > 0:
             .rst(rst),
             .out(out_{i})
         );
-        mux_to_demux_2#({i}, {(wires_per_mux_to_demux // 2) * signal_width}) mux_to_demux_{i}(
+        (* dont_touch = "yes" *) mux_to_demux_2#({i}, {(wires_per_mux_to_demux // 2) * signal_width}) mux_to_demux_{i}(
             .inp({{{','.join(launch_regs[step(i):step(i+1)])}}}),
             .sel(out_{i}),
             .outp({{{','.join(land_wires[step(i):step(i+1)])}}})
@@ -278,11 +278,11 @@ clock = open("clock.xdc", "w")
 clock.write("create_clock -name clk -period 10 -waveform {0.000 5} [get_ports clk]\n")
 # clock.write("set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\n")
 
-for input in [part_1_inputs[i] for i in non_stub_indxs]:
-    clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
-
-for output in part_3_outputs:
-    clock.write(f"set_output_delay -clock [get_clocks clk] 0 [get_ports {output}]\n")
+# for input in [part_1_inputs[i] for i in non_stub_indxs]:
+#     clock.write(f"set_input_delay -clock [get_clocks clk] 0 [get_ports {input}]\n")
+#
+# for output in part_3_outputs:
+#     clock.write(f"set_output_delay -clock [get_clocks clk] 0 [get_ports {output}]\n")
 
 imports = open("imports.tcl", "w")
 imports.write(

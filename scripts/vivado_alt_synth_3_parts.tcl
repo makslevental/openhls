@@ -84,22 +84,24 @@ set_property CONTAIN_ROUTING 1 [get_pblocks pblock_1]
 set_property IS_SOFT 0 [get_pblocks pblock_1]
 resize_pblock pblock_1 -add SLR2:SLR2
 add_cells_to_pblock pblock_1 [get_cells [list part_1]] -clear_locs
-add_cells_to_pblock pblock_1 [get_cells -regexp part_1_launch_output_p.*] -clear_locs
+add_cells_to_pblock pblock_1 [get_cells -regexp .*part_1_launch_output_p.*] -clear_locs
+add_cells_to_pblock pblock_1 [get_cells -regexp mux_to_demux_.*/MUX_2X1] -clear_locs
 
 create_pblock pblock_2
 set_property CONTAIN_ROUTING 1 [get_pblocks pblock_2]
 set_property IS_SOFT 0 [get_pblocks pblock_2]
 resize_pblock pblock_2 -add SLR1:SLR1
 add_cells_to_pblock pblock_2 [get_cells [list part_2]] -clear_locs
-add_cells_to_pblock pblock_2 [get_cells -regexp part_1_land_output_p.*] -clear_locs
-add_cells_to_pblock pblock_2 [get_cells -regexp part_2_launch_output_p.*] -clear_locs
+add_cells_to_pblock pblock_2 [get_cells -regexp mux_to_demux_.*/DEMUX_1X2] -clear_locs
+add_cells_to_pblock pblock_2 [get_cells -regexp .*part_1_land_output_p.*] -clear_locs
+add_cells_to_pblock pblock_2 [get_cells -regexp .*part_2_launch_output_p.*] -clear_locs
 
 create_pblock pblock_3
 set_property CONTAIN_ROUTING 1 [get_pblocks pblock_3]
 set_property IS_SOFT 0 [get_pblocks pblock_3]
 resize_pblock pblock_3 -add SLR0:SLR0
 add_cells_to_pblock pblock_3 [get_cells [list part_3]] -clear_locs
-add_cells_to_pblock pblock_3 [get_cells -regexp part_2_land_output_p.*] -clear_locs
+add_cells_to_pblock pblock_3 [get_cells -regexp .*part_2_land_output_p.*] -clear_locs
 
 eval place_design -ultrathreads -fanout_opt
 

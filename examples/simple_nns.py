@@ -98,6 +98,16 @@ class ConvPlusReLU(nn.Module):
         return x
 
 
+class Conv(nn.Module):
+    def __init__(self, in_channels, out_channels, bias=True):
+        super().__init__()
+        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, 3, bias=bias)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        return x
+
+
 class Exp(nn.Module):
     def __init__(self):
         super().__init__()
@@ -212,6 +222,28 @@ class Div(nn.Module):
         return 1 / y
 
 
+class BatchNorm2DModule(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.bn2d = torch.nn.BatchNorm2d(2)
+        self.bn2d.eval()
+        self.bn2d.running_mean = torch.tensor([0.5, 0.4])
+        self.bn2d.running_var = torch.tensor([3.0, 2.0])
+        self.bn2d.weight = torch.nn.Parameter(torch.tensor([3.0, 2.0]))
+        self.bn2d.bias = torch.nn.Parameter(torch.tensor([0.5, 0.4]))
+
+    def forward(self, x):
+        return self.bn2d(x)
+
+
+class AddmmModuleFloat(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, M, mat1, mat2):
+        return torch.addmm(M, mat1, mat2, beta=3.0, alpha=7.0)
+
+
 def make_dot_product(size=11):
     with torch.no_grad():
         mod = Dot()
@@ -243,15 +275,16 @@ def make_linear(size=11, simplify_weights=False, bias=True):
     return str(mlir_module)
 
 
-def make_matmul(M=2, N=3, K=2):
+def make_matmul(size):
+    N = M = K = size
     with torch.no_grad():
         mod = MatMul()
         mod.eval()
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
-            ([M, N], torch.int),
-            ([N, K], torch.int),
+            ([M, N], torch.float32),
+            ([N, K], torch.float32),
         ],
     )
     return str(mlir_module)
@@ -278,6 +311,25 @@ def make_single_small_cnn(
 ):
     with torch.no_grad():
         mod = ConvPlusReLU(in_channels, out_channels, bias)
+        mod.eval()
+        print(mod)
+        if simplify_weights:
+            mod.apply(set_weights)
+
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([1, in_channels, img_size, img_size], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_conv(
+    img_size=11, in_channels=3, out_channels=8, simplify_weights=False, bias=True
+):
+    with torch.no_grad():
+        mod = Conv(in_channels, out_channels, bias)
         mod.eval()
         print(mod)
         if simplify_weights:
@@ -513,8 +565,43 @@ def make_max_pool_2d(img_size=11):
     mlir_module = compile_nn_module_to_mlir(
         mod,
         [
-            # ([1, 1, img_size, img_size], torch.float32),
-            ([-1, -1, -1, -1], torch.float32),
+            ([1, 1, img_size, img_size], torch.float32),
+            # ([-1, -1, -1, -1], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_batch_norm(img_size=11):
+    with torch.no_grad():
+        mod = BatchNorm2DModule()
+        mod.eval()
+        # print(mod)
+        # y = torch.randn(1, 1, img_size, img_size)
+        # z = mod(y)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([10, 2, 3, 3], torch.float32),
+            # ([-1, -1, -1, -1], torch.float32),
+        ],
+    )
+    return str(mlir_module)
+
+
+def make_addmm(img_size=11):
+    with torch.no_grad():
+        mod = AddmmModuleFloat()
+        mod.eval()
+        # print(mod)
+        # y = torch.randn(1, 1, img_size, img_size)
+        # z = mod(y)
+    mlir_module = compile_nn_module_to_mlir(
+        mod,
+        [
+            ([img_size, img_size], torch.float32),
+            ([img_size, img_size], torch.float32),
+            ([img_size, img_size], torch.float32),
         ],
     )
     return str(mlir_module)
@@ -531,6 +618,9 @@ if __name__ == "__main__":
             "linear",
             "linear_no_sum",
             "matmul",
+            "conv",
+            "batch_norm",
+            "addmm",
             "small_cnn",
             "double_cnn",
             "soft_max",
@@ -559,9 +649,15 @@ if __name__ == "__main__":
     elif args.net == "linear_no_sum":
         mlir_str = make_linear_no_sum(size=args.size)
     elif args.net == "matmul":
-        mlir_str = make_matmul()
+        mlir_str = make_matmul(args.size)
     elif args.net == "small_cnn":
         mlir_str = make_single_small_cnn(img_size=args.size)
+    elif args.net == "conv":
+        mlir_str = make_conv(img_size=args.size)
+    elif args.net == "batch_norm":
+        mlir_str = make_batch_norm(img_size=args.size)
+    elif args.net == "addmm":
+        mlir_str = make_addmm(img_size=args.size)
     elif args.net == "double_cnn":
         mlir_str = make_double_small_cnn(img_size=args.size)
     elif args.net == "soft_max":

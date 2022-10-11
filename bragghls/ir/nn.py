@@ -21,6 +21,30 @@ BUFFERIZATION_PIPELINE = [
     "func.func(finalizing-bufferize)",
 ]
 
+ONE_SHOT_PIPELINE = [
+    # "func.func(scf-bufferize)",
+    # "func.func(tm-tensor-bufferize)",
+    "func.func(linalg-init-tensor-to-alloc-tensor)",
+    "one-shot-bufferize",
+    # "func.func(linalg-bufferize)",
+    "func-bufferize",
+    "arith-bufferize",
+    # "func.func(tensor-bufferize)",
+    # "func.func(buffer-loop-hoisting)",
+    "func.func(finalizing-bufferize)",
+]
+
+SCALEHLS_LOWERING_PIPELINE = [
+    "func.func(cse)",
+    "func.func(convert-linalg-to-loops)",
+    # TODO fix emitter to handle parallel scf loops (this is hella lazy)
+    # "func.func(convert-linalg-to-affine-loops)",
+    # "func.func(convert-linalg-to-parallel-loops)",
+    # "func.func(lower-affine)",
+    "func.func(promote-buffers-to-stack{max-alloc-size-in-bytes=1000000000 max-rank-of-allocated-memref=10})",
+    "cse",
+]
+
 LOWERING_PIPELINE = [
     "func.func(cse)",
     # "func.func(convert-linalg-to-loops)",

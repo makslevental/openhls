@@ -71,9 +71,10 @@ class Part3(torch.nn.Module):
         )
 
     def forward(self, inp):
-        # print(inp.shape)
         out = self.cnn_layers_2(inp)
-        out = out.flatten(start_dim=1)
+        out_flat = out.flatten(start_dim=1)
+        out = torch.empty_like(out_flat)
+        out.copy_(out_flat)
         return self.dense_layers(out)
 
 

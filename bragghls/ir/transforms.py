@@ -284,6 +284,36 @@ class RemoveDiv(ast.NodeTransformer):
         return node
 
 
+class RemoveMax(ast.NodeTransformer):
+    def transform(self, node):
+        for i, b in enumerate(node.body):
+            if (
+                isinstance(b, Assign)
+                and isinstance(b.value, Call)
+                and isinstance(b.value.func, Name)
+                and b.value.func.id == "max"
+            ):
+                node.body[i] = Assign(
+                    targets=b.targets,
+                    value=Call(
+                        func=Name(id=f"{b.value.args[0].id}.max"),
+                        args=[b.value.args[1]],
+                        keywords=[],
+                    ),
+                    type_comment=None,
+                )
+
+    def visit_For(self, node):
+        self.transform(node)
+        self.generic_visit(node)
+        return node
+
+    def visit_FunctionDef(self, node):
+        self.transform(node)
+        self.generic_visit(node)
+        return node
+
+
 class TileLoops(ast.NodeTransformer):
     loops_to_tile = []
 
@@ -439,6 +469,8 @@ def transform_forward(new_tree):
     new_tree = CopyParFors().visit(new_tree)
     logger.info("Removing div")
     new_tree = RemoveDiv().visit(new_tree)
+    logger.info("Removing max")
+    new_tree = RemoveMax().visit(new_tree)
     if LOOP_TILING_FACTOR > 1:
         logger.info("Tiling loops")
         new_tree = TileLoops(tile_factor=LOOP_TILING_FACTOR).visit(new_tree)

@@ -73,7 +73,7 @@ module clk_wiz_0_clk_wiz
   // Status and control signals
   input         reset,
   output        locked,
-  input         clk_in1
+  input wire clk_in1
  );
   // Input buffering
   //------------------------------------

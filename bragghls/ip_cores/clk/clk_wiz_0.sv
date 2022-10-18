@@ -75,7 +75,7 @@ module clk_wiz_0
   input         reset,
   output        locked,
  // Clock in ports
-  input         clk_in1
+  input wire clk_in1
  );
 
   clk_wiz_0_clk_wiz inst

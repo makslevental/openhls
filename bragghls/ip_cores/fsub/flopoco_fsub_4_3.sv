@@ -2,7 +2,7 @@ module intadder_9_f300_uid13333
   (input  wire clk,
    input  wire [8:0] x,
    input  wire [8:0] y,
-   input  cin,
+   input wire cin,
    output wire [8:0] r);
   wire [8:0] rtmp;
   wire [8:0] y_d1;
@@ -37,7 +37,7 @@ module intadder_7_f300_uid100000
   (input  wire clk,
    input  wire [6:0] x,
    input  wire [6:0] y,
-   input  cin,
+   input wire cin,
    output wire [6:0] r);
   wire [6:0] rtmp;
   wire [6:0] x_d1;

@@ -61,14 +61,14 @@ module clk_wiz_0_exdes
  (
   // Reset that only drives logic in example design
   input         COUNTER_RESET,
-  output [1:1]   CLK_OUT,
+  output wire [1:1]   CLK_OUT,
   // High bits of counters driven by clocks
   output        COUNT,
   // Status and control signals
   input         reset,
   output        locked,
  // Clock in ports
-  input         clk_in1
+  input wire clk_in1
  );
 
   // Parameters for the counters

@@ -56,8 +56,8 @@ for size in "${sizes[@]}"; do
 
     echo python $BRAGGHLS_DIR/examples/simple_nns.py $net --size $size --out_dir $THIS_DIR
     python $BRAGGHLS_DIR/examples/simple_nns.py $net --size $size --out_dir $THIS_DIR
-    echo bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -t -r
-    bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -t -r
+    echo bragghls_compiler "${net}_${size}/${net}.mlir" -t -r
+    bragghls_compiler "${net}_${size}/${net}.mlir" -t -r
     for widths in "${width_pairs[@]}"; do
       set -- $widths
       we=$1
@@ -71,14 +71,14 @@ for size in "${sizes[@]}"; do
         continue
       fi
 
-      echo WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
-      WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -s
-      echo TB_RANDOM=$TB_RANDOM WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
-      TB_RANDOM=$TB_RANDOM WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}_bragghls_artifacts/${net}.mlir" -v -b -n 10 --threshold 0.1
+      echo WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}/${net}.mlir" -s
+      WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}/${net}.mlir" -s
+      echo TB_RANDOM=$TB_RANDOM WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}/${net}.mlir" -v -b -n 10 --threshold 0.1
+      TB_RANDOM=$TB_RANDOM WIDTH_EXPONENT=$we WIDTH_FRACTION=$wf bragghls_compiler "${net}_${size}/${net}.mlir" -v -b -n 10 --threshold 0.1
       # clean up duh
       rm -rf "*/*.vcd"
       rm -rf "*/*.vvp"
     done
-    rm -rf "${net}_${size}_bragghls_artifacts"
+    rm -rf "${net}_${size}"
   done
 done

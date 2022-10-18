@@ -22,6 +22,10 @@ function make() {
   flopoco_here FPAdd wE=$wE wF=$wF name=fadd dualPath=1 outputFile=flopoco_fadd_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
   $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fadd_${wE}_${wF}.vhdl fadd
 
+  echo "fsqrt"
+  flopoco_here FPSqrt wE=$wE wF=$wF name=fsqrt outputFile=flopoco_fsqrt_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
+  $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fsqrt_${wE}_${wF}.vhdl fsqrt
+
   echo "fsub"
   flopoco_here FPAdd wE=$wE wF=$wF name=fsub dualPath=1 sub=1 outputFile=flopoco_fsub_${wE}_${wF}.vhdl target=Virtex6 frequency=$freq clockEnable=0
   $BRAGGHLS_DIR/scripts/ghdl_convert_vhdl_verilog.sh $HERE/flopoco_fsub_${wE}_${wF}.vhdl fsub
@@ -44,6 +48,7 @@ width_pairs=(
 "4 5"
 "5 4"
 "5 5"
+"5 11"
 "6 6"
 "7 7"
 "8 8"

@@ -156,6 +156,7 @@ brew install llvm gmp mpfr mpfi icarus-verilog
     2. Build CIRCT against LLVM
     3. Build `bragghls_translate` and `flopoco_converter`
     4. Put all of the things in the correct places (`circt-opt` and `bragghls_translate` in `venv/bin`)
+4. If you want to reinstall you can `BUILD_LLVM=0 BUILD_CIRCT=0 BUILD_FLOPOCO=1 pip install . -vvvv` to save some time.
 
 If you get some mysterious errors like
 

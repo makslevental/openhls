@@ -87,7 +87,7 @@ module rightshiftersticky4_by_max_6_f300_uid8
         input wire [3:0] x,
         input wire [2:0] s,
        output wire [5:0] r,
-        output sticky);
+        output wire sticky);
     wire[2:0] ps;
     wire[2:0] ps_d1;
     wire[2:0] ps_d2;

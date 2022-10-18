@@ -3,7 +3,7 @@ module intcomparator_31_101_f300_uid4
         input wire [30:0] x,
         input wire [30:0] y,
         output wire xlty,
-        output xgty);
+        output wire xgty);
     wire xltyi;
     wire xgtyi;
     wire n91_o;

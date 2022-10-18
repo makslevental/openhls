@@ -5,7 +5,41 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from bragghls.ir.nn import compile_nn_module_to_mlir, set_weights
+from bragghls.ir.nn import (
+    compile_nn_module_to_mlir,
+    set_weights,
+    TosaOrLinalg,
+    BufferizationStrategy,
+    LoopLoweringType,
+)
+
+SCALE_HLS_COMPILE = int(os.getenv("SCALE_HLS_COMPILE", default=0))
+UNROLL_FACTOR = int(os.getenv("UNROLL_FACTOR", default=0))
+
+
+def compile(mod, annots):
+    if SCALE_HLS_COMPILE:
+        return compile_nn_module_to_mlir(
+            mod,
+            annots,
+            backend_pipeline=TosaOrLinalg.LINALG,
+            lower=True,
+            bufferization_strategy=BufferizationStrategy.FULL,
+            bufferize=True,
+            loop_lowering=LoopLoweringType.AFFINE_LOOPS,
+            unroll=True,
+            unroll_factor=UNROLL_FACTOR,
+        )
+    else:
+        return compile_nn_module_to_mlir(
+            mod,
+            annots,
+            backend_pipeline=TosaOrLinalg.LINALG,
+            lower=True,
+            bufferization_strategy=BufferizationStrategy.FULL,
+            bufferize=True,
+            loop_lowering=LoopLoweringType.PARALLEL_LOOPS,
+        )
 
 
 class SimpleTernarySum(nn.Module):
@@ -135,7 +169,7 @@ class SoftMax(nn.Module):
         self.exp = Exp()
 
     def forward(self, x):
-        x += -x.max()
+        # x += -x.max()
         y = self.exp(x)
         z = y.sum()
         factor = 1 / z
@@ -205,9 +239,7 @@ class MaxPool2dCeilModeTrueModule(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.mp2d = torch.nn.MaxPool2d(
-            kernel_size=[2, 2],
-            stride=[2, 3],
-            dilation=3,
+            kernel_size=[3, 3], stride=[2, 2], dilation=[1, 1]
         )
 
     def forward(self, x):
@@ -249,7 +281,7 @@ def make_dot_product(size=11):
         mod = Dot()
         mod.eval()
         print(mod)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -266,7 +298,7 @@ def make_linear(size=11, simplify_weights=False, bias=True):
         print(mod)
         if simplify_weights:
             mod.apply(set_weights)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, size], torch.float32),
@@ -280,7 +312,7 @@ def make_matmul(size):
     with torch.no_grad():
         mod = MatMul()
         mod.eval()
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([M, N], torch.float32),
@@ -297,7 +329,7 @@ def make_linear_no_sum(size=11, simplify_weights=False, bias=True):
         print(mod)
         if simplify_weights:
             mod.apply(set_weights)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, size], torch.float32),
@@ -316,7 +348,7 @@ def make_single_small_cnn(
         if simplify_weights:
             mod.apply(set_weights)
 
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, in_channels, img_size, img_size], torch.float32),
@@ -335,7 +367,7 @@ def make_conv(
         if simplify_weights:
             mod.apply(set_weights)
 
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, in_channels, img_size, img_size], torch.float32),
@@ -354,7 +386,7 @@ def make_double_small_cnn(
         if simplify_weights:
             mod.apply(set_weights)
 
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, in_channels, img_size, img_size], torch.float32),
@@ -370,7 +402,7 @@ def make_soft_max(scale=8, img_size=11):
         print(mod)
         x = torch.randn((1, scale, img_size, img_size))
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, scale, img_size, img_size], torch.float32),
@@ -386,7 +418,7 @@ def make_max(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -402,7 +434,7 @@ def make_sub_max(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -418,7 +450,7 @@ def make_sub(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -434,7 +466,7 @@ def make_sub_self(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -450,7 +482,7 @@ def make_sub_one(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -466,7 +498,7 @@ def make_relu(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -482,7 +514,7 @@ def make_neg(size=8):
         print(mod)
         x = torch.randn(size)
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([size], torch.float32),
@@ -498,7 +530,7 @@ def make_exp(scale=8, img_size=11):
         print(mod)
         x = torch.randn((1, scale, img_size, img_size))
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, scale, img_size, img_size], torch.float32),
@@ -512,7 +544,7 @@ def make_ternary_sum(img_size=11):
         mod = SimpleTernarySum()
         mod.eval()
         print(mod)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([img_size], torch.float32),
@@ -530,7 +562,7 @@ def make_div(img_size=11):
         print(mod)
         y = torch.randn(img_size)
         z = mod(y)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([img_size], torch.float32),
@@ -546,7 +578,7 @@ def make_simple_sum(img_size=11):
         print(mod)
         y = torch.randn(1, 2, img_size, img_size)
         z = mod(y)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, 2, img_size, img_size], torch.float32),
@@ -560,12 +592,12 @@ def make_max_pool_2d(img_size=11):
         mod = MaxPool2dCeilModeTrueModule()
         mod.eval()
         print(mod)
-        y = torch.randn(1, 1, img_size, img_size)
+        y = torch.randn(1, 3, img_size, img_size)
         z = mod(y)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
-            ([1, 1, img_size, img_size], torch.float32),
+            ([1, 3, img_size, img_size], torch.float32),
             # ([-1, -1, -1, -1], torch.float32),
         ],
     )
@@ -579,7 +611,7 @@ def make_batch_norm(img_size=11):
         # print(mod)
         # y = torch.randn(1, 1, img_size, img_size)
         # z = mod(y)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([10, 2, 3, 3], torch.float32),
@@ -596,7 +628,7 @@ def make_addmm(img_size=11):
         # print(mod)
         # y = torch.randn(1, 1, img_size, img_size)
         # z = mod(y)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([img_size, img_size], torch.float32),
@@ -640,7 +672,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    out_dir = (args.out_dir / f"{args.net}_{args.size}_bragghls_artifacts").resolve()
+    out_dir = (args.out_dir / f"{args.net}_{args.size}").resolve()
     os.makedirs(out_dir, exist_ok=True)
     if args.net == "dot_product":
         mlir_str = make_dot_product(size=args.size)
@@ -687,4 +719,7 @@ if __name__ == "__main__":
     else:
         raise Exception(f"unknown net {args.net}")
 
-    open(f"{out_dir}/{args.net}.mlir", "w").write(mlir_str)
+    if UNROLL_FACTOR:
+        open(f"{out_dir}/{args.net}_{UNROLL_FACTOR}.mlir", "w").write(mlir_str)
+    else:
+        open(f"{out_dir}/{args.net}.mlir", "w").write(mlir_str)

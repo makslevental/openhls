@@ -6,8 +6,43 @@ from pathlib import Path
 import torch
 from torch.nn import Conv2d, Sequential, ReLU, Linear
 
-from bragghls.ir.nn import set_weights, compile_nn_module_to_mlir
+from bragghls.ir.nn import (
+    set_weights,
+    compile_nn_module_to_mlir,
+    LoopLoweringType,
+    BufferizationStrategy,
+    TosaOrLinalg,
+)
 from simple_nns import SoftMax
+
+
+SCALE_HLS_COMPILE = int(os.getenv("SCALE_HLS_COMPILE", default=0))
+UNROLL_FACTOR = int(os.getenv("UNROLL_FACTOR", default=0))
+
+
+def compile(mod, annots):
+    if SCALE_HLS_COMPILE:
+        return compile_nn_module_to_mlir(
+            mod,
+            annots,
+            backend_pipeline=TosaOrLinalg.LINALG,
+            lower=True,
+            bufferization_strategy=BufferizationStrategy.FULL,
+            bufferize=True,
+            loop_lowering=LoopLoweringType.AFFINE_LOOPS,
+            unroll=True,
+            unroll_factor=UNROLL_FACTOR,
+        )
+    else:
+        return compile_nn_module_to_mlir(
+            mod,
+            annots,
+            backend_pipeline=TosaOrLinalg.LINALG,
+            lower=True,
+            bufferization_strategy=BufferizationStrategy.FULL,
+            bufferize=True,
+            loop_lowering=LoopLoweringType.PARALLEL_LOOPS,
+        )
 
 
 class Part1(torch.nn.Module):
@@ -73,9 +108,7 @@ class Part3(torch.nn.Module):
     def forward(self, inp):
         out = self.cnn_layers_2(inp)
         out_flat = out.flatten(start_dim=1)
-        out = torch.empty_like(out_flat)
-        out.copy_(out_flat)
-        return self.dense_layers(out)
+        return self.dense_layers(out_flat)
 
 
 class MyBraggNN(torch.nn.Module):
@@ -184,7 +217,7 @@ def make_braggn(scale, img_size=11, simplify_weights=True):
             mod.apply(set_weights)
         x = torch.randn((1, 1, img_size, img_size))
         z = mod(x)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, 1, img_size, img_size], torch.float32),
@@ -202,7 +235,7 @@ def make_braggn_part1(scale, img_size=11, simplify_weights=True):
         mod.eval()
         if simplify_weights:
             mod.apply(set_weights)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, 1, img_size, img_size], torch.float32),
@@ -222,7 +255,7 @@ def make_braggn_part2(scale, img_size=11, simplify_weights=True):
             torch.randn(1, 16, img_size - 2, img_size - 2),
         )
         print(z.shape)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, 8, img_size - 2, img_size - 2], torch.float32),
@@ -241,7 +274,7 @@ def make_braggn_part3(scale, img_size=11, simplify_weights=True):
 
         z = mod(torch.randn(1, 8, img_size - 4, img_size - 4))
         print(z.shape)
-    mlir_module = compile_nn_module_to_mlir(
+    mlir_module = compile(
         mod,
         [
             ([1, 8, img_size - 4, img_size - 4], torch.float32),
@@ -307,14 +340,15 @@ if __name__ == "__main__":
         [make_braggn_part1, make_braggn_part2, make_braggn_part3], start=1
     ):
         out_dir = (
-            args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts_3_parts" / f"part_{i}"
+            args.out_dir / f"braggnn_{args.scale}_3_parts" / f"part_{i}"
         ).resolve()
         os.makedirs(f"{out_dir}", exist_ok=True)
         dot_str = make(args.scale, img_size=args.img_size, simplify_weights=False)
         open(f"{out_dir}/braggnn_part_{i}.mlir", "w").write(dot_str)
-    out_dir = (
-        args.out_dir / f"braggnn_{args.scale}_bragghls_artifacts"
-    ).resolve()
+    out_dir = (args.out_dir / f"braggnn_{args.scale}").resolve()
     os.makedirs(f"{out_dir}", exist_ok=True)
-    dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=False)
-    open(f"{out_dir}/braggnn.mlir", "w").write(dot_str)
+    dot_str = make_braggn(args.scale, img_size=args.img_size, simplify_weights=True)
+    if UNROLL_FACTOR:
+        open(f"{out_dir}/braggnn_{UNROLL_FACTOR}.mlir", "w").write(dot_str)
+    else:
+        open(f"{out_dir}/braggnn.mlir", "w").write(dot_str)

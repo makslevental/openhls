@@ -27,7 +27,7 @@ def compile(mod, annots):
             bufferization_strategy=BufferizationStrategy.FULL,
             bufferize=True,
             loop_lowering=LoopLoweringType.AFFINE_LOOPS,
-            unroll=True,
+            unroll=True if UNROLL_FACTOR > 0 else False,
             unroll_factor=UNROLL_FACTOR,
         )
     else:
@@ -358,7 +358,7 @@ def make_single_small_cnn(
 
 
 def make_conv(
-    img_size=11, in_channels=3, out_channels=8, simplify_weights=False, bias=True
+    img_size=11, in_channels=1, out_channels=3, simplify_weights=False, bias=True
 ):
     with torch.no_grad():
         mod = Conv(in_channels, out_channels, bias)
@@ -395,7 +395,7 @@ def make_double_small_cnn(
     return str(mlir_module)
 
 
-def make_soft_max(scale=8, img_size=11):
+def make_soft_max(scale=3, img_size=11):
     with torch.no_grad():
         mod = SoftMax()
         mod.eval()

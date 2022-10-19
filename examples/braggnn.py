@@ -30,7 +30,7 @@ def compile(mod, annots):
             bufferization_strategy=BufferizationStrategy.FULL,
             bufferize=True,
             loop_lowering=LoopLoweringType.AFFINE_LOOPS,
-            unroll=True,
+            unroll=True if UNROLL_FACTOR > 0 else False,
             unroll_factor=UNROLL_FACTOR,
         )
     else:

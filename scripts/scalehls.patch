@@ -1,0 +1,186 @@
+Index: build-scalehls.sh
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build-scalehls.sh b/build-scalehls.sh
+--- a/build-scalehls.sh	(revision d6ffcd0c5b2fa67c624a500365a3cc95942d91c0)
++++ b/build-scalehls.sh	(date 1665765846483)
+@@ -85,20 +85,7 @@
+ # Run building.
+ if [ "${CMAKE_GENERATOR}" == "Ninja" ]; then
+   ninja
+-  ninja check-mlir-clang
+ else
+   make -j "$(nproc)"
+-  make -j "$(nproc)" check-mlir-clang
+ fi
+ 
+-echo ""
+-echo ">>> ScaleHLS check..."
+-echo ""
+-
+-cd "${SCALEHLS_DIR}/build"
+-
+-if [ "${CMAKE_GENERATOR}" == "Ninja" ]; then
+-  ninja check-scalehls
+-else
+-  make -j "$(nproc)" check-scalehls
+-fi
+Index: lib/Translation/EmitHLSCpp.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Translation/EmitHLSCpp.cpp b/lib/Translation/EmitHLSCpp.cpp
+--- a/lib/Translation/EmitHLSCpp.cpp	(revision d6ffcd0c5b2fa67c624a500365a3cc95942d91c0)
++++ b/lib/Translation/EmitHLSCpp.cpp	(date 1666213189110)
+@@ -1488,6 +1488,13 @@
+     }
+     os << "};";
+     emitInfoAndNewLine(op);
++
++    if (op.getResult().getType().isa<ShapedType>()) {
++      indent();
++      indent() << "#pragma HLS array_partition variable=";
++      emitValue(op.getResult());
++      os << " complete dim=0\n";
++    }
+   } else
+     emitError(op, "has unsupported constant type.");
+ }
+@@ -1629,49 +1636,55 @@
+   auto layoutMap = type.getLayout().getAffineMap();
+ 
+   // Emit array_partition pragma(s).
+-  SmallVector<int64_t, 8> factors;
+-  getPartitionFactors(type, &factors);
++//  SmallVector<int64_t, 8> factors;
++//  getPartitionFactors(type, &factors);
++//
++//  for (int64_t dim = 0; dim < type.getRank(); ++dim) {
++//    if (factors[dim] != 1) {
++//      emitPragmaFlag = true;
++//
++//      indent() << "#pragma HLS array_partition";
++//      os << " variable=";
++//      emitValue(memref);
++//
++//      // Emit partition type.
++//      if (layoutMap.getResult(dim).getKind() == AffineExprKind::FloorDiv)
++//        os << " block";
++//      else
++//        os << " cyclic";
++//
++//      os << " factor=" << factors[dim];
++//      os << " dim=" << dim + 1 << "\n";
++//    }
++//  }
+ 
+-  for (int64_t dim = 0; dim < type.getRank(); ++dim) {
+-    if (factors[dim] != 1) {
+-      emitPragmaFlag = true;
+-
+-      indent() << "#pragma HLS array_partition";
+-      os << " variable=";
+-      emitValue(memref);
++  emitPragmaFlag = true;
++  indent() << "#pragma HLS array_partition variable=";
++  emitValue(memref);
++  os << " complete dim=0\n";
+ 
+-      // Emit partition type.
+-      if (layoutMap.getResult(dim).getKind() == AffineExprKind::FloorDiv)
+-        os << " block";
+-      else
+-        os << " cyclic";
+-
+-      os << " factor=" << factors[dim];
+-      os << " dim=" << dim + 1 << "\n";
+-    }
+-  }
+ 
+   // Emit resource pragma when the array is not DRAM kind and is not fully
+   // partitioned.
+   auto kind = MemoryKind(type.getMemorySpaceAsInt());
+-  if (kind != MemoryKind::DRAM && !isFullyPartitioned(type)) {
+-    emitPragmaFlag = true;
+-
+-    indent() << "#pragma HLS resource";
+-    os << " variable=";
+-    emitValue(memref);
+-
+-    os << " core=";
+-    if (kind == MemoryKind::BRAM_1P)
+-      os << "ram_1p_bram";
+-    else if (kind == MemoryKind::BRAM_S2P)
+-      os << "ram_s2p_bram";
+-    else if (kind == MemoryKind::BRAM_T2P)
+-      os << "ram_t2p_bram";
+-    else
+-      os << "ram_s2p_bram";
+-    os << "\n";
+-  }
++//  if (kind != MemoryKind::DRAM && !isFullyPartitioned(type)) {
++//    emitPragmaFlag = true;
++//
++//    indent() << "#pragma HLS resource";
++//    os << " variable=";
++//    emitValue(memref);
++//
++//    os << " core=";
++//    if (kind == MemoryKind::BRAM_1P)
++//      os << "ram_1p_bram";
++//    else if (kind == MemoryKind::BRAM_S2P)
++//      os << "ram_s2p_bram";
++//    else if (kind == MemoryKind::BRAM_T2P)
++//      os << "ram_t2p_bram";
++//    else
++//      os << "ram_s2p_bram";
++//    os << "\n";
++//  }
+ 
+   // Emit an empty line.
+   if (emitPragmaFlag)
+@@ -1732,6 +1745,10 @@
+       if (port.getType().isa<MemRefType>())
+         emitArrayDirectives(port);
+   }
++
++  for (auto &port : portList)
++    if (port.getType().isa<MemRefType>())
++      emitArrayDirectives(port);
+ 
+   auto funcDirect = getFuncDirective(func);
+   if (!funcDirect)
+Index: lib/Transforms/Passes.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/lib/Transforms/Passes.cpp b/lib/Transforms/Passes.cpp
+--- a/lib/Transforms/Passes.cpp	(revision d6ffcd0c5b2fa67c624a500365a3cc95942d91c0)
++++ b/lib/Transforms/Passes.cpp	(date 1665765882767)
+@@ -13,6 +13,7 @@
+ #include "mlir/Dialect/MemRef/Transforms/Passes.h"
+ #include "mlir/Pass/PassManager.h"
+ #include "mlir/Transforms/Passes.h"
++#include "mlir/Dialect/Func/IR/FuncOps.h"
+ 
+ using namespace mlir;
+ using namespace scalehls;
+@@ -111,11 +112,12 @@
+         if (dataflowGran)
+           pm.addPass(
+               scalehls::createFuncDataflowPass(opts.hlsTopFunc, dataflowGran));
++
+         pm.addPass(mlir::createCanonicalizerPass());
+-        pm.addPass(tosa::createTosaToLinalgNamed());
++        pm.addNestedPass<FuncOp>(tosa::createTosaToLinalgNamed());
+         pm.addPass(mlir::createCanonicalizerPass());
+         pm.addPass(scalehls::createTosaToLinalgCleanupPass());
+-        pm.addPass(tosa::createTosaToLinalg());
++        pm.addNestedPass<FuncOp>(tosa::createTosaToLinalg());
+         pm.addPass(tosa::createTosaToStandard());
+ 
+         // Create runtime main function.

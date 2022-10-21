@@ -468,7 +468,7 @@ public:
   bool visitOp(math::TanhOp op) { return emitter.emitUnary(op, "Tanh"), true; }
   bool visitOp(math::SqrtOp op) { return emitter.emitUnary(op, "Sqrt"), true; }
   bool visitOp(math::RsqrtOp op) {
-    return emitter.emitUnary(op, "1.0 / sqrt"), true;
+    return emitter.emitUnary(op, "1.0 / Sqrt"), true;
   }
   bool visitOp(math::ExpOp op) { return emitter.emitUnary(op, "Exp"), true; }
   bool visitOp(math::Exp2Op op) { return emitter.emitUnary(op, "Exp2"), true; }
@@ -1606,7 +1606,7 @@ std::string getValIdent(Value &value) {
 void ModuleEmitter::emitModule(ModuleOp module) {
   os << R"XXX(import numpy as np
 from bragghls.ir.memref import MemRef, GlobalMemRef
-from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy, ReduceTiling, Div
+from bragghls.ir.ops import FMAC, ReduceAdd, Copy, SelfCopy, ReduceTiling, Div, Sqrt
 from bragghls.compiler.runner import parfor, Forward, make_output_file
 import os
 

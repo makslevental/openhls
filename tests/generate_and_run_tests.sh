@@ -25,7 +25,7 @@ div
 dot_product
 soft_max
 #double_cnn
-simple_sum
+#simple_sum
 exp
 linear
 #linear_no_sum

@@ -19,7 +19,8 @@ from bragghls.config import (
     MAX_LATENCY,
     GT_LATENCY,
     NEG_LATENCY,
-    RELU_LATENCY, SQRT_LATENCY,
+    RELU_LATENCY,
+    SQRT_LATENCY,
 )
 from bragghls.util import extend_idx, chunks, is_val
 
@@ -166,8 +167,10 @@ CONSTANTS = set()
 
 def make_constant(arg):
     assert isinstance(arg, (float, bool, int)), arg
-    arg = str(arg)
-    cst_v = Val(id=f'cst_{arg.replace(".", "_point_").replace("+", "_plus_")}')
+    arg = f"{arg:.15f}"
+    cst_v = Val(
+        id=f'cst_{arg.replace(".", "_point_").replace("+", "_plus_")}'
+    )
     if cst_v not in CONSTANTS:
         cst_op = Op(
             OpType.CST,
@@ -334,11 +337,15 @@ def SelfCopy(memref):
 
 def ReduceTiling(fmac_arr, init_arr):
     assert (
-        fmac_arr.registers.shape[:len(init_arr.shape)] == init_arr.registers.shape
+        fmac_arr.registers.shape[: len(init_arr.shape)] == init_arr.registers.shape
     ), f"{fmac_arr.arr_name} fmac_arr {fmac_arr.registers.shape} and {init_arr.arr_name} init_arr {init_arr.registers.shape} shape don't match"
-    reduction_dim_sizes = fmac_arr.registers.shape[len(init_arr.shape):]
-    to_reduce = fmac_arr.registers.reshape([*init_arr.shape, np.prod(reduction_dim_sizes)])
-    inited = np.concatenate([to_reduce, np.expand_dims(init_arr.registers, axis=-1)], axis=-1)
+    reduction_dim_sizes = fmac_arr.registers.shape[len(init_arr.shape) :]
+    to_reduce = fmac_arr.registers.reshape(
+        [*init_arr.shape, np.prod(reduction_dim_sizes)]
+    )
+    inited = np.concatenate(
+        [to_reduce, np.expand_dims(init_arr.registers, axis=-1)], axis=-1
+    )
     fmac_arr.registers = np.apply_along_axis(ReduceAdd, -1, inited)
     fmac_arr.shape = fmac_arr.registers.shape
     SelfCopy(fmac_arr)
@@ -366,5 +373,13 @@ def Div(cst, val):
     return create_new_op(
         OpType.DIV,
         (cst, val),
+        pe_idx=state.state.get_val_pe(val) if is_val(val) else None,
+    )
+
+
+def Sqrt(val):
+    return create_new_op(
+        OpType.SQRT,
+        (val,),
         pe_idx=state.state.get_val_pe(val) if is_val(val) else None,
     )

@@ -56,7 +56,7 @@ for net in "${nets[@]}"; do
     sed -i.bak 's/float/half/g' ./${filename}.cpp && \
     sed -i.bak 's/max(/hls::half_fmax(/g' ./${filename}.cpp && \
     sed -i.bak 's/sqrt(/hls::half_sqrt(/g' ./${filename}.cpp && \
-    sed -E -i.bak 's/memcpy\(v([0-9]*), v([0-9]*)/memcpy(\&v\1, \&v\2/g' ./${filename}.cpp &
+    sed -E -i.bak 's/memcpy\(v([0-9]*), v([0-9]*), 1 \* sizeof/memcpy(\&v\1, \&v\2, 1 * sizeof/g' ./${filename}.cpp &
   done
   popd
 done
@@ -90,7 +90,7 @@ for i in "${unroll_factors[@]}" ; do
   sed -i.bak 's/float/half/g' ./${filename}.cpp && \
   sed -i.bak 's/max(/hls::half_fmax(/g' ./${filename}.cpp && \
   sed -i.bak 's/sqrt(/hls::half_sqrt(/g' ./${filename}.cpp && \
-  sed -E -i.bak 's/memcpy\(v([0-9]*), v([0-9]*)/memcpy(\&v\1, \&v\2/g' ./${filename}.cpp &
+  sed -E -i.bak 's/memcpy\(v([0-9]*), v([0-9]*), 1 /memcpy(\&v\1, \&v\2, 1 /g' ./${filename}.cpp &
 done
 popd
 

@@ -132,6 +132,9 @@ def generate_imports_tcl(sv_filename, width_exponent, width_fraction):
     add_files -norecurse -scan_for_includes flopoco_fcmplt_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fcmplt_{width_exponent}_{width_fraction}.sv -force
     
+    add_files -norecurse -scan_for_includes flopoco_fsqrt_{width_exponent}_{width_fraction}.sv -force
+    import_files -norecurse flopoco_fsqrt_{width_exponent}_{width_fraction}.sv -force
+    
     add_files -norecurse -scan_for_includes flopoco_fdiv_{width_exponent}_{width_fraction}.sv -force
     import_files -norecurse flopoco_fdiv_{width_exponent}_{width_fraction}.sv -force
     

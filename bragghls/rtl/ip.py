@@ -152,6 +152,11 @@ class ReLU(UnaryOp):
         super().__init__(OpType.RELU, pe_idx, signal_width)
 
 
+class Sqrt(UnaryOp):
+    def __init__(self, pe_idx, signal_width):
+        super().__init__(OpType.SQRT, pe_idx, signal_width)
+
+
 class Neg(UnaryOp):
     def __init__(self, pe_idx, signal_width):
         super().__init__(OpType.NEG, pe_idx, signal_width)
@@ -165,6 +170,7 @@ class PE:
     fsub: FSub
     fmax: FMax
     frelu: ReLU
+    fsqrt: Sqrt
     fneg: Neg
     idx: Tuple[int, ...]
 

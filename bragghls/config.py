@@ -59,11 +59,19 @@ if USING_FLOPOCO:
     ) as f:
         depths = pipeline_depth_re.findall(f.read())
         DIV_PIPELINE_DEPTH = int(depths[-1])
+    with open(
+        Path(ip_cores.__file__).parent
+        / "fsqrt"
+        / f"flopoco_fsqrt_{WIDTH_EXPONENT}_{WIDTH_FRACTION}.vhdl"
+    ) as f:
+        depths = pipeline_depth_re.findall(f.read())
+        SQRT_PIPELINE_DEPTH = int(depths[-1])
 
 MUL_LATENCY = MUL_PIPELINE_DEPTH + 1
 DIV_LATENCY = DIV_PIPELINE_DEPTH + 1
 ADD_LATENCY = ADD_PIPELINE_DEPTH + 1
 SUB_LATENCY = SUB_PIPELINE_DEPTH + 1
+SQRT_LATENCY = SQRT_PIPELINE_DEPTH + 1
 
 # comb ops with registered outputs
 MAX_LATENCY = 2

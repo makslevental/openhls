@@ -15,7 +15,7 @@ from bragghls.rtl.basic import (
     CombOrSeq,
 )
 from bragghls.rtl.fsm import FSM
-from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE, FMax, FSub
+from bragghls.rtl.ip import FAdd, FMul, FDiv, ReLU, Neg, PE, FMax, FSub, Sqrt
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +33,7 @@ def build_ip_res_val_map(pe, op_datas: list[Op], vals):
             OpType.MAX,
             OpType.NEG,
             OpType.RELU,
+            OpType.SQRT,
         }:
             ip = getattr(pe, op.type.value, None)
             ip_res_val_map[res_val] = ip.r
@@ -73,7 +74,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
                 )
             )
             # not_latches.update({ip.x, ip.y})
-        elif op.type in {OpType.NEG, OpType.RELU}:
+        elif op.type in {OpType.NEG, OpType.RELU, OpType.SQRT}:
             tree_conds.append(
                 make_always_branch(
                     [ip.x], [in_a], fsm.make_fsm_conditions([start_time])
@@ -257,6 +258,7 @@ def emit_verilog(
         fsub = FSub(pe_idx, signal_width)
         fmax = FMax(pe_idx, signal_width)
         frelu = ReLU(pe_idx, signal_width)
+        fsqrt = Sqrt(pe_idx, signal_width)
         fneg = Neg(pe_idx, signal_width)
         pes[pe_idx] = PE(
             fadd=fadd,
@@ -265,6 +267,7 @@ def emit_verilog(
             fsub=fsub,
             fmax=fmax,
             frelu=frelu,
+            fsqrt=fsqrt,
             fneg=fneg,
             idx=pe_idx,
         )

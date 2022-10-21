@@ -19,7 +19,7 @@ from bragghls.config import (
     MAX_LATENCY,
     GT_LATENCY,
     NEG_LATENCY,
-    RELU_LATENCY,
+    RELU_LATENCY, SQRT_LATENCY,
 )
 from bragghls.util import extend_idx, chunks, is_val
 
@@ -40,6 +40,7 @@ class OpType(Enum):
     GT = "fcmpugt"
     NEG = "fneg"
     RELU = "frelu"
+    SQRT = "fsqrt"
     CST = "arith.constant"
     COPY = "copy"
     FMAC = "fmac"
@@ -68,6 +69,7 @@ class Val:
     __neg__ = overload_op(OpType.NEG)
     copy = overload_op(OpType.COPY)
     relu = overload_op(OpType.RELU)
+    sqrt = overload_op(OpType.SQRT)
     max = overload_op(OpType.MAX)
 
     def __repr__(self):
@@ -127,6 +129,7 @@ class Latencies:
         OpType.MAX: MAX_LATENCY,
         OpType.GT: GT_LATENCY,
         OpType.NEG: NEG_LATENCY,
+        OpType.SQRT: SQRT_LATENCY,
         OpType.RELU: RELU_LATENCY,
         OpType.CST: 0,
         OpType.COPY: 1,

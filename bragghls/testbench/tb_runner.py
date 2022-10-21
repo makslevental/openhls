@@ -33,6 +33,7 @@ def testbench_runner(
         proj_path / f"flopoco_fsub_{width_exponent}_{width_fraction}.sv",
         proj_path / f"flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
         proj_path / f"flopoco_fcmplt_{width_exponent}_{width_fraction}.sv",
+        proj_path / f"flopoco_fsqrt_{width_exponent}_{width_fraction}.sv",
         proj_path / f"flopoco_max.sv",
         proj_path / "flopoco_relu.sv",
         proj_path / "flopoco_neg.sv",

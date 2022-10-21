@@ -241,6 +241,7 @@ def compile(
         f"fmul/flopoco_fmul_{width_exponent}_{width_fraction}.sv",
         f"fdiv/flopoco_fdiv_{width_exponent}_{width_fraction}.sv",
         f"fcmplt/flopoco_fcmplt_{width_exponent}_{width_fraction}.sv",
+        f"fsqrt/flopoco_fsqrt_{width_exponent}_{width_fraction}.sv",
         f"flopoco_max.sv",
         f"flopoco_neg.sv",
         f"flopoco_relu.sv",

@@ -88,7 +88,7 @@ def build_llvm(base_cmake_args):
         "-DLLVM_ENABLE_PROJECTS=mlir",
         "-DLLVM_TARGETS_TO_BUILD=host",
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
-        "-DLLVM_ENABLE_ZSTD=OFF"
+        "-DLLVM_ENABLE_ZSTD=OFF",
     ]
     run_cmake(llvm_dir, cmake_args, LLVM_BUILD_DIR)
 
@@ -159,7 +159,7 @@ def build_circt(base_cmake_args):
     run_cmake(circt_dir, cmake_args, circt_build_dir)
 
 
-def build_bragghls(base_cmake_args):
+def build_bragghls_translate(base_cmake_args):
     bragghls_dir = CWD
     bragghls_build_dir = os.path.join(ROOT_BUILD_DIR, "bragghls")
 
@@ -171,6 +171,21 @@ def build_bragghls(base_cmake_args):
         f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
     ]
     run_cmake(bragghls_dir, cmake_args, bragghls_build_dir, target="bragghls_translate")
+    return bragghls_build_dir
+
+
+def build_bragghls_opt(base_cmake_args):
+    bragghls_dir = CWD
+    bragghls_build_dir = os.path.join(ROOT_BUILD_DIR, "bragghls")
+
+    cmake_args = base_cmake_args + [
+        # f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
+        f'-DMLIR_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "mlir")}',
+        f'-DLLVM_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "llvm")}',
+        "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
+        f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
+    ]
+    run_cmake(bragghls_dir, cmake_args, bragghls_build_dir, target="bragghls-opt")
     return bragghls_build_dir
 
 
@@ -243,7 +258,9 @@ class CMakeBuild(build_ext):
         if bool(int(os.getenv("BUILD_CIRCT", "1"))):
             build_circt(base_cmake_args)
         if bool(int(os.getenv("BUILD_BRAGGHLS_TRANSLATE", "1"))):
-            build_bragghls(base_cmake_args)
+            build_bragghls_translate(base_cmake_args)
+        if bool(int(os.getenv("BUILD_BRAGGHLS_OPT", "1"))):
+            build_bragghls_opt(base_cmake_args)
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = base_cmake_args + [
@@ -261,6 +278,7 @@ data_files = [
         "bin/bragghls",
         [
             "build/bragghls/bin/bragghls_translate",
+            "build/bragghls/bin/bragghls-opt",
         ],
     ),
     (
@@ -318,6 +336,8 @@ setup(
             "ip_cores/fadd/*.sv",
             "ip_cores/fcmplt/*.vhdl",
             "ip_cores/fcmplt/*.sv",
+            "ip_cores/fsqrt/*.vhdl",
+            "ip_cores/fsqrt/*.sv",
             "ip_cores/fdiv/*.vhdl",
             "ip_cores/fdiv/*.sv",
             "ip_cores/fmul/*.vhdl",

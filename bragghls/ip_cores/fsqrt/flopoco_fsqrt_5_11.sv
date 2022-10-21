@@ -1,4 +1,4 @@
-module fsqrt
+module fsqrt#(parameter ID=1)
   (input wire clk,
    input wire [18:0] X,
    output wire [18:0] R);

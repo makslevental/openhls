@@ -1,4 +1,4 @@
-#add_subdirectory(Transforms)
+#add_subdirectory(dialect_and_stuff)
 
 get_property(dialect_libs GLOBAL PROPERTY MLIR_DIALECT_LIBS)
 get_property(conversion_libs GLOBAL PROPERTY MLIR_CONVERSION_LIBS)
@@ -15,5 +15,3 @@ target_link_libraries(bragghls-opt
   ${conversion_libs}
   MLIROptLib
   )
-
-

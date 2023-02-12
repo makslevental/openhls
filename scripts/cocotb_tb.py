@@ -4,7 +4,7 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge
 
-from bragghls.testbench.cocotb_runner import get_runner
+from openhls.testbench.cocotb_runner import get_runner
 
 
 # test_dff.py
@@ -32,7 +32,7 @@ async def test_fneg(dut):
 
 if __name__ == "__main__":
     proj_path = Path(__file__).parent
-    verilog_sources = ["/home/mlevental/dev_projects/bragghls/bragghls/ip_cores/flopoco_neg.sv"]
+    verilog_sources = ["/home/mlevental/dev_projects/openhls/openhls/ip_cores/flopoco_neg.sv"]
     top_level = "fneg"
     runner = get_runner("icarus")()
     runner.build(

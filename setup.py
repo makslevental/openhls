@@ -159,9 +159,9 @@ def build_circt(base_cmake_args):
     run_cmake(circt_dir, cmake_args, circt_build_dir)
 
 
-def build_bragghls_translate(base_cmake_args):
-    bragghls_dir = CWD
-    bragghls_build_dir = os.path.join(ROOT_BUILD_DIR, "bragghls")
+def build_openhls_translate(base_cmake_args):
+    openhls_dir = CWD
+    openhls_build_dir = os.path.join(ROOT_BUILD_DIR, "openhls")
 
     cmake_args = base_cmake_args + [
         # f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
@@ -170,13 +170,13 @@ def build_bragghls_translate(base_cmake_args):
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
         f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
     ]
-    run_cmake(bragghls_dir, cmake_args, bragghls_build_dir, target="bragghls_translate")
-    return bragghls_build_dir
+    run_cmake(openhls_dir, cmake_args, openhls_build_dir, target="openhls_translate")
+    return openhls_build_dir
 
 
-def build_bragghls_opt(base_cmake_args):
-    bragghls_dir = CWD
-    bragghls_build_dir = os.path.join(ROOT_BUILD_DIR, "bragghls")
+def build_openhls_opt(base_cmake_args):
+    openhls_dir = CWD
+    openhls_build_dir = os.path.join(ROOT_BUILD_DIR, "openhls")
 
     cmake_args = base_cmake_args + [
         # f'-DCMAKE_PREFIX_PATH="{LLVM_BUILD_DIR}"',
@@ -185,8 +185,8 @@ def build_bragghls_opt(base_cmake_args):
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
         f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
     ]
-    run_cmake(bragghls_dir, cmake_args, bragghls_build_dir, target="bragghls-opt")
-    return bragghls_build_dir
+    run_cmake(openhls_dir, cmake_args, openhls_build_dir, target="openhls-opt")
+    return openhls_build_dir
 
 
 def build_flopoco_converter(base_cmake_args):
@@ -257,10 +257,10 @@ class CMakeBuild(build_ext):
             build_llvm(base_cmake_args)
         if bool(int(os.getenv("BUILD_CIRCT", "1"))):
             build_circt(base_cmake_args)
-        if bool(int(os.getenv("BUILD_BRAGGHLS_TRANSLATE", "1"))):
-            build_bragghls_translate(base_cmake_args)
-        if bool(int(os.getenv("BUILD_BRAGGHLS_OPT", "1"))):
-            build_bragghls_opt(base_cmake_args)
+        if bool(int(os.getenv("BUILD_OPENHLS_TRANSLATE", "1"))):
+            build_openhls_translate(base_cmake_args)
+        if bool(int(os.getenv("BUILD_OPENHLS_OPT", "1"))):
+            build_openhls_opt(base_cmake_args)
 
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = base_cmake_args + [
@@ -275,10 +275,10 @@ class CMakeBuild(build_ext):
 
 data_files = [
     (
-        "bin/bragghls",
+        "bin/openhls",
         [
-            "build/bragghls/bin/bragghls_translate",
-            "build/bragghls/bin/bragghls-opt",
+            "build/openhls/bin/openhls_translate",
+            "build/openhls/bin/openhls-opt",
         ],
     ),
     (
@@ -312,7 +312,7 @@ class CustomDevelopCommand(develop):
 
 
 setup(
-    name="bragghls",
+    name="openhls",
     version="0.1.0",
     author="Maksim Levental",
     author_email="maksim.levental@gmail.com",
@@ -323,12 +323,12 @@ setup(
     cmdclass={"build_ext": CMakeBuild, "develop": CustomDevelopCommand},
     ext_modules=[
         CMakeExtension(
-            "bragghls.flopoco.flopoco_converter",
+            "openhls.flopoco.flopoco_converter",
             sourcedir=os.path.join(CWD, "extensions/flopoco_convert_ext"),
         ),
     ],
     package_data={
-        "bragghls": [
+        "openhls": [
             "ip_cores/*.vhdl",
             "ip_cores/*.sv",
             "ip_cores/*.xdc",
@@ -350,7 +350,7 @@ setup(
     zip_safe=False,
     entry_points={
         "console_scripts": [
-            "bragghls_compiler = bragghls.compiler.compile:main",
+            "openhls_compiler = openhls.compiler.compile:main",
         ],
     },
 )

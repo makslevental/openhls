@@ -2,7 +2,7 @@ set -eox
 
 fullfile=$1
 
-BRAGGHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
+OPENHLS_DIR="$( cd "$(dirname "$0")" ; pwd -P)/.."
 
 dirname=$(dirname $fullfile)
 filename_with_ext=$(basename -- "$fullfile")
@@ -13,9 +13,9 @@ echo $dirname $filename_with_ext $extension $filename
 
 rm $dirname/$filename.vvp || echo 0
 if [[ "$extension" == "sv" ]]; then
-  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores -I $dirname -g2012 $dirname/"$filename"_tb.sv
+  iverilog -o $dirname/$filename.vvp -I "$OPENHLS_DIR"/ip_cores -I $dirname -g2012 $dirname/"$filename"_tb.sv
 else
-  iverilog -o $dirname/$filename.vvp -I "$BRAGGHLS_DIR"/ip_cores -I dirname $dirname/"$filename"_tb.v
+  iverilog -o $dirname/$filename.vvp -I "$OPENHLS_DIR"/ip_cores -I dirname $dirname/"$filename"_tb.v
 fi
 
 rm $dirname/*.vcd || echo 0

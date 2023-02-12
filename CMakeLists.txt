@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14...3.19)
 
-project(bragghls LANGUAGES CXX C)
+project(openhls LANGUAGES CXX C)
 
 if(POLICY CMP0068)
     cmake_policy(SET CMP0068 NEW)
@@ -18,7 +18,7 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
-project(bragghls LANGUAGES CXX C)
+project(openhls LANGUAGES CXX C)
 
 message(STATUS ${LLVM_MAIN_SRC_DIR})
 find_package(LLVM REQUIRED CONFIG)
@@ -47,5 +47,5 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 list(APPEND CMAKE_MODULE_PATH ${MLIR_MAIN_SRC_DIR}/cmake/modules)
 list(APPEND CMAKE_MODULE_PATH ${LLVM_MAIN_SRC_DIR}/cmake)
 
-add_subdirectory(bragghls_translate)
-add_subdirectory(bragghls_opt)
+add_subdirectory(openhls_translate)
+add_subdirectory(openhls_opt)

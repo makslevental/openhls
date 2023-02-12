@@ -9,7 +9,7 @@ __pycache__/
 *.vcd
 *.v
 *.bak
-*_bragghls_artifacts
+*_openhls_artifacts
 *generated*
 
 .externals_st_mtime

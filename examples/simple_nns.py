@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from bragghls.ir.nn import (
+from openhls.ir.nn import (
     compile_nn_module_to_mlir,
     set_weights,
     TosaOrLinalg,

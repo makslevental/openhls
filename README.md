@@ -1,6 +1,6 @@
-# BraggHLS
+# OpenHLS
 
-- [BraggHLS](#bragghls)
+- [OpenHLS](#openhls)
 - [TL;DR](#tl-dr)
 - [Repo structure](#repo-structure)
 - [Current status](#current-status)
@@ -20,7 +20,7 @@ high-energy diffraction microscopy (HEDM).
 The "flow" is
 
 <p align="center">
-  <img width="1000" src="docs/images/bragghls_flow.png" alt="">
+  <img width="1000" src="docs/images/openhls_flow.png" alt="">
 </p>
 
 # TL;DR
@@ -62,7 +62,7 @@ BraggNN(
 into this
 
 <p align="center">
-  <img height="1000" src="docs/images/bragghls_done.png" alt="">
+  <img height="1000" src="docs/images/openhls_done.png" alt="">
 </p>
 <p align="center">
    1200 intervals at ~100 MHz on Xilinx Alveo U280 with <b>pipeline depth 2</b> (and so the throughput is actually ~4.7μs/sample)
@@ -75,18 +75,18 @@ into this
 
 This project has a lot of moving parts; the directory structure tells the tale:
 
-- [bragghls/](bragghls) - the core python library
-    - [compiler/compiler.py](bragghls/compiler.py) - python script the drives the entire flow
-    - [flopoco/](bragghls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/)
+- [openhls/](openhls) - the core python library
+    - [compiler/compiler.py](openhls/compiler.py) - python script the drives the entire flow
+    - [flopoco/](openhls/flopoco) - functionality related to converting between [FloPoCo's](http://flopoco.org/)
       nonstandard floating point representation and IEEE754 (for purposes of RTL generation *and* simulation)
-    - [ip_cores/](bragghls/ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
+    - [ip_cores/](openhls/ip_cores) - FloPoCo cores for 4,4 and 5,5 floating point addition and multiplication along with testbench
       generation
-    - [ir/](bragghls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of
+    - [ir/](openhls/ir) - functionality related to parsing, transforming, and interpreting MLIR representations of
       PyTorch models.
-    - [rtl/](bragghls/rtl) - functionality related to emitting RTL (SystemVerilog)
-    - [testbench/](bragghls/testbench) - testbench runners via [cocotb](https://www.cocotb.org/)
+    - [rtl/](openhls/rtl) - functionality related to emitting RTL (SystemVerilog)
+    - [testbench/](openhls/testbench) - testbench runners via [cocotb](https://www.cocotb.org/)
       and [iverilog](http://iverilog.icarus.com/)
-- [bragghls_translate/](bragghls_translate) - MLIR parser/emitter translation library for translating MLIR to python
+- [openhls_translate/](openhls_translate) - MLIR parser/emitter translation library for translating MLIR to python
 - [examples/](examples) - obviously...
 - [extensions/flopoco_convert_ext/](extensions/flopoco_convert_ext) - pybind-ed extension for converting between IEEE754 and
   FloPoCo's floating point representation
@@ -95,10 +95,10 @@ This project has a lot of moving parts; the directory structure tells the tale:
 
 # Current status
 
-[![Build and Test](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/makslevental/bragghls/actions/workflows/build_and_test.yml)
-[![Build Docker](https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg)](https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml)
+[![Build and Test](https://github.com/makslevental/openhls/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/makslevental/openhls/actions/workflows/build_and_test.yml)
+[![Build Docker](https://github.com/makslevental/openhls/actions/workflows/build_docker.yml/badge.svg)](https://github.com/makslevental/openhls/actions/workflows/build_docker.yml)
 
-[//]: # ([![Build Docker]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml/badge.svg&#41;]&#40;https://github.com/makslevental/bragghls/actions/workflows/build_docker.yml&#41;)
+[//]: # ([![Build Docker]&#40;https://github.com/makslevental/openhls/actions/workflows/build_docker.yml/badge.svg&#41;]&#40;https://github.com/makslevental/openhls/actions/workflows/build_docker.yml&#41;)
 
 [//]: # ([linear]&#40;examples/linear.py&#41; and [cnn]&#40;examples/cnn.py&#41; examples work &#40;including tiling&#41;)
 
@@ -109,13 +109,13 @@ This project has a lot of moving parts; the directory structure tells the tale:
 The easiest way to get started is to build a docker container using the [Dockerfile](Dockerfile):
 
 ```shell
-docker build . -t bragghls && docker run -it bragghls
+docker build . -t openhls && docker run -it openhls
 ```
 
 or just pull the latest image from dockerhub:
 
 ```shell
-docker pull mlevental/bragghls:latest && docker run -it mlevental/bragghls
+docker pull mlevental/openhls:latest && docker run -it mlevental/openhls
 ```
 
 # Building
@@ -154,8 +154,8 @@ brew install llvm gmp mpfr mpfi icarus-verilog
 3. `pip install . -vvvv`. This will:
     1. Build all of LLVM
     2. Build CIRCT against LLVM
-    3. Build `bragghls_translate` and `flopoco_converter`
-    4. Put all of the things in the correct places (`circt-opt` and `bragghls_translate` in `venv/bin`)
+    3. Build `openhls_translate` and `flopoco_converter`
+    4. Put all of the things in the correct places (`circt-opt` and `openhls_translate` in `venv/bin`)
 4. If you want to reinstall you can `BUILD_LLVM=0 BUILD_CIRCT=0 BUILD_FLOPOCO=1 pip install . -vvvv` to save some time.
 
 If you get some mysterious errors like
@@ -172,21 +172,21 @@ C_COMPILER=clang CXX_COMPILER=clang++ pip install . -vvvv
 
 # Running
 
-There is a small config file that sets necessary parameters (cf. [bragghls_config.ini](bragghls_config.ini)).
-The path to this config file needs to be set as an environment variable before invoking any of the bragghls scripts, as such:
+There is a small config file that sets necessary parameters (cf. [openhls_config.ini](openhls_config.ini)).
+The path to this config file needs to be set as an environment variable before invoking any of the openhls scripts, as such:
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler 
+OPENHLS_CONFIG_FP=$(pwd)/openhls_config.ini openhls_compiler 
 ```
 
 Note the `$(pwd)` which is necessary if you're running the testbenches.
 
 Assuming everything built successfully and you have all of the correct paths and environment variables, run any of the
 scripts in [examples](examples) to generate MLIR IR. 
-Then the main [compiler driver](bragghls/compiler/compile.py) can be run with the following arguments
+Then the main [compiler driver](openhls/compiler/compile.py) can be run with the following arguments
 
 ```shell
-usage: BraggHLS compiler driver [-h] [-t] [-r] [-s] [-v] [-b] [-n N_TEST_VECTORS] [--threshold THRESHOLD] fp
+usage: OpenHLS compiler driver [-h] [-t] [-r] [-s] [-v] [-b] [-n N_TEST_VECTORS] [--threshold THRESHOLD] fp
 
 positional arguments:
   fp                    Filepath of top-level MLIR file
@@ -207,11 +207,11 @@ options:
 For example,
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini python $(pwd)/examples/simple_nns.py linear --size 11
+OPENHLS_CONFIG_FP=$(pwd)/openhls_config.ini python $(pwd)/examples/simple_nns.py linear --size 11
 ```
 
 which runs [examples/simple_nns.py](examples/simple_nns.py) and produces an artifacts folder
-at [examples/linear_bragghls_artifacts](examples/linear_11_bragghls_artifacts) which will contains a `linear.mlir` file
+at [examples/linear_openhls_artifacts](examples/linear_11_openhls_artifacts) which will contains a `linear.mlir` file
 that looks like
 
 ```mlir
@@ -238,13 +238,13 @@ module attributes {torch.debug_module_name = "Linear"} {
 Then running
 
 ```shell
-BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini bragghls_compiler $(pwd)/examples/linear_11_bragghls_artifacts/linear.mlir -t -r -s -v -b
+OPENHLS_CONFIG_FP=$(pwd)/openhls_config.ini openhls_compiler $(pwd)/examples/linear_11_openhls_artifacts/linear.mlir -t -r -s -v -b
 ```
 
 will generate `linear.sv` and run the automatically generated (no artifact) testbench, and produce the following output:
 
 ```
-INFO: Running command: iverilog "-o "examples/linear_bragghls_artifacts/sim.vvp "-D "COCOTB_SIM=1 "-g2012 ...
+INFO: Running command: iverilog "-o "examples/linear_openhls_artifacts/sim.vvp "-D "COCOTB_SIM=1 "-g2012 ...
      0.00ns INFO     Running on Icarus Verilog version 11.0 (stable)
      0.00ns INFO     Running tests with cocotb v1.6.2 from ...
      0.00ns INFO     Seeding Python random module with 1659448436

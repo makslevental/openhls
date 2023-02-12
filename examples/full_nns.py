@@ -4,7 +4,7 @@ from pathlib import Path
 
 import torch
 
-from bragghls.ir.nn import compile_nn_module_to_mlir, set_weights
+from openhls.ir.nn import compile_nn_module_to_mlir, set_weights
 from examples.braggnn import MyBraggNN
 from examples.lenet import LeNet
 from examples.mobilenet import MobileNet

@@ -6,7 +6,7 @@ from pathlib import Path
 import torch
 from torch.nn import Conv2d, Sequential, ReLU, Linear
 
-from bragghls.ir.nn import (
+from openhls.ir.nn import (
     set_weights,
     compile_nn_module_to_mlir,
     LoopLoweringType,

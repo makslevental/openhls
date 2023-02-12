@@ -23,16 +23,16 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: mlevental/bragghls:latest
+          tags: mlevental/openhls:latest
   test-docker:
     needs: build-docker
     runs-on: ubuntu-latest
     container:
-      image: mlevental/bragghls:latest
+      image: mlevental/openhls:latest
     steps:
       - name: Check the built docker image
         run: |
-          cd /bragghls
-          export BRAGGHLS_CONFIG_FP=$(pwd)/bragghls_config.ini
+          cd /openhls
+          export OPENHLS_CONFIG_FP=$(pwd)/openhls_config.ini
           python examples/simple_nns.py linear --size 11
-          bragghls_compiler $(pwd)/examples/linear_11/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1
+          openhls_compiler $(pwd)/examples/linear_11/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1

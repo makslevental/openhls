@@ -1,6 +1,6 @@
 set -e
 
-export BRAGGHLS_CONFIG_FP=/home/mlevental/dev_projects/bragghls/bragghls_config.ini
+export OPENHLS_CONFIG_FP=/home/mlevental/dev_projects/openhls/openhls_config.ini
 
 nets=(
 addmm
@@ -33,8 +33,8 @@ for net in "${nets[@]}"; do
     # unroll_factor=$(($i+1))
     while [ $(jobs | wc -l) -ge 10 ] ; do sleep 1 ; done
     python simple_nns.py $net --size 16 && \
-    /home/mlevental/dev_projects/bragghls/cmake-build-debug/bin/bragghls-opt --bragghls-naive-loop-unroll=unroll-factor=$unroll_factor --bragghls-naive-store-load-forward --cse ${net}_16/${net}.mlir > ${net}_16/${net}_$unroll_factor.mlir &
-#    python ../bragghls/compiler/compile.py ${net}_16/$net.mlir -t -r -s -v
+    /home/mlevental/dev_projects/openhls/cmake-build-debug/bin/openhls-opt --openhls-naive-loop-unroll=unroll-factor=$unroll_factor --openhls-naive-store-load-forward --cse ${net}_16/${net}.mlir > ${net}_16/${net}_$unroll_factor.mlir &
+#    python ../openhls/compiler/compile.py ${net}_16/$net.mlir -t -r -s -v
   done
 done
 
@@ -70,7 +70,7 @@ for i in "${unroll_factors[@]}" ; do
   unroll_factor=$((4*$i))
   # unroll_factor=$(($i+1))
   while [ $(jobs | wc -l) -ge 10 ] ; do sleep 1 ; done
-  /home/mlevental/dev_projects/bragghls/cmake-build-debug/bin/bragghls-opt --bragghls-naive-loop-unroll=unroll-factor=$unroll_factor --bragghls-naive-store-load-forward --cse braggnn_1/braggnn.mlir > braggnn_1/braggnn_$unroll_factor.mlir &
+  /home/mlevental/dev_projects/openhls/cmake-build-debug/bin/openhls-opt --openhls-naive-loop-unroll=unroll-factor=$unroll_factor --openhls-naive-store-load-forward --cse braggnn_1/braggnn.mlir > braggnn_1/braggnn_$unroll_factor.mlir &
 done
 
 while [ $(jobs | wc -l) -ge 1 ] ; do sleep 1 ;

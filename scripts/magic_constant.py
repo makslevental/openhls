@@ -3,7 +3,7 @@ from scipy.optimize import minimize, rosen, rosen_der
 import matplotlib.pyplot as plt
 import numpy as np
 
-from bragghls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
+from openhls.rtl.convert_flopoco import convert_float_to_flopoco_binary_str
 
 
 L = 2 ** 4

@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.10
 
 RUN apt-get update
 RUN apt-get install -y build-essential clang git vim \
@@ -21,5 +21,5 @@ RUN pip install . -vvvv
 
 ENTRYPOINT OPENHLS_CONFIG_FP=openhls_config.ini python examples/simple_nns.py linear --size 11 \
  && OPENHLS_CONFIG_FP=$(pwd)/openhls_config.ini \
-  openhls_compiler $(pwd)/examples/linear_11_openhls_artifacts/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1 \
+  openhls_compiler $(pwd)/examples/linear_11/linear.mlir -t -r -s -v -b -n 10 --threshold 0.1 \
  && /bin/bash

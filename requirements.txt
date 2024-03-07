@@ -12,4 +12,4 @@ astor
 jinja2
 cocotb==1.6.2
 matplotlib
-git+https://github.com/makslevental/xeda@read_xdc
+xeda

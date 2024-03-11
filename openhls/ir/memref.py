@@ -1,3 +1,4 @@
+import sys
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -81,9 +82,18 @@ class MemRef:
     def reduce_max(self):
         return ReduceMax(list(self.registers.flatten()))
 
-    def alias(self, other_memref):
+    def alias(self, other_memref, offsets=None, sizes=None, strides=None):
         assert isinstance(other_memref, MemRef)
-        self.registers = other_memref.registers
+        if offsets is not None and sizes is not None and strides is not None:
+            subview = []
+            for o, si, st in zip(offsets, sizes, strides):
+                subview.append(slice(o, o + si, st))
+            print("subview", subview, file=sys.stderr)
+            print("before subview", self.registers.shape, file=sys.stderr)
+            self.registers = other_memref.registers[tuple(subview)]
+            print("aftier subview", self.registers.shape, file=sys.stderr)
+        else:
+            self.registers = other_memref.registers
 
 
 class GlobalMemRef:

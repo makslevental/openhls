@@ -233,6 +233,7 @@ public:
   void emitLoad(memref::LoadOp op);
   void emitStore(memref::StoreOp op);
   void emitMemCpy(memref::CopyOp op);
+  void emitMemSubview(memref::SubViewOp op);
   void emitGlobal(memref::GlobalOp op);
   void emitGetGlobal(memref::GetGlobalOp op);
   void emitTensorStore(memref::TensorStoreOp op);
@@ -420,6 +421,7 @@ public:
   bool visitOp(memref::StoreOp op) { return emitter.emitStore(op), true; }
   bool visitOp(memref::DeallocOp op) { return true; }
   bool visitOp(memref::CopyOp op) { return emitter.emitMemCpy(op), true; }
+  bool visitOp(memref::SubViewOp op) { return emitter.emitMemSubview(op), true; }
   bool visitOp(memref::GlobalOp op) { return emitter.emitGlobal(op), true; }
   bool visitOp(memref::GetGlobalOp op) {
     return emitter.emitGetGlobal(op), true;
@@ -1169,20 +1171,23 @@ void ModuleEmitter::emitStore(memref::StoreOp op) {
 }
 
 void ModuleEmitter::emitMemCpy(memref::CopyOp op) {
-//  indent() << "memcpy(";
   indent() << "";
-//  emitValue(op.target());
-//  os << " = ";
   emitValue(op.target());
   os << ".alias(";
   emitValue(op.getSource());
   os << ")";
-//  os << ", ";
+  os << "\n";
+}
 
-//  auto type = op.target().getType().cast<MemRefType>();
-//  os << type.getNumElements() << " * sizeof(" << getTypeName(op.target())
-//     << "))";
-//  os << "\n";
+void ModuleEmitter::emitMemSubview(memref::SubViewOp op) {
+  indent() << "";
+  emitValue(op.result());
+  os << ".alias(";
+  emitValue(op.getSource());
+  os << ", offsets=" << op.getStaticOffsets();
+  os << ", sizes=" << op.getStaticSizes();
+  os << ", strides=" << op.getStaticStrides();
+  os << ")";
   os << "\n";
 }
 

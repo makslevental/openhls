@@ -32,6 +32,7 @@ if [ ! -f "${OPENHLS_DIR}"/build/llvm/CMakeCache.txt ]; then
     -DCMAKE_BUILD_TYPE=DEBUG \
     -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
     -DLLVM_TARGETS_TO_BUILD=host \
+    -DPython3_FIND_VIRTUALENV=ONLY \
     -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -S "${OPENHLS_DIR}"/externals/llvm-project/llvm \
     -B "${OPENHLS_DIR}"/build/llvm
@@ -137,7 +138,7 @@ if [ ! -f "${OPENHLS_DIR}"/build/flopoco_converter/CMakeCache.txt ]; then
       -DMLIR_ENABLE_BINDINGS_PYTHON=ON \
       -DLLVM_TARGETS_TO_BUILD=host \
       -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-      -S "${OPENHLS_DIR}"/flopoco_convert_ext \
+      -S "${OPENHLS_DIR}"/extensions/flopoco_convert_ext \
       -B "${OPENHLS_DIR}"/build/flopoco_converter
 fi
 
@@ -155,14 +156,3 @@ if [ ! -f "${OPENHLS_DIR}"/build/ghdl/bin/ghdl ]; then
     tar -xvf ghdl-gha-ubuntu-20.04-llvm.tgz -C "${OPENHLS_DIR}"/build/ghdl
   fi
 fi
-
-
-# TODO
-#PYBIND11_DIR=${PREFIX}/lib/python3.10/site-packages/pybind11/share/cmake/
-#PYBIND11_DIR=$(python -c "import pybind11; print(pybind11.get_cmake_dir())")
-#-DPYTHON_LIBRARY="/Users/mlevental/miniforge3/envs/openhls/lib/libpython3.10.dylib" -DPYTHON_INCLUDE_DIR="/Users/mlevental/miniforge3/envs/openhls/include/python3.10" \
-
-#      -DPYTHON_INCLUDE_DIR="$(python -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())")"  \
-#      -DPYTHON_LIBRARY="$(python -c "import distutils.sysconfig as sysconfig; print(sysconfig.get_config_var('LIBDIR'))")" \
-
-#-Dpybind11_DIR=/home/mlevental/miniconda3/envs/openhls/lib/python3.10/site-packages/pybind11/share/cmake/pybind11 -DPython_EXECUTABLE=/home/mlevental/miniconda3/envs/openhls/bin/python

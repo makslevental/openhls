@@ -1,6 +1,6 @@
 import logging
-
-import networkx as nx
+from contextlib import contextmanager
+from threading import RLock
 
 from openhls.config import VAL_PREFIX, DTYPE, DEBUG, INCLUDE_AUX_DEPS
 from openhls.util import extend_idx
@@ -17,7 +17,6 @@ CONSTANT = "CONSTANT"
 class State:
     _var_count = 0
     _op_call_count = 0
-    op_graph = nx.MultiDiGraph()
     cst_map = {}
     cst_count = 0
     _pe_idx = (0,)
@@ -26,12 +25,17 @@ class State:
     pe_idx_to_most_recent_op_id = {}
     op_id_to_pe_idx = {}
     pe_deps = set()
+    rlock = None
 
     def __init__(self, output_file):
-        self.op_graph.add_nodes_from(
-            [INPUT_ARG, MEMREF_ARG, GLOBAL_MEMREF_ARG, CONSTANT]
-        )
         self.output_file = output_file
+        self.rlock = RLock()
+
+    @contextmanager
+    def with_rlock(self):
+        self.rlock.acquire()
+        yield
+        self.rlock.release()
 
     def incr_var(self):
         self._var_count += 1
@@ -70,12 +74,10 @@ class State:
         self.val_source[v] = op
 
     def maybe_add_op(self, op):
-        if op not in self.op_graph.nodes:
-            self.op_graph.add_node(op)
+        pass
 
     def add_edge(self, op, arg, out_v):
-        val_source = self.get_arg_src(arg)
-        self.op_graph.add_edge(val_source, op, input=arg, output=out_v, id=op.op_id)
+        pass
 
     def update_most_recent_pe_idx(self, pe_idx, op):
         self.pe_idx_to_most_recent_op_id[pe_idx] = op.op_id

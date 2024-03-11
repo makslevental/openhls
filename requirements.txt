@@ -10,6 +10,6 @@ numpy
 networkx
 astor
 jinja2
-cocotb==1.6.2
+cocotb
 matplotlib
 xeda

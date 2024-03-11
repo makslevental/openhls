@@ -40,7 +40,7 @@ public:
             // Memref-related statements.
             memref::AllocOp, memref::AllocaOp, memref::LoadOp, memref::StoreOp,
             memref::GlobalOp, memref::GetGlobalOp,
-            memref::DeallocOp, memref::CopyOp, memref::TensorStoreOp,
+            memref::DeallocOp, memref::CopyOp, memref::SubViewOp, memref::TensorStoreOp,
             tensor::ReshapeOp, memref::ReshapeOp, memref::CollapseShapeOp,
             memref::ExpandShapeOp, memref::ReinterpretCastOp,
             bufferization::ToMemrefOp, bufferization::ToTensorOp,
@@ -132,6 +132,7 @@ public:
   HANDLE(memref::GetGlobalOp);
   HANDLE(memref::DeallocOp);
   HANDLE(memref::CopyOp);
+  HANDLE(memref::SubViewOp);
   HANDLE(memref::TensorStoreOp);
   HANDLE(tensor::ReshapeOp);
   HANDLE(memref::ReshapeOp);

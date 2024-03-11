@@ -119,6 +119,7 @@ def parfor(**kwargs):
 
     def wrapper(body):
         for args in itertools.product(*kwargs):
+            print(f"{args=}")
             idx = tuple(i for arg, i in args)
             pe_idx = extend_idx(idx)
             state.state.update_current_pe_idx(pe_idx=pe_idx)

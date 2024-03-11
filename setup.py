@@ -129,14 +129,6 @@ def build_torch_mlir(base_cmake_args):
     )
 
 
-def install_torch_mlir_from_wheel():
-    torch_mlir_wheel = get_latest_torch_mlir()
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", torch_mlir_wheel],
-        cwd=CWD,
-    )
-
-
 def build_circt(base_cmake_args):
     circt_dir = os.path.join(EXTERNALS, "circt")
     circt_build_dir = os.path.join(ROOT_BUILD_DIR, "circt")
@@ -168,6 +160,7 @@ def build_openhls_translate(base_cmake_args):
         f'-DMLIR_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "mlir")}',
         f'-DLLVM_DIR={os.path.join(LLVM_BUILD_DIR, "lib", "cmake", "llvm")}',
         "-DMLIR_ENABLE_BINDINGS_PYTHON=ON",
+        "-DLLVM_ENABLE_ABI_BREAKING_CHECKS=OFF"
         f"-Dpybind11_DIR={pybind11.get_cmake_dir()}",
     ]
     run_cmake(openhls_dir, cmake_args, openhls_build_dir, target="openhls_translate")

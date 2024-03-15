@@ -53,7 +53,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
     not_latches = set()
     for op in op_datas:
         if DEBUG:
-            tree_conds.append(f"\n\t// {op.emit()} start")
+            tree_conds.append(f"\n\t// {op.emit()} start"[:100])
         ip = getattr(pe, op.type.value, None)
         args = op.args
         start_time = op.attrs["start_time"]
@@ -103,7 +103,7 @@ def make_pe_always(fsm, pe, op_datas: list[Op], vals, input_wires, ip_res_val_ma
             raise NotImplementedError(str(op))
 
         if DEBUG:
-            tree_conds.append(f"\t// {op.emit()} end\n")
+            tree_conds.append(f"\t// {op.emit()} end\n"[:100])
 
     return make_always_tree(tree_conds, not_latches)
 

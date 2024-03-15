@@ -102,6 +102,7 @@ def parse_mlir_module(module_str):
                 value_float = float(str(value).split(":")[0])
                 csts[res_val] = value_float
             else:
+                vals.add(res_val)
                 vals.update(set(args))
 
             start_time = reg_start_time.findall(line)
